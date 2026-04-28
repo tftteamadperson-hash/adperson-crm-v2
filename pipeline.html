@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이프라인 — 분양의신 CRM</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --bg:#080f1a;--bg2:#0d1623;--bg3:#111e30;--bg4:#162236;--bg5:#0a1828;
+  --border:#1e3050;--border2:#2a3f60;
+  --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:rgba(201,168,76,.13);
+  --text:#eaf0f8;--text2:#96aec8;--text3:#4d6480;
+  --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;--purple:#a78bfa;--orange:#fb923c;
+  --col-w:260px;--sidebar:220px;--radius:8px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px}
+
+/* ── 사이드바 ── */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+.sb-top{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo{height:28px;width:auto;filter:drop-shadow(0 0 6px rgba(201,168,76,.4))}
+.sb-brand{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.04em;line-height:1.3}
+.sb-brand span{display:block;font-size:9px;font-weight:300;color:var(--text3)}
+.sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600}
+.sb-role{font-size:11px;color:var(--gold);font-weight:500}
+.sb-nav{flex:1;padding:8px 0}
+.sb-section{padding:10px 16px 4px;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:var(--gold-dim);color:var(--gold-light);border-left-color:var(--gold);font-weight:600}
+.sb-item .icon{font-size:14px;width:17px;text-align:center;flex-shrink:0}
+.sb-bottom{padding:10px 0;border-top:1px solid var(--border)}
+
+/* ── 메인 ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.page-title{font-size:16px;font-weight:700}
+.page-desc{font-size:12px;color:var(--text3);margin-top:1px}
+.realtime{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px}
+.realtime::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── 필터바 ── */
+.filter-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 24px;border-bottom:1px solid var(--border);
+  background:var(--bg2);flex-shrink:0;flex-wrap:wrap;
+}
+.search-wrap{position:relative;width:220px;flex-shrink:0}
+.search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px 8px 30px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
+.search-wrap input:focus{border-color:rgba(201,168,76,.4)}
+.search-wrap input::placeholder{color:var(--text3)}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:11px;pointer-events:none}
+.fdivider{width:1px;height:22px;background:var(--border);margin:0 4px}
+.exec-btns{display:flex;gap:6px}
+.exec-btn{padding:7px 16px;border-radius:20px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:500;cursor:pointer;background:var(--bg3);border:1px solid var(--border);color:var(--text2);transition:all .18s}
+.exec-btn:hover{border-color:var(--border2);color:var(--text)}
+.exec-btn.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light);font-weight:600}
+.reset-btn{padding:7px 13px;border-radius:20px;background:none;border:1px solid var(--border);font-family:'Pretendard',sans-serif;font-size:12px;color:var(--text3);cursor:pointer;transition:all .18s}
+.reset-btn:hover{border-color:var(--gold);color:var(--gold)}
+.total-info{margin-left:auto;font-size:12px;color:var(--text3)}
+.total-info strong{color:var(--text2);font-weight:600}
+
+/* ── 칸반 보드 ── */
+.board-wrap{flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 24px;display:flex;gap:14px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.board-wrap::-webkit-scrollbar{height:5px}
+.board-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* 컬럼 */
+.col{
+  width:var(--col-w);min-width:var(--col-w);
+  display:flex;flex-direction:column;gap:0;
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;
+}
+
+.col-head{
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;position:sticky;top:0;background:var(--bg2);
+}
+.col-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700}
+.col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.col-count{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;min-width:22px;text-align:center}
+
+.col-body{flex:1;overflow-y:auto;padding:10px 10px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.col-body::-webkit-scrollbar{width:3px}
+.col-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.empty-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;color:var(--text3);font-size:12px;gap:8px;opacity:.6}
+.empty-col .eicon{font-size:24px}
+
+/* ── 카드 ── */
+.card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 13px;transition:border-color .18s,transform .18s,box-shadow .18s;
+  cursor:default;
+}
+.card:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.card-avatar{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.card-info{flex:1;margin-left:8px}
+.card-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2}
+.card-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.card-detail-btn{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.card-detail-btn:hover{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold-light)}
+
+.card-stage{display:inline-flex;margin-bottom:7px}
+.card-meta{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.card-meta-row{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2)}
+.card-meta-row .micon{font-size:11px;color:var(--text3);width:14px;text-align:center;flex-shrink:0}
+.card-date{color:var(--blue);font-weight:600}
+
+/* 활동 노트 프리뷰 */
+.note-preview{
+  background:var(--bg5);border:1px solid var(--border);border-radius:5px;
+  padding:7px 9px;margin-bottom:6px;
+}
+.note-item{font-size:11px;color:var(--text2);line-height:1.6;display:flex;gap:6px}
+.note-date{color:var(--text3);flex-shrink:0;font-size:10px}
+.note-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.note-more{font-size:10px;color:var(--text3);margin-top:3px}
+.note-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:3px}
+.note-edit-btn,.note-del-btn{font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:1px 4px;border-radius:3px;transition:color .15s}
+.note-edit-btn:hover{color:var(--blue)}
+.note-del-btn:hover{color:var(--red)}
+
+.card-note-btn{
+  width:100%;text-align:left;
+  font-family:'Pretendard',sans-serif;font-size:11px;font-weight:500;
+  color:var(--text3);background:none;border:none;cursor:pointer;
+  padding:5px 0 0;transition:color .15s;
+  display:flex;align-items:center;gap:4px;
+}
+.card-note-btn:hover{color:var(--gold-light)}
+
+/* 배지 */
+.badge{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+.b-prospect{background:rgba(251,146,60,.12);color:var(--orange)}
+.b-deal{background:rgba(91,156,246,.12);color:var(--blue);font-weight:600}
+.b-retain{background:rgba(45,212,160,.12);color:var(--green);font-weight:600}
+.b-lead{color:var(--text3);font-size:10px}
+.b-tm-high{background:rgba(240,96,96,.16);color:var(--red);font-weight:700}
+.b-tm-mid{color:var(--text3)}
+
+/* 컬럼 색상 */
+.dot-meeting{background:#5b9cf6}
+.dot-done{background:#2dd4a0}
+.dot-book{background:#a78bfa}
+.dot-doc{background:#fb923c}
+.dot-manage{background:#F0D080}
+.cnt-meeting{background:rgba(91,156,246,.15);color:var(--blue)}
+.cnt-done{background:rgba(45,212,160,.15);color:var(--green)}
+.cnt-book{background:rgba(167,139,250,.15);color:var(--purple)}
+.cnt-doc{background:rgba(251,146,60,.15);color:var(--orange)}
+.cnt-manage{background:rgba(240,208,128,.15);color:var(--gold-light)}
+.col-meeting{border-top:2px solid var(--blue)}
+.col-done{border-top:2px solid var(--green)}
+.col-book{border-top:2px solid var(--purple)}
+.col-doc{border-top:2px solid var(--orange)}
+.col-manage{border-top:2px solid var(--gold)}
+
+/* ── 활동 노트 모달 ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(5px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-bg.on{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:500px;max-width:95vw;max-height:80vh;overflow-y:auto;padding:26px;position:relative;box-shadow:0 0 60px rgba(0,0,0,.7);scrollbar-width:thin}
+.modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:18px;opacity:.5}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-who{display:flex;align-items:center;gap:10px}
+.modal-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.modal-wname{font-size:15px;font-weight:700}
+.modal-wsub{font-size:11px;color:var(--text3);margin-top:1px}
+.modal-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
+
+.note-count-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.note-count-label{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.note-count-label .dot2{width:5px;height:5px;border-radius:50%;background:var(--blue)}
+.btn-add-note{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);cursor:pointer;transition:all .2s}
+.btn-add-note:hover{background:rgba(201,168,76,.2)}
+
+.notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.note-card{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:11px 13px}
+.note-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.note-card-date{font-size:10px;font-weight:600;color:var(--text3)}
+.note-card-acts{display:flex;gap:4px}
+.nc-btn{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 5px;border-radius:3px;transition:color .15s}
+.nc-btn:hover{color:var(--text)}
+.nc-btn.del:hover{color:var(--red)}
+.note-card-text{font-size:13px;color:var(--text2);line-height:1.7}
+
+.note-empty{text-align:center;padding:24px 0;color:var(--text3);font-size:13px}
+
+.note-input-area{border-top:1px solid var(--border);padding-top:14px}
+.note-input-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em;margin-bottom:7px;display:block}
+.note-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;height:80px;transition:border-color .2s}
+.note-textarea:focus{border-color:rgba(201,168,76,.45)}
+.note-textarea::placeholder{color:var(--text3)}
+.note-input-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.btn-note-cancel{font-family:'Pretendard',sans-serif;font-size:12px;padding:7px 14px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s}
+.btn-note-cancel:hover{border-color:var(--text2)}
+.btn-note-save{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:700;padding:7px 18px;border-radius:6px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;cursor:pointer;transition:all .2s}
+.btn-note-save:hover{box-shadow:0 3px 12px rgba(201,168,76,.3)}
+
+/* 상세 모달 */
+.detail-modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:560px;max-width:95vw;max-height:85vh;overflow-y:auto;padding:26px;position:relative;box-shadow:0 0 60px rgba(0,0,0,.7);scrollbar-width:thin}
+.detail-modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:18px;opacity:.5}
+.dm-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dm-field{display:flex;flex-direction:column;gap:5px}
+.dm-field.full{grid-column:1/-1}
+.dm-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase}
+.dm-val{font-size:13px;color:var(--text);font-weight:500;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;min-height:36px}
+.dm-val.empty{color:var(--text3)}
+.dm-sec{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;grid-column:1/-1;padding-bottom:6px;border-bottom:1px solid var(--border);margin-top:4px;display:flex;align-items:center;gap:6px}
+.dm-sec .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeIn .25s ease}
+</style>
+</head>
+<body>
+
+<!-- 사이드바 -->
+<aside class="sidebar">
+  <div class="sb-top">
+    <img src="./logo-gold.png" class="sb-logo" alt="분양의신" onerror="this.style.display='none'">
+    <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar">김</div>
+    <div><div class="sb-uname">김창완 팀장</div><div class="sb-role">관리자</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">총괄</div>
+    <a class="sb-item"><span class="icon">📊</span>대시보드</a>
+    <a class="sb-item"><span class="icon">📅</span>월간 실적</a>
+    <a class="sb-item"><span class="icon">📆</span>주간 실적</a>
+    <div class="sb-section">실행</div>
+    <a class="sb-item"><span class="icon">👥</span>고객 DB</a>
+    <a class="sb-item active"><span class="icon">🔀</span>파이프라인</a>
+    <a class="sb-item"><span class="icon">⭐</span>분양회 입회자</a>
+    <a class="sb-item"><span class="icon">📰</span>취재 · 아티클</a>
+    <a class="sb-item"><span class="icon">🏢</span>프리미엄 대행사</a>
+    <a class="sb-item"><span class="icon">🚚</span>완판트럭</a>
+    <div class="sb-section">운영</div>
+    <a class="sb-item"><span class="icon">📋</span>매출일보</a>
+    <a class="sb-item"><span class="icon">💰</span>통합 매출 관리</a>
+    <a class="sb-item"><span class="icon">🎁</span>리워드 관리</a>
+    <a class="sb-item"><span class="icon">👑</span>분양회 회원 관리</a>
+  </nav>
+  <div class="sb-bottom">
+    <a class="sb-item"><span class="icon">🌙</span>라이트 모드</a>
+    <a class="sb-item"><span class="icon">🚪</span>로그아웃</a>
+  </div>
+</aside>
+
+<!-- 메인 -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span style="font-size:17px">🔀</span>
+      <div><div class="page-title">파이프라인</div><div class="page-desc" id="totalDesc">전체 — 명</div></div>
+    </div>
+    <div class="realtime">실시간</div>
+  </div>
+
+  <!-- 필터바 -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <span class="si">🔍</span>
+      <input type="text" placeholder="고객명, 직급, 연락처 검색..." id="searchInput" oninput="render()">
+    </div>
+    <div class="fdivider"></div>
+    <div class="exec-btns">
+      <button class="exec-btn" data-exec="조계현" onclick="toggleExec(this)">조계현</button>
+      <button class="exec-btn" data-exec="이세호" onclick="toggleExec(this)">이세호</button>
+      <button class="exec-btn" data-exec="기여운" onclick="toggleExec(this)">기여운</button>
+      <button class="exec-btn" data-exec="최연전" onclick="toggleExec(this)">최연전</button>
+    </div>
+    <button class="reset-btn" onclick="resetFilter()">↺ 초기화</button>
+    <div class="total-info" id="totalInfo">전체 <strong>—</strong>명 표시</div>
+  </div>
+
+  <!-- 칸반 보드 -->
+  <div class="board-wrap">
+    <div class="col col-meeting" id="col-meeting">
+      <div class="col-head">
+        <div class="col-title"><span class="col-dot dot-meeting"></span>미팅 예정</div>
+        <span class="col-count cnt-meeting" id="cnt-meeting">0</span>
+      </div>
+      <div class="col-body" id="body-meeting"></div>
+    </div>
+    <div class="col col-done" id="col-done">
+      <div class="col-head">
+        <div class="col-title"><span class="col-dot dot-done"></span>계약 완료</div>
+        <span class="col-count cnt-done" id="cnt-done">0</span>
+      </div>
+      <div class="col-body" id="body-done"></div>
+    </div>
+    <div class="col col-book" id="col-book">
+      <div class="col-head">
+        <div class="col-title"><span class="col-dot dot-book"></span>예약 완료</div>
+        <span class="col-count cnt-book" id="cnt-book">0</span>
+      </div>
+      <div class="col-body" id="body-book"></div>
+    </div>
+    <div class="col col-doc" id="col-doc">
+      <div class="col-head">
+        <div class="col-title"><span class="col-dot dot-doc"></span>서류 수취</div>
+        <span class="col-count cnt-doc" id="cnt-doc">0</span>
+      </div>
+      <div class="col-body" id="body-doc"></div>
+    </div>
+    <div class="col col-manage" id="col-manage">
+      <div class="col-head">
+        <div class="col-title"><span class="col-dot dot-manage"></span>관리 필요</div>
+        <span class="col-count cnt-manage" id="cnt-manage">0</span>
+      </div>
+      <div class="col-body" id="body-manage"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 활동 노트 모달 -->
+<div class="modal-bg" id="noteModal" onclick="if(event.target===this)closeNoteModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-who">
+        <div class="modal-avatar" id="nm-avatar"></div>
+        <div><div class="modal-wname" id="nm-name"></div><div class="modal-wsub" id="nm-sub"></div></div>
+      </div>
+      <button class="modal-close" onclick="closeNoteModal()">✕</button>
+    </div>
+    <div class="note-count-row">
+      <div class="note-count-label"><span class="dot2"></span>활동 노트 <span id="nm-count">0</span>건</div>
+      <button class="btn-add-note" onclick="showNoteInput()">＋ 노트 추가</button>
+    </div>
+    <div class="notes-list" id="notesList"></div>
+    <div class="note-input-area" id="noteInputArea" style="display:none">
+      <label class="note-input-label">새 활동 노트</label>
+      <textarea class="note-textarea" id="noteTextarea" placeholder="고객과의 통화 내용, 관심도, 특이사항 등을 자유롭게 입력하세요."></textarea>
+      <div class="note-input-footer">
+        <button class="btn-note-cancel" onclick="hideNoteInput()">취소</button>
+        <button class="btn-note-save" onclick="saveNote()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 상세 모달 -->
+<div class="modal-bg" id="detailModal" onclick="if(event.target===this)closeDetailModal()">
+  <div class="detail-modal">
+    <div class="modal-head">
+      <div class="modal-who">
+        <div class="modal-avatar" id="dm-avatar"></div>
+        <div><div class="modal-wname" id="dm-name"></div><div class="modal-wsub" id="dm-sub"></div></div>
+      </div>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="dm-grid" id="dm-grid"></div>
+  </div>
+</div>
+
+<script>
+// ── 더미 데이터 ─────────────────────────────
+let DATA=[
+  {id:1,name:'김부성',rank:'본부장',phone:'010-5064-8707',type:'기존',tm:'중',date:'04.29',region:'평택',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
+  {id:2,name:'민혜경',rank:'팀장',phone:'010-5331-0550',type:'기존',tm:'중',date:'04.28',region:'용인',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'강아름',note:''},
+  {id:3,name:'홍원호',rank:'총괄본부장',phone:'010-5350-8955',type:'기존',tm:'중',date:'',region:'',result:'',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
+  {id:4,name:'강다연',rank:'팀장',phone:'010-9175-8837',type:'기존',tm:'상',date:'',region:'김포',result:'',stage:'프로스펙팅',exec:'조계현',consult:'강아름',note:''},
+  {id:5,name:'이정재',rank:'총괄본부장',phone:'010-4878-7464',type:'기존',tm:'상',date:'04.28',region:'인천',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'박민경',note:''},
+  {id:6,name:'이승엽',rank:'본부장',phone:'010-5391-8497',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'',note:''},
+  {id:7,name:'윤지민',rank:'팀장',phone:'010-9887-1734',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'전정훈',note:''},
+  {id:8,name:'오세혁',rank:'대표',phone:'010-5146-7442',type:'기존',tm:'상',date:'04.24',region:'경남 양산',result:'계약완료',stage:'딜클로징',exec:'최연전',consult:'박민경',note:''},
+  {id:9,name:'한세이',rank:'팀장',phone:'010-7791-7988',type:'기존',tm:'중',date:'03.24',region:'오산',result:'계약완료',stage:'리텐션',exec:'최연전',consult:'강아름',note:''},
+  {id:10,name:'진선화',rank:'본부장',phone:'010-6208-7523',type:'기존',tm:'상',date:'',region:'청주',result:'관리필요',stage:'',exec:'최연전',consult:'전정훈',note:''},
+  {id:11,name:'송태산',rank:'본부장',phone:'010-9787-6397',type:'신규',tm:'중',date:'04.24',region:'울산',result:'예약완료',stage:'프로스펙팅',exec:'조계현',consult:'',note:''},
+  {id:12,name:'김영성',rank:'팀장',phone:'010-8907-6151',type:'신규',tm:'중',date:'04.24',region:'김해',result:'계약완료',stage:'딜클로징',exec:'조계현',consult:'',note:''},
+  {id:13,name:'김소이',rank:'팀장',phone:'010-2755-6981',type:'기존',tm:'중',date:'04.29',region:'오산',result:'',stage:'',exec:'조계현',consult:'박민경',note:''},
+  {id:14,name:'김진태',rank:'팀장',phone:'010-6595-8944',type:'신규',tm:'상',date:'',region:'대전',result:'미팅불발',stage:'프로스펙팅',exec:'최연전',consult:'',note:''},
+  {id:15,name:'박정연',rank:'본부장',phone:'010-2069-4539',type:'기존',tm:'중',date:'',region:'오산',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
+  {id:16,name:'박수근',rank:'본부장',phone:'010-6633-7866',type:'기존',tm:'중',date:'04.21',region:'서울 강서구',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'강아름',note:''},
+  {id:17,name:'김성호',rank:'팀장',phone:'010-3773-0018',type:'기존',tm:'중',date:'04.21',region:'성남시',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'강아름',note:''},
+];
+
+// 활동 노트 저장소: {id: [{date, text}]}
+let NOTES={};
+DATA.forEach(d=>{NOTES[d.id]=[]});
+// 샘플 노트
+NOTES[8]=[{id:'n1',date:'4. 23.',text:'1. 14:06 오세혁 대표와 통화 완료 2. 구루... 상세 논의 예정'}];
+NOTES[9]=[{id:'n2',date:'4. 27.',text:'1.5월 8일 호갱노노 관련하여 소통 → 주요...'},{id:'n3',date:'4. 21.',text:'1. 15:43 1차 TM 미수신 2. 16:30 2차 TM...'}];
+
+let activeExec=null;
+let noteTargetId=null;
+let detailTargetId=null;
+
+// ── 아바타 색상 ──────────────────────────────
+const COLORS=['#3b5bdb','#e67700','#2f9e44','#c92a2a','#5f3dc4','#0c8599','#d6336c','#495057'];
+function avatarColor(name){return COLORS[name.charCodeAt(0)%COLORS.length]}
+function avatarLetter(name){return name?name[0]:'?'}
+
+// ── 필터 ──────────────────────────────────
+function getFiltered(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  return DATA.filter(d=>{
+    if(q&&!d.name.includes(q)&&!d.rank.includes(q)&&!d.phone.includes(q))return false;
+    if(activeExec&&d.exec!==activeExec)return false;
+    return true;
+  });
+}
+
+function toggleExec(btn){
+  const v=btn.dataset.exec;
+  if(activeExec===v){activeExec=null;btn.classList.remove('active')}
+  else{document.querySelectorAll('.exec-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeExec=v}
+  render();
+}
+function resetFilter(){
+  activeExec=null;
+  document.querySelectorAll('.exec-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('searchInput').value='';
+  render();
+}
+
+// ── 배지 ──────────────────────────────────
+const stageBadge=v=>{const m={리드:'b-lead',프로스펙팅:'b-prospect',딜클로징:'b-deal',리텐션:'b-retain'};return v?`<span class="badge ${m[v]||''}">${v}</span>`:''};
+const tmBadge=v=>{if(v==='상')return`<span class="badge b-tm-high">▲ 상</span>`;if(v==='중')return`<span class="badge b-tm-mid">중</span>`;return''};
+
+// ── 카드 HTML ─────────────────────────────
+function cardHTML(d){
+  const color=avatarColor(d.name);
+  const notes=NOTES[d.id]||[];
+  const notePreview=notes.length>0
+    ?`<div class="note-preview">${notes.slice(0,2).map(n=>`<div class="note-item"><span class="note-date">${n.date}</span><span class="note-text">${n.text}</span></div>`).join('')}${notes.length>2?`<div class="note-more">+${notes.length-2}개 더</div>`:''}</div>`
+    :'';
+  return `<div class="card" id="card-${d.id}">
+    <div class="card-head">
+      <div class="card-avatar" style="background:${color}">${avatarLetter(d.name)}</div>
+      <div class="card-info">
+        <div class="card-name">${d.name}</div>
+        <div class="card-sub">${d.rank||''}${d.exec?' · '+d.exec:''}</div>
+      </div>
+      <button class="card-detail-btn" onclick="openDetailModal(${d.id})">상세</button>
+    </div>
+    ${d.stage?`<div class="card-stage">${stageBadge(d.stage)}</div>`:''}
+    <div class="card-meta">
+      ${d.phone?`<div class="card-meta-row"><span class="micon">📞</span><span>${d.phone}</span></div>`:''}
+      ${d.date||d.region?`<div class="card-meta-row"><span class="micon">📍</span><span>${d.date?`<span class="card-date">${d.date}일</span>`:''}${d.date&&d.region?' · ':''}${d.region||''}</span></div>`:''}
+      ${d.tm?`<div class="card-meta-row"><span class="micon">📡</span><span>TM감도 ${tmBadge(d.tm)}</span></div>`:''}
+    </div>
+    ${notePreview}
+    <button class="card-note-btn" onclick="openNoteModal(${d.id})">
+      📝 활동노트 ${notes.length>0?`(${notes.length}건)`:'입력하기'} →
+    </button>
+  </div>`;
+}
+
+// ── 렌더 ──────────────────────────────────
+function render(){
+  const filtered=getFiltered();
+  const total=filtered.length;
+  document.getElementById('totalDesc').textContent=`전체 ${DATA.length}명 중 ${total}명 표시`;
+  document.getElementById('totalInfo').innerHTML=`전체 <strong>${total}</strong>명 표시`;
+
+  const cols={
+    meeting: filtered.filter(d=>!d.result||d.result===''),
+    done:    filtered.filter(d=>d.result==='계약완료'),
+    book:    filtered.filter(d=>d.result==='예약완료'),
+    doc:     filtered.filter(d=>d.result==='서류수취'),
+    manage:  filtered.filter(d=>d.result==='관리필요'),
+  };
+
+  Object.entries(cols).forEach(([key,list])=>{
+    document.getElementById('cnt-'+key).textContent=list.length;
+    const body=document.getElementById('body-'+key);
+    if(!list.length){
+      body.innerHTML=`<div class="empty-col"><div class="eicon">📭</div>없음</div>`;
+    } else {
+      body.innerHTML=list.map(d=>cardHTML(d)).join('');
+    }
+  });
+}
+
+// ── 활동 노트 모달 ───────────────────────────
+function openNoteModal(id){
+  noteTargetId=id;
+  const d=DATA.find(x=>x.id===id);
+  const color=avatarColor(d.name);
+  document.getElementById('nm-avatar').style.background=color;
+  document.getElementById('nm-avatar').textContent=avatarLetter(d.name);
+  document.getElementById('nm-name').textContent=d.name+' — 활동 노트';
+  document.getElementById('nm-sub').textContent=(d.rank||'')+(d.exec?' · '+d.exec:'');
+  renderNoteList();
+  hideNoteInput();
+  document.getElementById('noteModal').classList.add('on');
+}
+function closeNoteModal(){document.getElementById('noteModal').classList.remove('on');noteTargetId=null}
+
+function renderNoteList(){
+  const notes=NOTES[noteTargetId]||[];
+  document.getElementById('nm-count').textContent=notes.length;
+  const list=document.getElementById('notesList');
+  if(!notes.length){list.innerHTML=`<div class="note-empty">활동 노트가 없습니다</div>`;return}
+  list.innerHTML=notes.map(n=>`
+    <div class="note-card" id="nc-${n.id}">
+      <div class="note-card-head">
+        <span class="note-card-date">${n.date}</span>
+        <div class="note-card-acts">
+          <button class="nc-btn del" onclick="deleteNote('${n.id}')">삭제</button>
+        </div>
+      </div>
+      <div class="note-card-text">${n.text.replace(/\n/g,'<br>')}</div>
+    </div>`).join('');
+}
+
+function showNoteInput(){document.getElementById('noteInputArea').style.display='block';document.getElementById('noteTextarea').focus()}
+function hideNoteInput(){document.getElementById('noteInputArea').style.display='none';document.getElementById('noteTextarea').value=''}
+
+function saveNote(){
+  const text=document.getElementById('noteTextarea').value.trim();
+  if(!text)return;
+  if(!NOTES[noteTargetId])NOTES[noteTargetId]=[];
+  const today=new Date();
+  const dateStr=`${today.getMonth()+1}. ${today.getDate()}.`;
+  const nid='n'+Date.now();
+  NOTES[noteTargetId].unshift({id:nid,date:dateStr,text});
+  hideNoteInput();
+  renderNoteList();
+  render(); // 카드 노트 프리뷰 업데이트
+}
+
+function deleteNote(nid){
+  if(!confirm('이 노트를 삭제하시겠습니까?'))return;
+  NOTES[noteTargetId]=NOTES[noteTargetId].filter(n=>n.id!==nid);
+  renderNoteList();
+  render();
+}
+
+// ── 상세 모달 ─────────────────────────────
+function openDetailModal(id){
+  const d=DATA.find(x=>x.id===id);
+  const color=avatarColor(d.name);
+  document.getElementById('dm-avatar').style.background=color;
+  document.getElementById('dm-avatar').textContent=avatarLetter(d.name);
+  document.getElementById('dm-name').textContent=d.name;
+  document.getElementById('dm-sub').textContent=(d.rank||'')+(d.phone?' · '+d.phone:'');
+
+  const val=(v,fallback='—')=>v?`<div class="dm-val">${v}</div>`:`<div class="dm-val empty">${fallback}</div>`;
+  document.getElementById('dm-grid').innerHTML=`
+    <div class="dm-sec"><span class="dot" style="background:var(--blue)"></span>미팅 전 정보</div>
+    <div class="dm-field"><div class="dm-label">고객명</div>${val(d.name)}</div>
+    <div class="dm-field"><div class="dm-label">직급</div>${val(d.rank)}</div>
+    <div class="dm-field"><div class="dm-label">연락처</div>${val(d.phone)}</div>
+    <div class="dm-field"><div class="dm-label">고객유형</div>${val(d.type)}</div>
+    <div class="dm-field"><div class="dm-label">TM 감도</div>${val(d.tm)}</div>
+    <div class="dm-field"><div class="dm-label">미팅 일정</div>${val(d.date)}</div>
+    <div class="dm-field full"><div class="dm-label">미팅 지역</div>${val(d.region)}</div>
+    <div class="dm-sec" style="margin-top:8px"><span class="dot" style="background:var(--gold)"></span>미팅 후 정보</div>
+    <div class="dm-field"><div class="dm-label">미팅 결과</div>${val(d.result)}</div>
+    <div class="dm-field"><div class="dm-label">관리 구간</div>${val(d.stage)}</div>
+    <div class="dm-field"><div class="dm-label">담당 실행파트</div>${val(d.exec)}</div>
+    <div class="dm-field"><div class="dm-label">담당 컨설턴트</div>${val(d.consult)}</div>
+    <div class="dm-field full"><div class="dm-label">비고</div>${val(d.note)}</div>
+  `;
+  document.getElementById('detailModal').classList.add('on');
+}
+function closeDetailModal(){document.getElementById('detailModal').classList.remove('on')}
+
+render();
+</script>
+</body>
+</html>
