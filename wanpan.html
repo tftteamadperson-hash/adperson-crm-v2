@@ -96,7 +96,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .tc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
 .tc-title-wrap{}
 .tc-site{font-size:16px;font-weight:700;color:var(--text);line-height:1.2}
-.tc-addr{font-size:12px;color:var(--text3);margin-top:4px;display:flex;align-items:center;gap:4px}
+.tc-addr{font-size:12px;color:var(--text2);margin-top:4px;display:flex;align-items:center;gap:4px}
 .tc-status{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap}
 .status-upcoming{background:rgba(91,156,246,.15);color:var(--blue)}
 .status-today{background:rgba(201,168,76,.2);color:var(--gold-light)}
@@ -266,10 +266,17 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
       <span class="si">🔍</span>
       <input type="text" id="searchInput" placeholder="현장명, 대행사 검색..." oninput="renderCards()">
     </div>
+    <div class="fdivider"></div>
     <div class="month-tabs" id="monthTabs"></div>
     <div class="filter-right">
       <div class="total-badge">전체 <strong id="totalCnt">—</strong>회차</div>
     </div>
+  </div>
+
+  <!-- 담당자 필터 -->
+  <div style="display:flex;align-items:center;gap:8px;padding:10px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;flex-wrap:wrap">
+    <div id="execFilterBtns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <button style="margin-left:auto;padding:5px 12px;border-radius:16px;background:none;border:1px solid var(--border);font-family:'Pretendard',sans-serif;font-size:11px;color:var(--text3);cursor:pointer;transition:all .18s" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'" onclick="resetAllFilters()">↺ 초기화</button>
   </div>
 
   <!-- 카드 그리드 -->
@@ -384,9 +391,31 @@ let execSelected = new Set();
 let consultSelected = new Set();
 let activeMonth = 'all';
 let editId = null;
+let activeExecFilter = null;
 
 const EXEC_MEMBERS = ['김정후','김창완','최웅','조계현','이세호','기여운','최연전','김재영','최은정'];
 const CONSULT_MEMBERS = ['박경화','박혜은','박민경','조승현','강아름','백선중','전정훈','박나라'];
+
+// ── 담당자 필터 버튼 생성 ──────────────────
+const FILTER_EXEC = ['조계현','이세호','기여운','최연전'];
+
+function buildPersonFilters(){
+  document.getElementById('execFilterBtns').innerHTML = FILTER_EXEC.map(n=>`
+    <button style="padding:6px 16px;border-radius:20px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;${activeExecFilter===n?'background:rgba(201,168,76,.15);border:1px solid var(--gold);color:var(--gold-light);font-weight:600':'background:var(--bg3);border:1px solid var(--border);color:var(--text2)'}" onclick="toggleExecFilter('${n}')">${n}</button>
+  `).join('');
+}
+
+function toggleExecFilter(name){
+  activeExecFilter = activeExecFilter === name ? null : name;
+  buildPersonFilters();
+  renderCards();
+}
+function resetAllFilters(){
+  activeExecFilter = null;
+  activeMonth = 'all';
+  document.getElementById('searchInput').value = '';
+  buildMonthTabs(); buildPersonFilters(); renderCards();
+}
 
 // ── 월 탭 생성 ─────────────────────────────
 function buildMonthTabs(){
@@ -413,6 +442,7 @@ function getFiltered(){
       if(mo !== activeMonth) return false;
     }
     if(q && !d.site.toLowerCase().includes(q) && !d.agency.toLowerCase().includes(q)) return false;
+    if(activeExecFilter && !d.execTeam.includes(activeExecFilter)) return false;
     return true;
   }).sort((a,b) => new Date(a.date)-new Date(b.date));
 }
@@ -653,6 +683,7 @@ function deleteItem(id){
 buildMonthTabs();
 renderCards();
 renderChips();
+buildPersonFilters();
 </script>
 </body>
 </html>
