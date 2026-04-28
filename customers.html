@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고객 DB — 분양의신 CRM</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --bg:#080f1a;--bg2:#0d1623;--bg3:#111e30;--bg4:#162236;
+  --border:#1e3050;--border2:#243a58;
+  --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:rgba(201,168,76,.15);
+  --text:#e8edf5;--text2:#8fa3bc;--text3:#4d6480;
+  --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;
+  --purple:#a78bfa;--orange:#fb923c;
+  --sidebar:220px;--panel:420px;--radius:8px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:13px}
+
+/* ── 사이드바 ── */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+.sb-top{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo{height:28px;width:auto;filter:drop-shadow(0 0 6px rgba(201,168,76,.4))}
+.sb-brand{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.04em;line-height:1.3}
+.sb-brand span{display:block;font-size:9px;font-weight:300;color:var(--text3);letter-spacing:.06em}
+.sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+.sb-uname{font-size:12px;font-weight:600}
+.sb-role{font-size:10px;color:var(--gold);font-weight:500}
+.sb-nav{flex:1;padding:8px 0}
+.sb-section{padding:8px 16px 4px;font-size:9px;font-weight:600;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:var(--gold-dim);color:var(--gold-light);border-left-color:var(--gold);font-weight:600}
+.sb-item .icon{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.sb-bottom{padding:10px 0;border-top:1px solid var(--border)}
+
+/* ── 메인 ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* 탑바 */
+.topbar{height:52px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.page-title{font-size:15px;font-weight:700}
+.page-desc{font-size:11px;color:var(--text3)}
+.btn-new{display:flex;align-items:center;gap:5px;background:var(--gold);color:#160d00;border:none;border-radius:6px;padding:8px 16px;font-family:'Pretendard',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .2s}
+.btn-new:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.3)}
+
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+
+/* 요약 카드 → 클릭 필터 버튼 */
+.summary-row{display:flex;gap:8px;padding:14px 24px 0;flex-shrink:0}
+.sum-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 16px;display:flex;align-items:center;gap:10px;flex:1;
+  cursor:pointer;transition:all .18s;user-select:none;
+}
+.sum-card:hover{border-color:var(--border2);background:var(--bg4)}
+.sum-card.active-filter{border-color:var(--gold) !important;background:rgba(201,168,76,.08) !important;box-shadow:0 0 0 1px rgba(201,168,76,.25)}
+.sum-card.active-filter .sum-label{color:var(--gold-light)}
+.sum-icon{font-size:18px}
+.sum-val{font-size:18px;font-weight:700;line-height:1}
+.sum-label{font-size:10px;color:var(--text3);margin-top:2px;transition:color .18s}
+
+/* ── 필터 영역 (클릭식) ── */
+.filter-area{padding:12px 24px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.filter-row1{display:flex;align-items:center;gap:8px}
+.search-wrap{position:relative;width:240px;flex-shrink:0}
+.search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px 8px 30px;font-family:'Pretendard',sans-serif;font-size:12px;color:var(--text);outline:none;transition:border-color .2s}
+.search-wrap input:focus{border-color:rgba(201,168,76,.4)}
+.search-wrap input::placeholder{color:var(--text3)}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:11px;pointer-events:none}
+
+/* 담당자 버튼 */
+.exec-btns{display:flex;gap:6px;flex-wrap:wrap}
+.exec-btn{
+  padding:6px 14px;border-radius:20px;font-family:'Pretendard',sans-serif;
+  font-size:12px;font-weight:500;cursor:pointer;
+  background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+  transition:all .18s;
+}
+.exec-btn:hover{border-color:var(--border2);color:var(--text)}
+.exec-btn.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light);font-weight:600}
+
+.filter-divider{width:1px;height:20px;background:var(--border);margin:0 4px}
+.reset-btn{padding:6px 12px;border-radius:20px;background:none;border:1px solid var(--border);font-family:'Pretendard',sans-serif;font-size:11px;color:var(--text3);cursor:pointer;transition:all .18s}
+.reset-btn:hover{border-color:var(--gold);color:var(--gold)}
+.total-count{margin-left:auto;font-size:11px;color:var(--text3);white-space:nowrap}
+.total-count strong{color:var(--text2);font-weight:600}
+
+/* 서브 필터 (TM감도 + 미팅결과) */
+.filter-row2{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:8px 14px;background:rgba(201,168,76,.04);
+  border:1px solid rgba(201,168,76,.15);border-radius:8px;
+  animation:fadeIn .2s ease;
+}
+.filter-row2.hidden{display:none}
+.sub-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.sub-btns{display:flex;gap:5px;flex-wrap:wrap}
+.sub-btn{
+  padding:4px 11px;border-radius:14px;font-family:'Pretendard',sans-serif;
+  font-size:11px;font-weight:500;cursor:pointer;
+  background:transparent;border:1px solid var(--border);color:var(--text3);
+  transition:all .18s;
+}
+.sub-btn:hover{border-color:var(--border2);color:var(--text2)}
+.sub-btn.active-tm-high{background:rgba(240,96,96,.18);border-color:rgba(240,96,96,.5);color:var(--red)}
+.sub-btn.active-green{background:rgba(45,212,160,.15);border-color:rgba(45,212,160,.4);color:var(--green)}
+.sub-btn.active-blue{background:rgba(91,156,246,.15);border-color:rgba(91,156,246,.4);color:var(--blue)}
+.sub-btn.active-gold{background:rgba(240,208,128,.15);border-color:rgba(240,208,128,.4);color:var(--gold-light)}
+.sub-divider{width:1px;height:16px;background:rgba(201,168,76,.2);margin:0 4px}
+
+/* ── 테이블 ── */
+.table-wrap{flex:1;overflow:auto;padding:0 24px 16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.table-wrap::-webkit-scrollbar{width:4px;height:4px}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+table{width:100%;border-collapse:separate;border-spacing:0}
+thead th{
+  position:sticky;top:0;z-index:10;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:10px 12px;font-size:10px;font-weight:700;color:var(--text3);
+  letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
+  text-align:center; /* 중앙정렬 */
+}
+thead th.left{text-align:left}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+tbody tr.selected{background:rgba(201,168,76,.06) !important}
+tbody td{
+  padding:11px 12px;font-size:12px;color:var(--text2);
+  border-bottom:1px solid rgba(30,48,80,.6);
+  text-align:center; /* 중앙정렬 */
+  white-space:nowrap;
+}
+tbody td.left{text-align:left}
+
+/* 강조 행 */
+tbody tr.highlight-done{background:rgba(45,212,160,.04)}
+tbody tr.highlight-done:hover{background:rgba(45,212,160,.07)}
+tbody tr.highlight-book{background:rgba(91,156,246,.03)}
+tbody tr.highlight-manage td.td-result{color:var(--gold-light) !important}
+
+/* 이름 */
+.td-name{font-size:13px;font-weight:700;color:var(--text)}
+.td-phone{font-size:11px;color:var(--text3);letter-spacing:.02em}
+
+/* 배지 */
+.badge{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap}
+
+/* 고객유형 */
+.b-new{background:rgba(45,212,160,.12);color:var(--green)}
+.b-old{background:rgba(91,156,246,.1);color:var(--blue)}
+.b-ref{background:rgba(167,139,250,.12);color:var(--purple)}
+
+/* TM감도: 상만 강조, 나머지 절제 */
+.b-tm-high{
+  background:rgba(240,96,96,.18);color:var(--red);
+  font-size:11px;font-weight:700;
+  box-shadow:0 0 8px rgba(240,96,96,.2);
+}
+.b-tm-mid{color:var(--text3);font-size:11px}
+.b-tm-low{color:var(--text3);font-size:11px;opacity:.6}
+
+/* 미팅결과: 중요순으로 강조 */
+.b-done{
+  background:rgba(45,212,160,.15);color:var(--green);font-weight:700;
+  box-shadow:0 0 8px rgba(45,212,160,.15);
+}
+.b-book{background:rgba(91,156,246,.12);color:var(--blue);font-weight:600}
+.b-doc{background:rgba(167,139,250,.1);color:var(--purple)}
+.b-manage{
+  background:rgba(240,208,128,.12);color:var(--gold-light);font-weight:600;
+  border:1px solid rgba(240,208,128,.2);
+}
+.b-reject{background:rgba(240,96,96,.1);color:var(--red)}
+.b-fail{color:var(--text3);font-size:11px}
+
+/* 관리구간 */
+.b-lead{color:var(--text3);font-size:11px}
+.b-prospect{background:rgba(251,146,60,.12);color:var(--orange)}
+.b-deal{background:rgba(91,156,246,.12);color:var(--blue);font-weight:600}
+.b-retain{background:rgba(45,212,160,.12);color:var(--green);font-weight:600}
+
+.dash{color:var(--text3);font-size:11px}
+.row-arrow{color:var(--text3);font-size:11px}
+tbody tr.selected .row-arrow{color:var(--gold)}
+
+/* ── 슬라이드 패널 ── */
+.detail-panel{
+  position:absolute;top:0;right:0;bottom:0;width:var(--panel);
+  background:var(--bg2);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  z-index:100;box-shadow:-8px 0 40px rgba(0,0,0,.5);
+}
+.detail-panel.open{transform:translateX(0)}
+.panel-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-name{font-size:16px;font-weight:700}
+.panel-job{font-size:11px;color:var(--text3);margin-top:3px}
+.panel-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.panel-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.panel-body{flex:1;overflow-y:auto;padding:16px 20px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.panel-body::-webkit-scrollbar{width:3px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.psec{margin-bottom:22px}
+.psec-title{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.psec-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.pfield-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pfield{display:flex;flex-direction:column;gap:5px}
+.pfield.full{grid-column:1/-1}
+.pfield-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.04em}
+
+/* 패널 미팅 전: readonly 스타일 */
+.p-readonly{font-size:13px;color:var(--text);font-weight:500;padding:7px 0;border-bottom:1px solid rgba(30,48,80,.4)}
+.p-readonly.muted{color:var(--text3)}
+
+/* 패널 미팅 후: 입력 스타일 */
+.p-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
+.p-input:focus{border-color:rgba(201,168,76,.45)}
+.p-input::placeholder{color:var(--text3)}
+.p-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);cursor:pointer;outline:none;transition:border-color .2s}
+.p-select:focus{border-color:rgba(201,168,76,.45)}
+.p-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:vertical;min-height:80px;transition:border-color .2s}
+.p-textarea:focus{border-color:rgba(201,168,76,.45)}
+.p-textarea::placeholder{color:var(--text3)}
+
+.panel-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;border-radius:6px;padding:10px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.3)}
+.btn-del{background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.25);color:var(--red);border-radius:6px;padding:10px 14px;font-family:'Pretendard',sans-serif;font-size:12px;cursor:pointer;transition:all .2s}
+.btn-del:hover{background:rgba(240,96,96,.2)}
+
+/* 오버레이 */
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);z-index:99;display:none}
+.overlay.show{display:block}
+
+/* ── 신규 등록 모달 ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-bg.on{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:28px;position:relative;scrollbar-width:thin}
+.modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:20px;opacity:.5}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-field{display:flex;flex-direction:column;gap:5px}
+.modal-field.full{grid-column:1/-1}
+.modal-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
+.modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);border-radius:6px;padding:10px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text2);cursor:pointer;transition:all .2s}
+.btn-cancel:hover{border-color:var(--text2);color:var(--text)}
+.btn-submit{flex:2;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;border-radius:6px;padding:10px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.btn-submit:hover{box-shadow:0 4px 16px rgba(201,168,76,.3)}
+
+/* 새 행 하이라이트 */
+@keyframes newRow{0%{background:rgba(201,168,76,.2)}100%{background:transparent}}
+.new-row{animation:newRow 1.5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- 사이드바 -->
+<aside class="sidebar">
+  <div class="sb-top">
+    <img src="./logo-gold.png" class="sb-logo" alt="분양의신" onerror="this.style.display='none'">
+    <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar">김</div>
+    <div><div class="sb-uname">김창완 팀장</div><div class="sb-role">관리자</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">총괄</div>
+    <a class="sb-item"><span class="icon">📊</span>대시보드</a>
+    <a class="sb-item"><span class="icon">📅</span>월간 실적</a>
+    <a class="sb-item"><span class="icon">📆</span>주간 실적</a>
+    <div class="sb-section">실행</div>
+    <a class="sb-item active"><span class="icon">👥</span>고객 DB</a>
+    <a class="sb-item"><span class="icon">🔀</span>파이프라인</a>
+    <a class="sb-item"><span class="icon">⭐</span>분양회 입회자</a>
+    <a class="sb-item"><span class="icon">📰</span>취재 · 아티클</a>
+    <a class="sb-item"><span class="icon">🏢</span>프리미엄 대행사</a>
+    <a class="sb-item"><span class="icon">🚚</span>완판트럭</a>
+    <div class="sb-section">운영</div>
+    <a class="sb-item"><span class="icon">📋</span>매출일보</a>
+    <a class="sb-item"><span class="icon">💰</span>통합 매출 관리</a>
+    <a class="sb-item"><span class="icon">🎁</span>리워드 관리</a>
+    <a class="sb-item"><span class="icon">👑</span>분양회 회원 관리</a>
+  </nav>
+  <div class="sb-bottom">
+    <a class="sb-item"><span class="icon">🌙</span>라이트 모드</a>
+    <a class="sb-item"><span class="icon">🚪</span>로그아웃</a>
+  </div>
+</aside>
+
+<!-- 메인 -->
+<div class="main" id="mainWrap">
+  <div class="overlay" id="overlay" onclick="closePanel()"></div>
+
+  <!-- 탑바 -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span style="font-size:16px">👥</span>
+      <div>
+        <div class="page-title">고객 DB</div>
+        <div class="page-desc">분양회 고객 정보 및 영업 관리</div>
+      </div>
+    </div>
+    <button class="btn-new" onclick="openNewModal()">＋ 신규 등록</button>
+  </div>
+
+  <div class="content">
+    <!-- 상단 퀵 필터 버튼 -->
+    <div class="summary-row">
+      <div class="sum-card active-filter" data-qf="all" onclick="quickFilter('all',this)">
+        <span class="sum-icon">👤</span>
+        <div><div class="sum-val" id="cntTotal">—</div><div class="sum-label">전체 DB</div></div>
+      </div>
+      <div class="sum-card" data-qf="meeting" onclick="quickFilter('meeting',this)">
+        <span class="sum-icon">📅</span>
+        <div><div class="sum-val" style="color:var(--blue)" id="cntMeeting">—</div><div class="sum-label">이번 주 미팅</div></div>
+      </div>
+      <div class="sum-card" data-qf="계약완료" onclick="quickFilter('계약완료',this)">
+        <span class="sum-icon">✅</span>
+        <div><div class="sum-val" style="color:var(--green)" id="cntDone">—</div><div class="sum-label">계약 완료</div></div>
+      </div>
+      <div class="sum-card" data-qf="예약완료" onclick="quickFilter('예약완료',this)">
+        <span class="sum-icon">📌</span>
+        <div><div class="sum-val" style="color:var(--blue)" id="cntBook">—</div><div class="sum-label">예약 완료</div></div>
+      </div>
+      <div class="sum-card" data-qf="관리필요" onclick="quickFilter('관리필요',this)">
+        <span class="sum-icon">⚡</span>
+        <div><div class="sum-val" style="color:var(--gold-light)" id="cntManage">—</div><div class="sum-label">관리 필요</div></div>
+      </div>
+    </div>
+
+    <!-- 필터 영역 -->
+    <div class="filter-area">
+      <!-- 1행: 검색 + 담당자 버튼 + 초기화 -->
+      <div class="filter-row1">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="고객명, 직급, 연락처 검색..." id="searchInput" oninput="applyFilter()">
+        </div>
+        <div class="filter-divider"></div>
+        <div class="exec-btns">
+          <button class="exec-btn" data-exec="조계현" onclick="toggleExec(this)">조계현</button>
+          <button class="exec-btn" data-exec="이세호" onclick="toggleExec(this)">이세호</button>
+          <button class="exec-btn" data-exec="기여운" onclick="toggleExec(this)">기여운</button>
+          <button class="exec-btn" data-exec="최연전" onclick="toggleExec(this)">최연전</button>
+        </div>
+        <button class="reset-btn" onclick="resetAll()">↺ 초기화</button>
+        <span class="total-count">전체 <strong id="filteredCount">—</strong>명</span>
+      </div>
+
+      <!-- 2행: 서브 필터 (담당자 선택 시 나타남) -->
+      <div class="filter-row2 hidden" id="subFilterRow">
+        <span class="sub-label">TM감도</span>
+        <div class="sub-btns" id="tmBtns">
+          <button class="sub-btn" data-tm="상" onclick="toggleSub(this,'tm')">상</button>
+          <button class="sub-btn" data-tm="중" onclick="toggleSub(this,'tm')">중</button>
+          <button class="sub-btn" data-tm="하" onclick="toggleSub(this,'tm')">하</button>
+        </div>
+        <div class="sub-divider"></div>
+        <span class="sub-label">미팅결과</span>
+        <div class="sub-btns" id="resultBtns">
+          <button class="sub-btn" data-result="계약완료" onclick="toggleSub(this,'result')">계약완료</button>
+          <button class="sub-btn" data-result="예약완료" onclick="toggleSub(this,'result')">예약완료</button>
+          <button class="sub-btn" data-result="관리필요" onclick="toggleSub(this,'result')">관리필요</button>
+          <button class="sub-btn" data-result="계약거부" onclick="toggleSub(this,'result')">계약거부</button>
+          <button class="sub-btn" data-result="미팅불발" onclick="toggleSub(this,'result')">미팅불발</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th class="left">고객명</th>
+            <th>직급</th>
+            <th>연락처</th>
+            <th>고객유형</th>
+            <th>TM감도</th>
+            <th>미팅일정</th>
+            <th>미팅지역</th>
+            <th>관리구간</th>
+            <th>미팅결과</th>
+            <th>담당자</th>
+            <th style="width:24px"></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 상세 패널 -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="panel-topbar">
+      <div>
+        <div class="panel-name" id="pName">—</div>
+        <div class="panel-job" id="pJob">—</div>
+      </div>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body">
+      <!-- 미팅 전 정보 (읽기 전용 표시 + 수정 가능) -->
+      <div class="psec">
+        <div class="psec-title"><span class="dot" style="background:var(--blue)"></span>미팅 전 정보</div>
+        <div class="pfield-grid">
+          <div class="pfield"><span class="pfield-label">고객명</span><input class="p-input" id="p_name" type="text" placeholder="홍길동"></div>
+          <div class="pfield"><span class="pfield-label">직급</span>
+            <select class="p-select" id="p_rank">
+              <option value="">선택</option>
+              <option>대표</option><option>이사</option><option>총괄본부장</option>
+              <option>본부장</option><option>팀장</option><option>부장</option>
+              <option>차장</option><option>과장</option><option>실장</option>
+            </select>
+          </div>
+          <div class="pfield"><span class="pfield-label">연락처</span><input class="p-input" id="p_phone" type="text" placeholder="010-0000-0000"></div>
+          <div class="pfield"><span class="pfield-label">고객유형</span>
+            <select class="p-select" id="p_type">
+              <option value="">선택</option><option>신규</option><option>기존</option><option>소개</option>
+            </select>
+          </div>
+          <div class="pfield"><span class="pfield-label">TM 감도</span>
+            <select class="p-select" id="p_tm">
+              <option value="">선택</option><option>상</option><option>중</option><option>하</option>
+            </select>
+          </div>
+          <div class="pfield"><span class="pfield-label">미팅 일정</span><input class="p-input" id="p_date" type="date"></div>
+          <div class="pfield full"><span class="pfield-label">미팅 지역</span><input class="p-input" id="p_region" type="text" placeholder="서울 강남"></div>
+        </div>
+      </div>
+
+      <!-- 미팅 후 정보 -->
+      <div class="psec">
+        <div class="psec-title"><span class="dot" style="background:var(--gold)"></span>미팅 후 정보</div>
+        <div class="pfield-grid">
+          <div class="pfield"><span class="pfield-label">미팅 결과</span>
+            <select class="p-select" id="p_result">
+              <option value="">선택</option>
+              <option>계약완료</option><option>예약완료</option><option>서류수취</option>
+              <option>관리필요</option><option>계약거부</option><option>미팅불발</option>
+            </select>
+          </div>
+          <div class="pfield"><span class="pfield-label">관리 구간</span>
+            <select class="p-select" id="p_stage">
+              <option value="">선택</option>
+              <option>리드</option><option>프로스펙팅</option><option>딜클로징</option><option>리텐션</option>
+            </select>
+          </div>
+          <div class="pfield"><span class="pfield-label">담당 실행파트</span>
+            <select class="p-select" id="p_exec">
+              <option value="">선택</option>
+              <option>조계현</option><option>이세호</option><option>기여운</option><option>최연전</option>
+            </select>
+          </div>
+          <div class="pfield"><span class="pfield-label">담당 컨설턴트</span>
+            <select class="p-select" id="p_consult">
+              <option value="">선택</option>
+              <option>박경화</option><option>박혜은</option><option>박민경</option>
+              <option>조승현</option><option>강아름</option><option>백선중</option>
+              <option>전정훈</option><option>박나라</option>
+            </select>
+          </div>
+          <div class="pfield full"><span class="pfield-label">비고</span>
+            <textarea class="p-textarea" id="p_note" placeholder="계약률, 특이사항 등 자유롭게 입력하세요."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn-del" onclick="deleteRow()">삭제</button>
+      <button class="btn-save" id="saveBtn" onclick="saveRow()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 신규 등록 모달 -->
+<div class="modal-bg" id="newModal" onclick="if(event.target===this)closeNewModal()">
+  <div class="modal">
+    <div class="modal-title">신규 고객 등록</div>
+    <div class="modal-sub">미팅 전 기본 정보를 입력하세요. 등록 후 테이블에 추가되며, 클릭해서 미팅 후 정보를 입력할 수 있습니다.</div>
+    <div class="modal-grid">
+      <div class="modal-field"><label class="modal-label">고객명 *</label><input class="p-input" id="m_name" placeholder="홍길동"></div>
+      <div class="modal-field"><label class="modal-label">직급</label>
+        <select class="p-select" id="m_rank">
+          <option value="">선택</option>
+          <option>대표</option><option>이사</option><option>총괄본부장</option>
+          <option>본부장</option><option>팀장</option><option>부장</option>
+          <option>차장</option><option>과장</option><option>실장</option>
+        </select>
+      </div>
+      <div class="modal-field"><label class="modal-label">연락처</label><input class="p-input" id="m_phone" placeholder="010-0000-0000"></div>
+      <div class="modal-field"><label class="modal-label">고객유형</label>
+        <select class="p-select" id="m_type">
+          <option value="">선택</option><option>신규</option><option>기존</option><option>소개</option>
+        </select>
+      </div>
+      <div class="modal-field"><label class="modal-label">TM 감도</label>
+        <select class="p-select" id="m_tm">
+          <option value="">선택</option><option>상</option><option>중</option><option>하</option>
+        </select>
+      </div>
+      <div class="modal-field"><label class="modal-label">미팅 일정</label><input class="p-input" id="m_date" type="date"></div>
+      <div class="modal-field full"><label class="modal-label">미팅 지역</label><input class="p-input" id="m_region" placeholder="서울 강남"></div>
+      <div class="modal-field"><label class="modal-label">담당 실행파트</label>
+        <select class="p-select" id="m_exec">
+          <option value="">선택</option>
+          <option>조계현</option><option>이세호</option><option>기여운</option><option>최연전</option>
+        </select>
+      </div>
+      <div class="modal-field"><label class="modal-label">담당 컨설턴트</label>
+        <select class="p-select" id="m_consult">
+          <option value="">선택</option>
+          <option>박경화</option><option>박혜은</option><option>박민경</option>
+          <option>조승현</option><option>강아름</option><option>백선중</option>
+          <option>전정훈</option><option>박나라</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeNewModal()">취소</button>
+      <button class="btn-submit" onclick="submitNew()">테이블에 등록</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 데이터 ─────────────────────────────────
+let DATA=[
+  {id:1,name:'김부성',rank:'본부장',phone:'010-5064-8707',type:'기존',tm:'중',date:'04.29',region:'평택',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:'80% (23년도부터...)'},
+  {id:2,name:'민혜경',rank:'팀장',phone:'010-5331-0550',type:'기존',tm:'중',date:'04.28',region:'용인',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'강아름',note:'80%(홍광고비 1천...)'},
+  {id:3,name:'홍원호',rank:'총괄본부장',phone:'010-5350-8955',type:'기존',tm:'중',date:'',region:'',result:'',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
+  {id:4,name:'강다연',rank:'팀장',phone:'010-9175-8837',type:'기존',tm:'상',date:'',region:'김포',result:'',stage:'프로스펙팅',exec:'조계현',consult:'강아름',note:'80% (홍광고비: 10...)'},
+  {id:5,name:'이정재',rank:'총괄본부장',phone:'010-4878-7464',type:'기존',tm:'상',date:'04.28',region:'인천',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'박민경',note:'100% 계약'},
+  {id:6,name:'이승엽',rank:'본부장',phone:'010-5391-8497',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'',note:''},
+  {id:7,name:'윤지민',rank:'팀장',phone:'010-9887-1734',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'전정훈',note:''},
+  {id:8,name:'오세혁',rank:'대표',phone:'010-5146-7442',type:'기존',tm:'상',date:'04.24',region:'경남 양산',result:'계약완료',stage:'딜클로징',exec:'최연전',consult:'박민경',note:''},
+  {id:9,name:'한세이',rank:'팀장',phone:'010-7791-7988',type:'기존',tm:'중',date:'03.24',region:'오산',result:'계약완료',stage:'리텐션',exec:'최연전',consult:'강아름',note:''},
+  {id:10,name:'진선화',rank:'본부장',phone:'010-6208-7523',type:'기존',tm:'상',date:'',region:'청주',result:'관리필요',stage:'',exec:'최연전',consult:'전정훈',note:''},
+  {id:11,name:'송태산',rank:'본부장',phone:'010-9787-6397',type:'신규',tm:'중',date:'04.24',region:'울산',result:'예약완료',stage:'프로스펙팅',exec:'조계현',consult:'',note:''},
+  {id:12,name:'김영성',rank:'팀장',phone:'010-8907-6151',type:'신규',tm:'중',date:'04.24',region:'김해',result:'계약완료',stage:'딜클로징',exec:'조계현',consult:'',note:''},
+  {id:13,name:'김소이',rank:'팀장',phone:'010-2755-6981',type:'기존',tm:'중',date:'04.29',region:'오산',result:'',stage:'',exec:'조계현',consult:'박민경',note:''},
+  {id:14,name:'김진태',rank:'팀장',phone:'010-6595-8944',type:'신규',tm:'상',date:'',region:'대전',result:'미팅불발',stage:'프로스펙팅',exec:'최연전',consult:'',note:''},
+  {id:15,name:'박정연',rank:'본부장',phone:'010-2069-4539',type:'기존',tm:'중',date:'',region:'오산',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
+];
+let selectedId=null, activeExec=null, activeTm=null, activeResult=null, activeQF='all';
+
+// ── 퀵 필터 ───────────────────────────────
+function quickFilter(type, btn){
+  activeQF=type;
+  document.querySelectorAll('.sum-card').forEach(c=>c.classList.remove('active-filter'));
+  btn.classList.add('active-filter');
+  // 퀵필터 전환 시 서브필터 초기화
+  activeExec=null;activeTm=null;activeResult=null;
+  document.querySelectorAll('.exec-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active-tm-high','active-green','active-blue','active-gold'));
+  document.getElementById('subFilterRow').classList.add('hidden');
+  document.getElementById('searchInput').value='';
+  applyFilter();
+}
+
+// ── 배지 함수 ──────────────────────────────
+const typeBadge=v=>v?`<span class="badge ${v==='신규'?'b-new':v==='기존'?'b-old':'b-ref'}">${v}</span>`:'<span class="dash">—</span>';
+const tmBadge=v=>{
+  if(!v) return '<span class="dash">—</span>';
+  if(v==='상') return `<span class="badge b-tm-high">▲ 상</span>`;
+  if(v==='중') return `<span class="badge b-tm-mid">중</span>`;
+  return `<span class="badge b-tm-low">하</span>`;
+};
+const resultBadge=v=>{
+  const m={계약완료:'b-done',예약완료:'b-book',서류수취:'b-doc',관리필요:'b-manage',계약거부:'b-reject',미팅불발:'b-fail'};
+  return v?`<span class="badge ${m[v]||''}">${v}</span>`:'<span class="dash">—</span>';
+};
+const stageBadge=v=>{
+  const m={리드:'b-lead',프로스펙팅:'b-prospect',딜클로징:'b-deal',리텐션:'b-retain'};
+  return v?`<span class="badge ${m[v]||''}">${v}</span>`:'<span class="dash">—</span>';
+};
+const rowClass=d=>{
+  if(d.result==='계약완료') return 'highlight-done';
+  if(d.result==='예약완료') return 'highlight-book';
+  return '';
+};
+
+// ── 필터 ──────────────────────────────────
+function getFiltered(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const today=new Date();
+  const mon=new Date(today); mon.setDate(today.getDate()-today.getDay()+1);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  return DATA.filter(d=>{
+    // 퀵필터
+    if(activeQF==='meeting'){
+      // 날짜가 이번주인지 (더미 데이터는 'MM.DD' 형식)
+      if(!d.date) return false;
+      const parts=d.date.split('.');
+      if(parts.length<2) return false;
+      const m=parseInt(parts[0]),day=parseInt(parts[1]);
+      const dd=new Date(today.getFullYear(),m-1,day);
+      if(dd<mon||dd>sun) return false;
+    } else if(activeQF==='계약완료'||activeQF==='예약완료'||activeQF==='관리필요'){
+      if(d.result!==activeQF) return false;
+    }
+    if(q&&!d.name.includes(q)&&!d.rank.includes(q)&&!d.phone.includes(q)) return false;
+    if(activeExec&&d.exec!==activeExec) return false;
+    if(activeTm&&d.tm!==activeTm) return false;
+    if(activeResult&&d.result!==activeResult) return false;
+    return true;
+  });
+}
+function toggleExec(btn){
+  const v=btn.dataset.exec;
+  if(activeExec===v){activeExec=null;btn.classList.remove('active')}
+  else{
+    document.querySelectorAll('.exec-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');activeExec=v;
+  }
+  // 서브필터 표시 여부
+  document.getElementById('subFilterRow').classList.toggle('hidden',!activeExec);
+  applyFilter();
+}
+function toggleSub(btn,type){
+  const v=btn.dataset[type];
+  if(type==='tm'){
+    if(activeTm===v){activeTm=null;document.querySelectorAll('#tmBtns .sub-btn').forEach(b=>{b.classList.remove('active-tm-high','active-green','active-blue','active-gold')})}
+    else{activeTm=v;document.querySelectorAll('#tmBtns .sub-btn').forEach(b=>{b.classList.remove('active-tm-high','active-green','active-blue','active-gold')});btn.classList.add('active-tm-high')}
+  } else {
+    if(activeResult===v){activeResult=null;document.querySelectorAll('#resultBtns .sub-btn').forEach(b=>{b.classList.remove('active-tm-high','active-green','active-blue','active-gold')})}
+    else{
+      activeResult=v;
+      document.querySelectorAll('#resultBtns .sub-btn').forEach(b=>{b.classList.remove('active-tm-high','active-green','active-blue','active-gold')});
+      const cls=v==='계약완료'?'active-green':v==='예약완료'?'active-blue':v==='관리필요'?'active-gold':'active-tm-high';
+      btn.classList.add(cls);
+    }
+  }
+  applyFilter();
+}
+function applyFilter(){renderTable()}
+function resetAll(){
+  activeExec=null;activeTm=null;activeResult=null;
+  document.getElementById('searchInput').value='';
+  document.querySelectorAll('.exec-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active-tm-high','active-green','active-blue','active-gold'));
+  document.getElementById('subFilterRow').classList.add('hidden');
+  applyFilter();
+}
+
+// ── 테이블 렌더 ─────────────────────────────
+function renderTable(){
+  const filtered=getFiltered();
+  document.getElementById('filteredCount').textContent=filtered.length;
+  document.getElementById('cntTotal').textContent=DATA.length;
+  document.getElementById('cntDone').textContent=DATA.filter(d=>d.result==='계약완료').length;
+  document.getElementById('cntBook').textContent=DATA.filter(d=>d.result==='예약완료').length;
+  document.getElementById('cntManage').textContent=DATA.filter(d=>d.result==='관리필요').length;
+  // 이번주 미팅 카운트
+  const today=new Date();
+  const mon=new Date(today);mon.setDate(today.getDate()-today.getDay()+1);
+  const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  document.getElementById('cntMeeting').textContent=DATA.filter(d=>{
+    if(!d.date)return false;
+    const p=d.date.split('.');if(p.length<2)return false;
+    const dd=new Date(today.getFullYear(),parseInt(p[0])-1,parseInt(p[1]));
+    return dd>=mon&&dd<=sun;
+  }).length;
+
+  const tbody=document.getElementById('tableBody');
+  if(!filtered.length){
+    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;padding:36px;color:var(--text3);font-size:12px">검색 결과가 없습니다</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=filtered.map((d,i)=>`
+    <tr class="${rowClass(d)}${selectedId===d.id?' selected':''}" onclick="openPanel(${d.id})">
+      <td style="color:var(--text3);font-size:11px">${i+1}</td>
+      <td class="left td-name">${d.name}</td>
+      <td>${d.rank||'<span class="dash">—</span>'}</td>
+      <td class="td-phone">${d.phone||'<span class="dash">—</span>'}</td>
+      <td>${typeBadge(d.type)}</td>
+      <td>${tmBadge(d.tm)}</td>
+      <td style="color:var(--blue);font-weight:500">${d.date||'<span class="dash">—</span>'}</td>
+      <td>${d.region||'<span class="dash">—</span>'}</td>
+      <td>${stageBadge(d.stage)}</td>
+      <td>${resultBadge(d.result)}</td>
+      <td style="font-size:12px">${d.exec||'<span class="dash">—</span>'}</td>
+      <td class="row-arrow">›</td>
+    </tr>
+  `).join('');
+}
+
+// ── 패널 ──────────────────────────────────
+function openPanel(id){
+  const d=DATA.find(x=>x.id===id);if(!d)return;
+  selectedId=id;
+  document.getElementById('pName').textContent=d.name;
+  document.getElementById('pJob').textContent=(d.rank||'')+(d.phone?' · '+d.phone:'');
+  ['name','rank','phone','type','tm','date','region','result','stage','exec','consult','note'].forEach(k=>{
+    const el=document.getElementById('p_'+k);
+    if(el) el.value=d[k]||'';
+  });
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+  renderTable();
+}
+function closePanel(){
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  selectedId=null;renderTable();
+}
+function saveRow(){
+  const d=DATA.find(x=>x.id===selectedId);if(!d)return;
+  ['name','rank','phone','type','tm','date','region','result','stage','exec','consult','note'].forEach(k=>{
+    const el=document.getElementById('p_'+k);if(el) d[k]=el.value;
+  });
+  document.getElementById('pName').textContent=d.name;
+  document.getElementById('pJob').textContent=(d.rank||'')+(d.phone?' · '+d.phone:'');
+  renderTable();
+  const btn=document.getElementById('saveBtn');
+  btn.textContent='✓ 저장됨';btn.style.background='var(--green)';btn.style.color='#fff';
+  setTimeout(()=>{btn.textContent='저장';btn.style.background='';btn.style.color=''},1400);
+}
+function deleteRow(){
+  if(!confirm('이 고객을 삭제하시겠습니까?'))return;
+  DATA=DATA.filter(x=>x.id!==selectedId);closePanel();
+}
+
+// ── 신규 등록 ─────────────────────────────
+function openNewModal(){document.getElementById('newModal').classList.add('on')}
+function closeNewModal(){document.getElementById('newModal').classList.remove('on')}
+function submitNew(){
+  const name=document.getElementById('m_name').value.trim();
+  if(!name){alert('고객명을 입력해주세요.');return;}
+  const newId=Math.max(...DATA.map(d=>d.id),0)+1;
+  DATA.unshift({ // 맨 위에 추가
+    id:newId,name,
+    rank:document.getElementById('m_rank').value,
+    phone:document.getElementById('m_phone').value,
+    type:document.getElementById('m_type').value,
+    tm:document.getElementById('m_tm').value,
+    date:document.getElementById('m_date').value,
+    region:document.getElementById('m_region').value,
+    result:'',stage:'리드',
+    exec:document.getElementById('m_exec').value,
+    consult:document.getElementById('m_consult').value,
+    note:''
+  });
+  closeNewModal();
+  // 입력창 초기화
+  ['m_name','m_phone','m_region'].forEach(id=>document.getElementById(id).value='');
+  ['m_rank','m_type','m_tm','m_exec','m_consult'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m_date').value='';
+  renderTable();
+  // 신규 행 강조 후 패널 열기
+  setTimeout(()=>{
+    const firstRow=document.querySelector('#tableBody tr');
+    if(firstRow) firstRow.classList.add('new-row');
+    openPanel(newId);
+  },80);
+}
+
+renderTable();
+</script>
+</body>
+</html>
