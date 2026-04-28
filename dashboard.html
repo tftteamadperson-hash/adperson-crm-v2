@@ -6,41 +6,10 @@
 <title>대외협력팀 종합 대시보드</title>
 <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
-// ── 세션 체크 & 사용자 표시 ──
-(function(){
-  const u = sessionStorage.getItem('crm_user');
-  if(!u){ window.location.href='index.html'; return; }
-  const user = JSON.parse(u);
-  const RANKS = {adperson1:'본부장',adperson2:'팀장',adperson3:'파트장',adperson4:'메인',adperson5:'어쏘',adperson6:'어쏘',adperson7:'CX',adperson8:'어시',adperson9:'어시'};
-  const rank = RANKS[user.id]||'';
-  const roleLabel = user.role==='admin'?'관리자':user.role==='exec'?'실행파트':'운영파트';
-  // 사이드바
-  const nameEl = document.getElementById('sbUserName') || document.getElementById('sbName');
-  const roleEl = document.getElementById('sbUserRole') || document.getElementById('sbRole');
-  const avEl   = document.getElementById('sbUserAv')  || document.getElementById('sbAvatar');
-  if(nameEl) nameEl.textContent = `${user.name} ${rank}`;
-  if(roleEl) roleEl.textContent = roleLabel;
-  if(avEl){
-    const savedPhoto = sessionStorage.getItem('profile_photo_'+user.id);
-    if(savedPhoto){ avEl.innerHTML=`<img src="${savedPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`; }
-    else { avEl.textContent = user.name[0]; }
-  }
-  // 내 KPI 이름
-  const kpiName = document.getElementById('myKpiName');
-  if(kpiName) kpiName.textContent = `(${user.name})`;
-})();
 
 
-// 접근 권한 메뉴: 허용 계정만 표시
-(function(){
-  var ALLOWED = ['adperson1','adperson2','adperson3','adperson8'];
-  var u = sessionStorage.getItem('crm_user');
-  if(u){
-    var uid = JSON.parse(u).id;
-    var menuEl = document.getElementById('menuAccessMgmt');
-    if(menuEl && ALLOWED.indexOf(uid) === -1) menuEl.style.display = 'none';
-  }
-})();
+
+
 
 </script>
 <style>
@@ -348,6 +317,46 @@ body.light-mode .sb-section{color:#5a7a9a}
 </style>
 <script>
 
+// ── 공통 세션 초기화 (사이드바 이름/직급/아바타 + 접근 권한 메뉴) ──
+window.addEventListener('DOMContentLoaded', function(){
+  var RANKS = {
+    'adperson1':'본부장','adperson2':'팀장','adperson3':'파트장',
+    'adperson4':'메인','adperson5':'어쏘','adperson6':'어쏘',
+    'adperson7':'CX','adperson8':'어시','adperson9':'어시'
+  };
+  var ROLE_LABEL = {admin:'—', exec:'실행파트', ops:'운영파트'};
+  var ALLOWED_ADMIN = ['adperson1','adperson2','adperson3','adperson8'];
+
+  var u = sessionStorage.getItem('crm_user');
+  if(!u){ window.location.href='index.html'; return; }
+  var user = JSON.parse(u);
+  var rank = RANKS[user.id] || '';
+  var roleLabel = ROLE_LABEL[user.role] || '';
+
+  // 이름/직급 (다양한 id 대응)
+  ['sbUserName','sbName'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = user.name + (rank ? ' ' + rank : '');
+  });
+  // 권한
+  ['sbUserRole','sbRole'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = roleLabel;
+  });
+  // 아바타
+  ['sbUserAv','sbAvatar'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var photo = sessionStorage.getItem('profile_photo_'+user.id);
+    if(photo){ el.innerHTML = '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; }
+    else if(!el.querySelector('img')){ el.textContent = user.name[0]; }
+  });
+  // 접근 권한 메뉴: 허용 계정만 표시
+  var menuEl = document.getElementById('menuAccessMgmt');
+  if(menuEl && ALLOWED_ADMIN.indexOf(user.id) === -1) menuEl.style.display = 'none';
+});
+
+
 function toggleLightMode(){
   var u = sessionStorage.getItem('crm_user');
   var uid = u ? JSON.parse(u).id : 'guest';
@@ -385,10 +394,10 @@ function toggleLightMode(){
     <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
   </div>
   <div class="sb-user">
-    <div class="sb-avatar" id="sbAvatar">김</div>
+    <div class="sb-avatar" id="sbAvatar">?</div>
     <div>
-      <div class="sb-uname" id="sbName">김창완 팀장</div>
-      <div class="sb-role" id="sbRole">관리자</div>
+      <div class="sb-uname" id="sbName">—</div>
+      <div class="sb-role" id="sbRole">—</div>
     </div>
   </div>
   <nav class="sb-nav">
@@ -628,12 +637,12 @@ function toggleLightMode(){
         <!-- 본인 KPI -->
         <div>
           <div class="panel-head" style="margin-bottom:10px">
-            <span class="panel-title"><span class="dot" style="background:var(--blue)"></span>내 목표 <span style="font-size:10px;color:var(--text3);font-weight:400" id="myKpiName">(김창완)</span></span>
+            <span class="panel-title"><span class="dot" style="background:var(--blue)"></span>내 목표 <span style="font-size:10px;color:var(--text3);font-weight:400" id="myKpiName">(—)</span></span>
             <span class="tab active">월간</span>
           </div>
           <div id="myKpiContent" style="text-align:center;padding:18px 0;color:var(--text3);font-size:12px">
             <div style="font-size:28px;margin-bottom:8px">👑</div>
-            <div style="font-weight:600;color:var(--text2);margin-bottom:4px">관리자 계정</div>
+            <div style="font-weight:600;color:var(--text2);margin-bottom:4px">— 계정</div>
             <div>개인 KPI 없음</div>
           </div>
         </div>

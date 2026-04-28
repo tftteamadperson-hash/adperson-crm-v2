@@ -161,6 +161,46 @@ body.light-mode .sb-section{color:#5a7a9a}
 </style>
 <script>
 
+// ── 공통 세션 초기화 (사이드바 이름/직급/아바타 + 접근 권한 메뉴) ──
+window.addEventListener('DOMContentLoaded', function(){
+  var RANKS = {
+    'adperson1':'본부장','adperson2':'팀장','adperson3':'파트장',
+    'adperson4':'메인','adperson5':'어쏘','adperson6':'어쏘',
+    'adperson7':'CX','adperson8':'어시','adperson9':'어시'
+  };
+  var ROLE_LABEL = {admin:'—', exec:'실행파트', ops:'운영파트'};
+  var ALLOWED_ADMIN = ['adperson1','adperson2','adperson3','adperson8'];
+
+  var u = sessionStorage.getItem('crm_user');
+  if(!u){ window.location.href='index.html'; return; }
+  var user = JSON.parse(u);
+  var rank = RANKS[user.id] || '';
+  var roleLabel = ROLE_LABEL[user.role] || '';
+
+  // 이름/직급 (다양한 id 대응)
+  ['sbUserName','sbName'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = user.name + (rank ? ' ' + rank : '');
+  });
+  // 권한
+  ['sbUserRole','sbRole'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = roleLabel;
+  });
+  // 아바타
+  ['sbUserAv','sbAvatar'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var photo = sessionStorage.getItem('profile_photo_'+user.id);
+    if(photo){ el.innerHTML = '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; }
+    else if(!el.querySelector('img')){ el.textContent = user.name[0]; }
+  });
+  // 접근 권한 메뉴: 허용 계정만 표시
+  var menuEl = document.getElementById('menuAccessMgmt');
+  if(menuEl && ALLOWED_ADMIN.indexOf(user.id) === -1) menuEl.style.display = 'none';
+});
+
+
 function toggleLightMode(){
   var u = sessionStorage.getItem('crm_user');
   var uid = u ? JSON.parse(u).id : 'guest';
@@ -188,16 +228,7 @@ function toggleLightMode(){
   if(u){ var uid = JSON.parse(u).id; if(localStorage.getItem('crm_light_'+uid)==='1') document.documentElement.setAttribute('data-theme','light'); }
 })();
 
-// 접근 권한 메뉴: 허용 계정만 표시
-(function(){
-  var ALLOWED = ['adperson1','adperson2','adperson3','adperson8'];
-  var u = sessionStorage.getItem('crm_user');
-  if(u){
-    var uid = JSON.parse(u).id;
-    var menuEl = document.getElementById('menuAccessMgmt');
-    if(menuEl && ALLOWED.indexOf(uid) === -1) menuEl.style.display = 'none';
-  }
-})();
+
 
 </script>
 </head>
@@ -207,7 +238,7 @@ function toggleLightMode(){
 <div class="no-access" id="noAccess">
   <div class="no-access-icon">🔒</div>
   <div class="no-access-title">접근 권한이 없습니다</div>
-  <div class="no-access-desc">이 페이지는 관리자 계정만 접근할 수 있습니다.</div>
+  <div class="no-access-desc">이 페이지는 — 계정만 접근할 수 있습니다.</div>
   <a href="dashboard.html" style="font-size:13px;color:var(--gold-light);text-decoration:none;border:1px solid rgba(201,168,76,.3);padding:8px 20px;border-radius:6px;margin-top:8px">대시보드로 돌아가기</a>
 </div>
 
@@ -252,12 +283,12 @@ function toggleLightMode(){
       <span style="font-size:18px">⚙️</span>
       <div><div class="page-title">계정 관리</div><div class="page-desc">계정별 페이지 접근 권한 설정</div></div>
     </div>
-    <span class="admin-badge">🔐 관리자 전용</span>
+    <span class="admin-badge">🔐 — 전용</span>
   </div>
   <div class="content">
     <div class="summary-bar">
       <div class="sum-chip"><div><div class="sum-chip-val" id="cntTotal">9</div><div class="sum-chip-label">전체 계정</div></div></div>
-      <div class="sum-chip"><div><div class="sum-chip-val" style="color:var(--gold-light)" id="cntAdmin">3</div><div class="sum-chip-label">관리자</div></div></div>
+      <div class="sum-chip"><div><div class="sum-chip-val" style="color:var(--gold-light)" id="cntAdmin">3</div><div class="sum-chip-label">—</div></div></div>
       <div class="sum-chip"><div><div class="sum-chip-val" style="color:var(--blue)" id="cntExec">4</div><div class="sum-chip-label">실행파트</div></div></div>
       <div class="sum-chip"><div><div class="sum-chip-val" style="color:var(--purple)" id="cntOps">2</div><div class="sum-chip-label">운영파트</div></div></div>
     </div>
@@ -268,7 +299,7 @@ function toggleLightMode(){
 <script>
 const ACCOUNTS_DATA = [
   {id:'adperson1', name:'김정후', role:'admin'},
-  {id:'adperson2', name:'김창완', role:'admin'},
+  {id:'adperson2', name:'—', role:'admin'},
   {id:'adperson3', name:'최웅',   role:'admin'},
   {id:'adperson4', name:'조계현', role:'exec'},
   {id:'adperson5', name:'이세호', role:'exec'},
@@ -308,11 +339,11 @@ if(!PERMS){
   });
 }
 
-// 세션 체크 & 관리자 확인
+// 세션 체크 & — 확인
 const userStr = sessionStorage.getItem('crm_user');
 if(!userStr){ window.location.href='index.html'; }
 const user = JSON.parse(userStr||'{}');
-const roleLabelMap = {admin:'관리자',exec:'실행파트',ops:'운영파트'};
+const roleLabelMap = {admin:'—',exec:'실행파트',ops:'운영파트'};
 document.getElementById('sbUserAv').textContent = user.name?.[0]||'?';
 document.getElementById('sbUserName').textContent = user.name||'—';
 document.getElementById('sbUserRole').textContent = roleLabelMap[user.role]||'—';

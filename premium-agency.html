@@ -333,6 +333,46 @@ body.light-mode .sb-section{color:#5a7a9a}
 </style>
 <script>
 
+// ── 공통 세션 초기화 (사이드바 이름/직급/아바타 + 접근 권한 메뉴) ──
+window.addEventListener('DOMContentLoaded', function(){
+  var RANKS = {
+    'adperson1':'본부장','adperson2':'팀장','adperson3':'파트장',
+    'adperson4':'메인','adperson5':'어쏘','adperson6':'어쏘',
+    'adperson7':'CX','adperson8':'어시','adperson9':'어시'
+  };
+  var ROLE_LABEL = {admin:'—', exec:'실행파트', ops:'운영파트'};
+  var ALLOWED_ADMIN = ['adperson1','adperson2','adperson3','adperson8'];
+
+  var u = sessionStorage.getItem('crm_user');
+  if(!u){ window.location.href='index.html'; return; }
+  var user = JSON.parse(u);
+  var rank = RANKS[user.id] || '';
+  var roleLabel = ROLE_LABEL[user.role] || '';
+
+  // 이름/직급 (다양한 id 대응)
+  ['sbUserName','sbName'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = user.name + (rank ? ' ' + rank : '');
+  });
+  // 권한
+  ['sbUserRole','sbRole'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = roleLabel;
+  });
+  // 아바타
+  ['sbUserAv','sbAvatar'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var photo = sessionStorage.getItem('profile_photo_'+user.id);
+    if(photo){ el.innerHTML = '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; }
+    else if(!el.querySelector('img')){ el.textContent = user.name[0]; }
+  });
+  // 접근 권한 메뉴: 허용 계정만 표시
+  var menuEl = document.getElementById('menuAccessMgmt');
+  if(menuEl && ALLOWED_ADMIN.indexOf(user.id) === -1) menuEl.style.display = 'none';
+});
+
+
 function toggleLightMode(){
   var u = sessionStorage.getItem('crm_user');
   var uid = u ? JSON.parse(u).id : 'guest';
@@ -360,16 +400,7 @@ function toggleLightMode(){
   if(u){ var uid = JSON.parse(u).id; if(localStorage.getItem('crm_light_'+uid)==='1') document.documentElement.setAttribute('data-theme','light'); }
 })();
 
-// 접근 권한 메뉴: 허용 계정만 표시
-(function(){
-  var ALLOWED = ['adperson1','adperson2','adperson3','adperson8'];
-  var u = sessionStorage.getItem('crm_user');
-  if(u){
-    var uid = JSON.parse(u).id;
-    var menuEl = document.getElementById('menuAccessMgmt');
-    if(menuEl && ALLOWED.indexOf(uid) === -1) menuEl.style.display = 'none';
-  }
-})();
+
 
 </script>
 </head>
@@ -382,8 +413,8 @@ function toggleLightMode(){
     <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
   </div>
   <div class="sb-user">
-    <div class="sb-av" id="sbUserAv">김</div>
-    <div><div class="sb-uname" id="sbUserName">김창완 팀장</div><div class="sb-role" id="sbUserRole">관리자</div></div>
+    <div class="sb-av" id="sbUserAv">?</div>
+    <div><div class="sb-uname" id="sbUserName">—</div><div class="sb-role" id="sbUserRole">—</div></div>
   </div>
   <nav class="sb-nav">
     <div class="sb-section">총괄</div>
@@ -552,22 +583,22 @@ function toggleLightMode(){
 <script>
 // ── 데이터 ─────────────────────────────────
 let DATA = [
-  {id:1,name:'조선에스에셋',location:'서울 강남구',date:'2026-04-20',org:'80명',grade:'black',status:'nego',contact:'이정민',rank:'대표',phone:'010-1234-5678',execTeam:['김창완','최웅'],consultTeam:['박경화'],note:'분양의신 앱 광고 집행 관심 높음. 5월 내 계약 가능성.',notes:[]},
-  {id:2,name:'한림부동산개발',location:'부산 해운대구',date:'2026-04-15',org:'60명',grade:'gold',status:'meet',contact:'박준호',rank:'본부장',phone:'010-9876-5432',execTeam:['김창완'],consultTeam:['박민경'],note:'1차 미팅 완료. 조직 규모 대비 광고비 예산 검토 중.',notes:[]},
+  {id:1,name:'조선에스에셋',location:'서울 강남구',date:'2026-04-20',org:'80명',grade:'black',status:'nego',contact:'이정민',rank:'대표',phone:'010-1234-5678',execTeam:['—','최웅'],consultTeam:['박경화'],note:'분양의신 앱 광고 집행 관심 높음. 5월 내 계약 가능성.',notes:[]},
+  {id:2,name:'한림부동산개발',location:'부산 해운대구',date:'2026-04-15',org:'60명',grade:'gold',status:'meet',contact:'박준호',rank:'본부장',phone:'010-9876-5432',execTeam:['—'],consultTeam:['박민경'],note:'1차 미팅 완료. 조직 규모 대비 광고비 예산 검토 중.',notes:[]},
   {id:3,name:'대한종합건설',location:'대구 수성구',date:'2026-04-10',org:'120명',grade:'gold',status:'plan',contact:'최수진',rank:'팀장',phone:'010-5555-3333',execTeam:['최웅'],consultTeam:[],note:'',notes:[]},
-  {id:4,name:'미래에셋리얼티',location:'인천 송도',date:'2026-04-08',org:'45명',grade:'silver',status:'meet',contact:'김도현',rank:'이사',phone:'010-7777-8888',execTeam:['김창완','최웅'],consultTeam:['강아름'],note:'인천/경기 중심 활동. LMS 관심 있음.',notes:[{id:'n1',date:'4. 15.',text:'2차 미팅 일정 조율 중. 대표이사 직접 미팅 요청'}]},
+  {id:4,name:'미래에셋리얼티',location:'인천 송도',date:'2026-04-08',org:'45명',grade:'silver',status:'meet',contact:'김도현',rank:'이사',phone:'010-7777-8888',execTeam:['—','최웅'],consultTeam:['강아름'],note:'인천/경기 중심 활동. LMS 관심 있음.',notes:[{id:'n1',date:'4. 15.',text:'2차 미팅 일정 조율 중. 대표이사 직접 미팅 요청'}]},
   {id:5,name:'현대분양컨설팅',location:'광주 북구',date:'2026-03-28',org:'35명',grade:'silver',status:'hold',contact:'박영수',rank:'본부장',phone:'010-2222-4444',execTeam:['최웅'],consultTeam:['전정훈'],note:'현재 타 플랫폼 계약 중. 계약 만료 후 재접촉 예정.',notes:[]},
-  {id:6,name:'스마트부동산',location:'대전 서구',date:'2026-04-22',org:'28명',grade:'silver',status:'plan',contact:'이민지',rank:'팀장',phone:'010-6666-9999',execTeam:['김창완'],consultTeam:[],note:'',notes:[]},
+  {id:6,name:'스마트부동산',location:'대전 서구',date:'2026-04-22',org:'28명',grade:'silver',status:'plan',contact:'이민지',rank:'팀장',phone:'010-6666-9999',execTeam:['—'],consultTeam:[],note:'',notes:[]},
 ];
 
 let NOTES_STORE = {};
 DATA.forEach(d => { NOTES_STORE[d.id] = d.notes || []; });
 
-const EXEC_ALL = ['김정후','김창완','최웅','조계현','이세호','기여운','최연전','김재영','최은정'];
+const EXEC_ALL = ['김정후','—','최웅','조계현','이세호','기여운','최연전','김재영','최은정'];
 const CONSULT_ALL = ['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'];
 
 // 줄 구분 그룹 정의
-const EXEC_ROWS = [['김정후','김창완','최웅'],['조계현','이세호','기여운','최연전'],['김재영','최은정']];
+const EXEC_ROWS = [['김정후','—','최웅'],['조계현','이세호','기여운','최연전'],['김재영','최은정']];
 const CONSULT_ROWS = [['박경화','박민경','강아름','전정훈'],['박혜은','조승현','백선중','박나라']];
 
 function renderChipRows(rows, selected, type, onClickFn){
@@ -917,19 +948,7 @@ function deleteItem(id){
 buildStatusFilter();
 render();
 
-// ── 세션 체크 & 사용자 표시 ──
-(function(){
-  const u = sessionStorage.getItem('crm_user');
-  if(!u){ window.location.href='index.html'; return; }
-  const user = JSON.parse(u);
-  // 사이드바 이름/권한 표시
-  const nameEl = document.getElementById('sbUserName');
-  const roleEl = document.getElementById('sbUserRole');
-  const avEl   = document.getElementById('sbUserAv');
-  if(nameEl) nameEl.textContent = user.name + (user.role==='admin'?' 팀장':user.role==='exec'?' 부장':' 어시');
-  if(roleEl) roleEl.textContent = user.role==='admin'?'관리자':user.role==='exec'?'실행파트':'운영파트';
-  if(avEl)   avEl.textContent   = user.name[0];
-})();
+
 
 </script>
 </body>
