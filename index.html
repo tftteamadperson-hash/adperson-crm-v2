@@ -4,11 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>분양의신 VIP Membership CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;700&family=Montserrat:wght@200;300;400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Montserrat:wght@200;300;400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<!-- Pretendard: 한국 웹 표준 폰트 -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--gold:#C9A84C;--gold-light:#F0D080;--white:#FFFFFF;--black:#000000}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--black);cursor:none}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--black);cursor:none;color:var(--white)}
 
 /* ── 커서 ── */
 #cur{
@@ -40,11 +43,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--black);cursor:
   transition:opacity 1.4s ease
 }
 #intro.hide{opacity:0;pointer-events:none}
-.intro-letter{
+#introRow{
+  display:flex;align-items:center;
+  font-family:'Montserrat',sans-serif;font-weight:900;
+  font-size:clamp(40px,6.5vw,86px);
+  letter-spacing:.22em;color:var(--white)
+}
+.intro-first{
+  display:inline-block;color:var(--white);
+  opacity:0;transform:translateY(14px);
+  transition:opacity .6s ease,transform .6s ease
+}
+.intro-first.in{opacity:1;transform:translateY(0)}
+.intro-space{display:inline-block;width:.45em}
+.intro-mover{
+  display:inline-flex;gap:.04em;
+  opacity:0;transform:translateY(14px);
+  transition:opacity .6s ease,transform .6s ease
+}
+.intro-mover.in{opacity:1;transform:translateY(0)}
+.m-letter{
   display:inline-block;color:var(--white);
   transition:color .45s ease,text-shadow .45s ease
 }
-.intro-letter.gold{
+.m-letter.gold{
   color:var(--gold-light);
   text-shadow:0 0 20px rgba(240,208,128,1),0 0 45px rgba(201,168,76,.8),0 0 80px rgba(201,168,76,.35)
 }
@@ -61,20 +83,20 @@ header{
 }
 .logo-block{display:flex;flex-direction:column;gap:3px}
 .logo-img{
-  height:42px;width:auto;
+  height:42px;width:auto;max-width:200px;object-fit:contain;
   filter:drop-shadow(0 0 10px rgba(201,168,76,.5)) drop-shadow(0 0 24px rgba(201,168,76,.25))
 }
 .logo-dept{
-  font-family:'Noto Sans KR',sans-serif;font-size:10px;font-weight:300;
+  font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:10px;font-weight:300;
   color:rgba(255,255,255,.36);letter-spacing:.1em
 }
-.btn-access{
-  font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:400;
+.btn-login-top{
+  font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:12px;font-weight:400;
   color:rgba(255,255,255,.8);background:rgba(255,255,255,.05);
   border:1px solid rgba(201,168,76,.3);padding:10px 26px;border-radius:3px;
-  cursor:none;letter-spacing:.12em;transition:all .3s ease;backdrop-filter:blur(10px)
+  cursor:none;letter-spacing:.08em;transition:all .3s ease;backdrop-filter:blur(10px)
 }
-.btn-access:hover{
+.btn-login-top:hover{
   background:rgba(201,168,76,.12);border-color:var(--gold);
   color:var(--gold-light);box-shadow:0 0 20px rgba(201,168,76,.15)
 }
@@ -92,7 +114,7 @@ header{
   animation:fadeDown 1s .2s ease both
 }
 .hero-title{
-  font-family:'EB Garamond','Noto Serif KR',serif;font-weight:600;
+  font-family:'EB Garamond',serif;font-weight:600;
   font-size:clamp(50px,7.2vw,102px);color:var(--white);
   text-align:center;line-height:1;
   animation:fadeUp 1s .4s ease both
@@ -110,7 +132,7 @@ header{
 }
 
 /* 태그라인 */
-.tagline-wrap{position:absolute;bottom:56px;left:40px;width:540px;z-index:10;min-height:115px}
+.tagline-wrap{position:absolute;bottom:56px;left:40px;width:560px;z-index:10;min-height:130px}
 .tagline-slot{
   position:absolute;bottom:0;left:0;width:100%;
   opacity:0;transform:translateY(8px);
@@ -118,21 +140,22 @@ header{
 }
 .tagline-slot.active{opacity:1;transform:translateY(0);pointer-events:all;position:relative}
 .tl-main{
-  font-family:'EB Garamond','Noto Serif KR',serif;
-  font-size:clamp(20px,2.5vw,33px);color:var(--white);
-  line-height:1.28;font-weight:600
+  font-family:'EB Garamond',serif;
+  font-size:clamp(20px,2.5vw,34px);color:var(--white);
+  line-height:1.3;font-weight:600
 }
 .tl-main strong{font-style:italic;font-weight:700}
 .tl-main em{font-style:normal;color:var(--gold-light)}
 .tl-desc{
-  font-family:'Noto Serif KR',serif;font-size:12px;font-weight:300;
-  color:rgba(255,255,255,.4);margin-top:10px;line-height:2;letter-spacing:.05em
+  font-family:'Pretendard','Noto Sans KR',sans-serif;
+  font-size:12px;font-weight:300;
+  color:rgba(255,255,255,.4);margin-top:10px;line-height:2;letter-spacing:.04em
 }
 
 footer{
   position:absolute;bottom:14px;left:40px;
-  font-family:'Noto Sans KR',sans-serif;font-size:10px;
-  color:rgba(255,255,255,.18);z-index:10;letter-spacing:.06em
+  font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:10px;
+  color:rgba(255,255,255,.18);z-index:10;letter-spacing:.04em
 }
 .side-hint{
   position:absolute;right:36px;bottom:48px;
@@ -170,11 +193,16 @@ footer{
 }
 .modal-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px}
 .modal-logo-col{display:flex;flex-direction:column;gap:5px}
+/* 모달 로고: 원본 비율 유지 */
 .modal-logo-img{
-  height:30px;width:auto;
+  height:auto;width:auto;max-height:36px;max-width:160px;
+  object-fit:contain;object-position:left center;
   filter:drop-shadow(0 0 6px rgba(201,168,76,.4))
 }
-.modal-org-text{font-family:'Noto Sans KR',sans-serif;font-size:10px;color:rgba(255,255,255,.28);letter-spacing:.08em}
+.modal-org-text{
+  font-family:'Pretendard','Noto Sans KR',sans-serif;
+  font-size:10px;color:rgba(255,255,255,.28);letter-spacing:.06em
+}
 .modal-close{
   width:26px;height:26px;border-radius:50%;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
@@ -182,22 +210,32 @@ footer{
   display:flex;align-items:center;justify-content:center;transition:all .2s
 }
 .modal-close:hover{background:rgba(255,255,255,.12);color:var(--white)}
-.modal-ttl{font-family:'Noto Serif KR',serif;font-size:21px;font-weight:600;color:var(--white);margin-bottom:6px}
-.modal-sub{font-family:'Noto Sans KR',sans-serif;font-size:12px;color:rgba(255,255,255,.28);margin-bottom:26px;letter-spacing:.04em}
+.modal-ttl{
+  font-family:'Pretendard','Noto Sans KR',sans-serif;
+  font-size:21px;font-weight:600;color:var(--white);margin-bottom:6px
+}
+.modal-sub{
+  font-family:'Pretendard','Noto Sans KR',sans-serif;
+  font-size:12px;color:rgba(255,255,255,.28);margin-bottom:26px;letter-spacing:.02em
+}
 .fg{margin-bottom:15px}
-.fl{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:rgba(255,255,255,.38);display:block;margin-bottom:7px;letter-spacing:.06em}
+.fl{
+  font-family:'Pretendard','Noto Sans KR',sans-serif;
+  font-size:11px;color:rgba(255,255,255,.38);display:block;margin-bottom:7px;letter-spacing:.04em
+}
 .fi-wrap{position:relative}
 .fi{
   width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
-  border-radius:6px;padding:13px 16px;font-family:'Noto Sans KR',sans-serif;
+  border-radius:6px;padding:13px 16px;
+  font-family:'Pretendard','Noto Sans KR',sans-serif;
   font-size:14px;color:var(--white);outline:none;
-  transition:border-color .2s,box-shadow .2s;letter-spacing:.04em
+  transition:border-color .2s,box-shadow .2s;letter-spacing:.02em
 }
 .fi::placeholder{color:rgba(255,255,255,.16)}
 .fi:focus{border-color:rgba(201,168,76,.45);box-shadow:0 0 0 3px rgba(201,168,76,.07)}
 .pw-btn{
   position:absolute;right:14px;top:50%;transform:translateY(-50%);
-  font-family:'Noto Sans KR',sans-serif;font-size:11px;
+  font-family:'Pretendard','Noto Sans KR',sans-serif;font-size:11px;
   color:rgba(255,255,255,.3);cursor:none;transition:color .2s
 }
 .pw-btn:hover{color:rgba(255,255,255,.65)}
@@ -205,8 +243,9 @@ footer{
   width:100%;padding:15px;margin-top:10px;
   background:linear-gradient(135deg,var(--gold-light),var(--gold));
   color:#160d00;border:none;border-radius:6px;
-  font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;
-  letter-spacing:.1em;cursor:none;transition:all .25s ease;
+  font-family:'Pretendard','Noto Sans KR',sans-serif;
+  font-size:14px;font-weight:700;
+  letter-spacing:.06em;cursor:none;transition:all .25s ease;
   box-shadow:0 4px 20px rgba(201,168,76,.2)
 }
 .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(201,168,76,.38)}
@@ -227,7 +266,13 @@ footer{
 
 <!-- 인트로 -->
 <div id="intro">
-  <div id="introRow" style="display:flex;align-items:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(42px,6.5vw,88px);letter-spacing:.22em"></div>
+  <div id="introRow">
+    <span class="intro-first" id="introFirst">FIRST</span>
+    <span class="intro-space"></span>
+    <span class="intro-mover" id="introMover">
+      <span class="m-letter">M</span><span class="m-letter">O</span><span class="m-letter">V</span><span class="m-letter">E</span><span class="m-letter">R</span>
+    </span>
+  </div>
 </div>
 
 <!-- 메인 -->
@@ -237,7 +282,7 @@ footer{
       <img src="./logo-gold.png" class="logo-img" alt="분양의신">
       <div class="logo-dept">광고인㈜ 대외협력팀</div>
     </div>
-    <button class="btn-access" onclick="openModal()">시스템 접속</button>
+    <button class="btn-login-top" onclick="openModal()">로그인</button>
   </header>
   <div class="hero">
     <img src="./분양회_로고.png" class="hero-emblem" alt="분양회">
@@ -277,99 +322,84 @@ document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.le
 document.addEventListener('mousedown',()=>{cur.style.transform='translate(-50%,-50%) scale(.45)';ring.style.transform='translate(-50%,-50%) scale(.65)'});
 document.addEventListener('mouseup',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)'});
 
-// 파티클 — 낙하하는 금빛 별
+// 파티클
 const cv=document.getElementById('canvas'),ctx=cv.getContext('2d');
 let W,H,stars=[];
 function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
 rsz();window.addEventListener('resize',rsz);
-
 class Star{
   constructor(){this.reset(true)}
-  reset(init){
-    this.x=Math.random()*W;
-    this.y=init?Math.random()*H:-8;
-    this.speed=Math.random()*1.8+0.4;
-    this.r=Math.random()*1.8+0.3;
-    this.opacity=Math.random()*0.7+0.3;
-    this.twinkle=Math.random()*Math.PI*2;
-    this.twinkleSpeed=Math.random()*0.06+0.02;
-    this.vx=(Math.random()-0.5)*0.4;
-    this.isMeteor=Math.random()<0.04;
-    if(this.isMeteor){this.speed=Math.random()*5+4;this.r=Math.random()*1.2+0.6;this.tailLen=Math.random()*60+30;this.vx=(Math.random()-0.5)*1.5}
-  }
+  reset(init){this.x=Math.random()*W;this.y=init?Math.random()*H:-8;this.speed=Math.random()*1.8+0.4;this.r=Math.random()*1.8+0.3;this.opacity=Math.random()*0.7+0.3;this.twinkle=Math.random()*Math.PI*2;this.twinkleSpeed=Math.random()*0.06+0.02;this.vx=(Math.random()-0.5)*0.4;this.isMeteor=Math.random()<0.04;if(this.isMeteor){this.speed=Math.random()*5+4;this.r=Math.random()*1.2+0.6;this.tailLen=Math.random()*60+30;this.vx=(Math.random()-0.5)*1.5}}
   update(){this.y+=this.speed;this.x+=this.vx;this.twinkle+=this.twinkleSpeed;if(this.y>H+10)this.reset(false)}
-  draw(){
-    const tw=0.6+0.4*Math.sin(this.twinkle),a=this.opacity*tw;
-    if(this.isMeteor){
-      const gr=ctx.createLinearGradient(this.x,this.y-this.tailLen,this.x,this.y);
-      gr.addColorStop(0,'rgba(240,208,128,0)');gr.addColorStop(1,`rgba(240,208,128,${a*0.7})`);
-      ctx.beginPath();ctx.moveTo(this.x-this.vx*this.tailLen/this.speed,this.y-this.tailLen);ctx.lineTo(this.x,this.y);
-      ctx.strokeStyle=gr;ctx.lineWidth=this.r*1.2;ctx.stroke();
-    }
-    const g=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.r*3);
-    g.addColorStop(0,`rgba(255,252,230,${a})`);g.addColorStop(0.3,`rgba(240,208,128,${a*0.8})`);g.addColorStop(1,'rgba(201,168,76,0)');
-    ctx.beginPath();ctx.arc(this.x,this.y,this.r*3,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-  }
+  draw(){const tw=0.6+0.4*Math.sin(this.twinkle),a=this.opacity*tw;if(this.isMeteor){const gr=ctx.createLinearGradient(this.x,this.y-this.tailLen,this.x,this.y);gr.addColorStop(0,'rgba(240,208,128,0)');gr.addColorStop(1,`rgba(240,208,128,${a*0.7})`);ctx.beginPath();ctx.moveTo(this.x-this.vx*this.tailLen/this.speed,this.y-this.tailLen);ctx.lineTo(this.x,this.y);ctx.strokeStyle=gr;ctx.lineWidth=this.r*1.2;ctx.stroke()}const g=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.r*3);g.addColorStop(0,`rgba(255,252,230,${a})`);g.addColorStop(0.3,`rgba(240,208,128,${a*0.8})`);g.addColorStop(1,'rgba(201,168,76,0)');ctx.beginPath();ctx.arc(this.x,this.y,this.r*3,0,Math.PI*2);ctx.fillStyle=g;ctx.fill()}
 }
-
 class Spark{
   constructor(){this.x=mx+(Math.random()-.5)*20;this.y=my+(Math.random()-.5)*20;this.vx=(Math.random()-.5)*2.5;this.vy=-(Math.random()*2+0.5);this.r=Math.random()*2.5+0.8;this.life=1;this.decay=0.022+Math.random()*0.018}
   update(){this.x+=this.vx;this.y+=this.vy;this.vy+=0.04;this.life-=this.decay}
   draw(){const g=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.r*2.5);g.addColorStop(0,`rgba(255,252,220,${this.life*0.9})`);g.addColorStop(1,'rgba(201,168,76,0)');ctx.beginPath();ctx.arc(this.x,this.y,this.r*2.5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill()}
   get dead(){return this.life<=0}
 }
-
 for(let i=0;i<180;i++)stars.push(new Star());
 let sparks=[],lastSpark=0;
 document.addEventListener('mousemove',()=>{const n=Date.now();if(n-lastSpark>22){for(let i=0;i<3;i++)sparks.push(new Spark());lastSpark=n}});
-
-function loop(){
-  ctx.fillStyle='rgba(4,2,0,1)';ctx.fillRect(0,0,W,H);
-  const vg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.8);
-  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.72)');
-  ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
-  stars.forEach(s=>{s.update();s.draw()});
-  sparks=sparks.filter(s=>!s.dead);sparks.forEach(s=>{s.update();s.draw()});
-  requestAnimationFrame(loop);
-}
+function loop(){ctx.fillStyle='rgba(4,2,0,1)';ctx.fillRect(0,0,W,H);const vg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.72)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);stars.forEach(s=>{s.update();s.draw()});sparks=sparks.filter(s=>!s.dead);sparks.forEach(s=>{s.update();s.draw()});requestAnimationFrame(loop)}
 loop();
 
-// 인트로: FIRST MOVER → M/O/V/E/R 순차 금장
-const introRow=document.getElementById('introRow');
-const firstEl=document.createElement('span');
-firstEl.textContent='FIRST';
-firstEl.style.cssText='opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease;display:inline-block';
-introRow.appendChild(firstEl);
-const spaceEl=document.createElement('span');
-spaceEl.style.width='.5em';spaceEl.style.display='inline-block';
-introRow.appendChild(spaceEl);
-const moverWrap=document.createElement('span');
-moverWrap.style.cssText='display:inline-flex;gap:.04em;opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease';
-const moverSpans=[];
-'MOVER'.split('').forEach(ch=>{
-  const el=document.createElement('span');el.className='intro-letter';el.textContent=ch;
-  moverWrap.appendChild(el);moverSpans.push(el);
-});
-introRow.appendChild(moverWrap);
-
+// 인트로: FIRST + MOVER 동시 등장 → M/O/V/E/R 순차 금장
+const introFirst=document.getElementById('introFirst');
+const introMover=document.getElementById('introMover');
+const mLetters=[...introMover.querySelectorAll('.m-letter')];
 function runIntro(){
-  setTimeout(()=>{firstEl.style.opacity='1';firstEl.style.transform='translateY(0)';moverWrap.style.opacity='1';moverWrap.style.transform='translateY(0)'},300);
-  moverSpans.forEach((el,i)=>setTimeout(()=>el.classList.add('gold'),1100+i*180));
-  setTimeout(()=>document.getElementById('canvas').classList.add('show'),1100+moverSpans.length*180+300);
-  setTimeout(()=>{document.getElementById('intro').classList.add('hide');document.getElementById('main').classList.add('show');startTaglines()},1100+moverSpans.length*180+1200);
+  // FIRST + MOVER 동시 등장
+  setTimeout(()=>{
+    introFirst.classList.add('in');
+    introMover.classList.add('in');
+  },300);
+  // M → O → V → E → R 순차 금장
+  mLetters.forEach((el,i)=>setTimeout(()=>el.classList.add('gold'),1100+i*180));
+  // 파티클 배경 등장
+  setTimeout(()=>document.getElementById('canvas').classList.add('show'),1100+mLetters.length*180+300);
+  // 인트로 종료 → 메인 등장
+  setTimeout(()=>{
+    document.getElementById('intro').classList.add('hide');
+    document.getElementById('main').classList.add('show');
+    startTaglines();
+  },1100+mLetters.length*180+1200);
 }
 setTimeout(runIntro,200);
 
 // 태그라인
 const TL=[
-  {main:'<strong>First Mover</strong> in Real Estate Sales',desc:'분양 산업의 판도를 바꾸는 새로운 기준.<br>대한민국 분양 생태계를 선도하는 퍼스트무버, 분양의신.'},
-  {main:'<em>Exclusive</em> VIP Membership for the Top 1%',desc:'광고를 넘어, 성장을 함께하는 프라이빗 파트너십.<br>분양상담사 최상위 100인만을 위한 멤버십, 분양회.'},
-  {main:'<strong>올인원</strong> 분양 파트너십',desc:'하이타겟·LMS·호갱노노를 하나로.<br>분양의신이 만드는 대한민국 최초 분양 올인원 생태계.'}
+  {
+    main:'<strong>First Mover</strong> in Real Estate Sales',
+    desc:'분양 산업의 판도를 바꾸는 새로운 기준.<br>대한민국 분양 생태계를 선도하는 퍼스트무버, 분양의신.'
+  },
+  {
+    // 줄바꿈: Exclusive VIP Membership / for the Top 1%
+    main:'<em>Exclusive</em> VIP Membership<br>for the Top 1%',
+    desc:'광고를 넘어, 성장을 함께하는 프라이빗 파트너십.<br>분양상담사 최상위 100인만을 위한 멤버십, 분양회.'
+  },
+  {
+    // 올인원 → All-In-One
+    main:'<strong>All-In-One</strong> 분양 파트너십',
+    desc:'하이타겟·LMS·호갱노노를 하나로.<br>분양의신이 만드는 대한민국 최초 분양 올인원 생태계.'
+  }
 ];
 const wrap=document.getElementById('taglineWrap');
 let tlIdx=0,tlTimer=null;
-function buildTL(){TL.forEach((t,i)=>{const el=document.createElement('div');el.className='tagline-slot'+(i===0?' active':'');el.innerHTML=`<div class="tl-main">${t.main}</div><div class="tl-desc">${t.desc}</div>`;wrap.appendChild(el)})}
-function goTo(idx){const s=[...wrap.querySelectorAll('.tagline-slot')];s[tlIdx].classList.remove('active');tlIdx=idx;s[tlIdx].classList.add('active');clearTimeout(tlTimer);tlTimer=setTimeout(()=>goTo((tlIdx+1)%TL.length),4800)}
+function buildTL(){
+  TL.forEach((t,i)=>{
+    const el=document.createElement('div');
+    el.className='tagline-slot'+(i===0?' active':'');
+    el.innerHTML=`<div class="tl-main">${t.main}</div><div class="tl-desc">${t.desc}</div>`;
+    wrap.appendChild(el);
+  });
+}
+function goTo(idx){
+  const s=[...wrap.querySelectorAll('.tagline-slot')];
+  s[tlIdx].classList.remove('active');tlIdx=idx;s[tlIdx].classList.add('active');
+  clearTimeout(tlTimer);tlTimer=setTimeout(()=>goTo((tlIdx+1)%TL.length),4800);
+}
 function startTaglines(){buildTL();tlTimer=setTimeout(()=>goTo(1),4800)}
 
 // 모달
