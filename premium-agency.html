@@ -156,30 +156,42 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .btn-del{background:rgba(240,96,96,.08);border:1px solid rgba(240,96,96,.2);color:var(--red)}
 .btn-del:hover{background:rgba(240,96,96,.18)}
 
-/* ── 인라인 확장 ── */
-.expand-row{background:var(--bg5);border-top:1px solid rgba(201,168,76,.2);border-bottom:2px solid rgba(201,168,76,.2);overflow:hidden;max-height:0;opacity:0;transform:translateY(-4px);transition:max-height .4s cubic-bezier(.4,0,.2,1),opacity .3s ease .05s,transform .3s ease .05s;pointer-events:none}
-.expand-row.open{max-height:700px;opacity:1;transform:translateY(0);pointer-events:all;padding:20px 22px}
+/* ── 상세 팝업 모달 ── */
+.detail-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.detail-bg.on{opacity:1;pointer-events:all}
+.detail-modal{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  width:820px;max-width:96vw;max-height:88vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 0 80px rgba(0,0,0,.8),0 0 40px rgba(201,168,76,.06);
+  transform:translateY(16px) scale(.98);transition:transform .35s ease;
+  overflow:hidden;
+}
+.detail-bg.on .detail-modal{transform:translateY(0) scale(1)}
 
-.exp-layout{display:grid;grid-template-columns:1fr 1px 1fr;gap:0;column-gap:0}
-.exp-col{padding:0 24px}
-.exp-col:first-child{padding-left:0}
-.exp-col:last-child{padding-right:0}
-.exp-divider{background:var(--border);align-self:stretch}
-.exp-col-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.exp-col-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.exp-fields{display:flex;flex-direction:column;gap:10px}
-.exp-field{display:flex;flex-direction:column;gap:5px}
-.exp-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
-.e-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;width:100%}
-.e-input:focus{border-color:rgba(201,168,76,.45)}
-.e-input::placeholder{color:var(--text3)}
-.e-select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);cursor:pointer;outline:none;transition:border-color .2s;width:100%}
-.e-select:focus{border-color:rgba(201,168,76,.45)}
-.e-textarea{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;height:72px;transition:border-color .2s;width:100%;line-height:1.7}
-.e-textarea:focus{border-color:rgba(201,168,76,.45)}
-.e-textarea::placeholder{color:var(--text3)}
+/* 팝업 헤더 */
+.dm-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 24px;border-bottom:1px solid var(--border);flex-shrink:0;
+  background:var(--bg2);
+}
+.dm-title-wrap{display:flex;align-items:center;gap:10px}
+.dm-agency-name{font-size:17px;font-weight:700;color:var(--text)}
+.dm-location{font-size:12px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:4px}
+.dm-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.dm-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
 
-/* 인원 칩 */
+/* 팝업 바디 */
+.dm-body{flex:1;overflow-y:auto;padding:22px 24px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dm-body::-webkit-scrollbar{width:4px}
+.dm-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+.dm-section{display:flex;flex-direction:column;gap:14px}
+.dm-section.full{grid-column:1/-1}
+.dm-sec-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.dm-sec-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dm-field{display:flex;flex-direction:column;gap:5px}
+.dm-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
 .people-chips{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;min-height:40px}
 .pchip{padding:4px 11px;border-radius:14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;background:var(--bg4);border:1px solid var(--border);color:var(--text3)}
 .pchip:hover{border-color:var(--border2);color:var(--text2)}
@@ -187,7 +199,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .pchip.sel-consult{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.5);color:var(--purple);font-weight:700}
 
 /* 활동 노트 */
-.act-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.act-section{grid-column:1/-1;padding-top:4px}
 .act-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .act-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .act-cnt{font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;background:rgba(91,156,246,.15);color:var(--blue)}
@@ -211,12 +223,16 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .btn-nc.cancel{background:transparent;border:1px solid var(--border);color:var(--text2)}
 .btn-nc.save{background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;font-weight:700}
 
-/* 확장 하단 버튼 */
-.exp-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
-.btn-exp-save{font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:6px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;cursor:pointer;transition:all .2s;letter-spacing:.04em}
-.btn-exp-save:hover{box-shadow:0 4px 14px rgba(201,168,76,.3)}
-.btn-exp-del{font-family:'Pretendard',sans-serif;font-size:13px;padding:9px 16px;border-radius:6px;background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.25);color:var(--red);cursor:pointer;transition:all .2s}
-.btn-exp-del:hover{background:rgba(240,96,96,.2)}
+/* 팝업 하단 */
+.dm-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;background:var(--bg2)}
+.btn-dm-save{font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;padding:10px 28px;border-radius:6px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.btn-dm-save:hover{box-shadow:0 4px 14px rgba(201,168,76,.3)}
+
+.e-input,.e-select,.e-textarea{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;width:100%}
+.e-input:focus,.e-select:focus,.e-textarea:focus{border-color:rgba(201,168,76,.45)}
+.e-input::placeholder,.e-textarea::placeholder{color:var(--text3)}
+.e-select{cursor:pointer}
+.e-textarea{resize:vertical;height:80px;line-height:1.7}
 
 /* 신규 등록 모달 */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(5px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
@@ -354,6 +370,29 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
   </div>
 </div>
 
+<!-- 상세 팝업 모달 -->
+<div class="detail-bg" id="detailBg" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-modal">
+    <div class="dm-topbar">
+      <div class="dm-title-wrap">
+        <div>
+          <div class="dm-agency-name" id="dm-name">—</div>
+          <div class="dm-location" id="dm-location">—</div>
+        </div>
+        <div id="dm-badges" style="display:flex;gap:6px;margin-left:12px"></div>
+      </div>
+      <button class="dm-close" onclick="closeDetail()">✕</button>
+    </div>
+
+    <div class="dm-body" id="dmBody"></div>
+
+    <div class="dm-footer">
+      <button class="btn-sm btn-del" onclick="deleteFromDetail()" style="padding:9px 16px;font-size:13px">삭제</button>
+      <button class="btn-dm-save" onclick="saveDetail()">저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- 신규 등록 모달 -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -426,7 +465,7 @@ const STATUS_MAP = {plan:{label:'미팅 예정',cls:'s-plan',icon:'📅'},meet:{
 const GRADE_MAP = {black:{label:'◆ BLACK',cls:'bg-black',cardCls:'grade-black',goal:2},gold:{label:'★ GOLD',cls:'bg-gold',cardCls:'grade-gold',goal:5},silver:{label:'● SILVER',cls:'bg-silver',cardCls:'grade-silver',goal:20}};
 const GRADE_TARGETS = {black:2,gold:5,silver:20};
 
-let gradeFilter='all', statusFilter='all', openId=null, editId=null;
+let gradeFilter='all', statusFilter='all', editId=null;
 let mExecSel=new Set(), mConsultSel=new Set(), openMenuId=null;
 
 // ── 요약 카드 ─────────────────────────────
@@ -512,11 +551,8 @@ function render(){
     const execTags=d.execTeam.map(n=>`<span class="person-tag exec">${n}</span>`).join('');
     const consultTags=d.consultTeam.map(n=>`<span class="person-tag consult">${n}</span>`).join('');
     const menuItems=Object.entries(STATUS_MAP).map(([v,s])=>`<div class="smenu-item${v===d.status?' cur':''}" onclick="setStatus(${d.id},'${v}',event)">${s.icon} ${s.label}</div>`).join('');
-    const isOpen=openId===d.id;
-    // 확장 내용
-    const expContent=isOpen?buildExpand(d):'';
     html+=`
-    <div class="agency-card ${gi.cardCls||''} ${isOpen?'selected':''}" data-id="${d.id}">
+    <div class="agency-card ${gi.cardCls||''}" data-id="${d.id}">
       <div class="card-body">
         <div class="card-head">
           <div class="card-name-wrap">
@@ -536,114 +572,152 @@ function render(){
         ${d.contact?`<div class="card-meta">
           <div class="card-meta-row"><span class="micon">👤</span>${d.contact}${d.rank?' · '+d.rank:''}</div>
           ${d.phone?`<div class="card-meta-row"><span class="micon">📞</span>${d.phone}</div>`:''}
-        </div>`:''}
-        ${(d.execTeam.length||d.consultTeam.length)?`
+        </div>`:`<div class="card-meta">
+          <div class="card-meta-row" style="color:var(--text3)"><span class="micon">👤</span>소통자 미입력</div>
+        </div>`}
         <div style="margin-bottom:8px">
-          ${execTags?`<div class="card-people-label">대외협력팀</div><div class="card-people">${execTags}</div>`:''}
-          ${consultTags?`<div class="card-people-label" style="margin-top:5px">컨설턴트</div><div class="card-people">${consultTags}</div>`:''}
-        </div>`:''}
+          <div class="card-people-label">대외협력팀</div>
+          <div class="card-people">${d.execTeam.length ? d.execTeam.map(n=>`<span class="person-tag exec">${n}</span>`).join('') : '<span style="color:var(--text3);font-size:12px">—</span>'}</div>
+          <div class="card-people-label" style="margin-top:6px">컨설턴트</div>
+          <div class="card-people">${d.consultTeam.length ? d.consultTeam.map(n=>`<span class="person-tag consult">${n}</span>`).join('') : '<span style="color:var(--text3);font-size:12px">—</span>'}</div>
+        </div>
       </div>
       <div class="card-footer">
         <div class="card-note-preview">${notes.length?`📝 활동노트 ${notes.length}건`:(d.note||'비고 없음')}</div>
         <div class="card-actions" onclick="event.stopPropagation()">
-          <button class="btn-sm btn-detail" onclick="toggleExpand(${d.id})">${isOpen?'닫기':'상세 ▾'}</button>
+          <button class="btn-sm btn-detail" onclick="openDetail(${d.id})">상세</button>
           <button class="btn-sm btn-del" onclick="deleteItem(${d.id})">삭제</button>
         </div>
       </div>
-      <div class="expand-row${isOpen?' open':''}" id="exp-${d.id}">${expContent}</div>
     </div>`;
   });
   grid.innerHTML=html;
-  // open 상태 복원
-  if(openId!==null){
-    const el=document.getElementById('exp-'+openId);
-    if(el&&!el.classList.contains('open')){
-      el.innerHTML=buildExpand(DATA.find(x=>x.id===openId));
-      requestAnimationFrame(()=>el.classList.add('open'));
-    }
-  }
 }
 
-// ── 인라인 확장 ───────────────────────────
-function buildExpand(d){
-  const notes=NOTES_STORE[d.id]||[];
-  const execChips=EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePerson(${d.id},'exec','${n}')">${n}</span>`).join('');
-  const consultChips=CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePerson(${d.id},'consult','${n}')">${n}</span>`).join('');
-  const notesList=notes.length
-    ?notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${d.id},'${n.id}')">삭제</button></div><div class="note-text">${n.text}</div></div>`).join('')
-    :`<div class="note-empty">활동 노트가 없습니다</div>`;
-  return `
-  <div class="exp-layout">
-    <div class="exp-col">
-      <div class="exp-col-title"><span class="dot" style="background:var(--blue)"></span>대행사 정보</div>
-      <div class="exp-fields">
-        <div class="exp-field"><span class="exp-label">대행사명</span><input class="e-input" value="${d.name}" onchange="updateField(${d.id},'name',this.value)"></div>
-        <div class="exp-field"><span class="exp-label">위치</span><input class="e-input" value="${d.location||''}" placeholder="예: 서울 강남구" onchange="updateField(${d.id},'location',this.value)"></div>
-        <div class="exp-field"><span class="exp-label">미팅 일자</span><input class="e-input" type="date" value="${d.date||''}" onchange="updateField(${d.id},'date',this.value)"></div>
-        <div class="exp-field"><span class="exp-label">조직수</span><input class="e-input" value="${d.org||''}" placeholder="예: 50명" onchange="updateField(${d.id},'org',this.value)"></div>
-        <div class="exp-field"><span class="exp-label">접점 (소통자)</span><input class="e-input" value="${d.contact||''}" onchange="updateField(${d.id},'contact',this.value)"></div>
-        <div class="exp-field"><span class="exp-label">소통자 직급</span><input class="e-input" value="${d.rank||''}" onchange="updateField(${d.id},'rank',this.value)"></div>
-        <div class="exp-field"><span class="exp-label">소통자 연락처</span><input class="e-input" value="${d.phone||''}" onchange="updateField(${d.id},'phone',this.value)"></div>
-        <div class="exp-field"><span class="exp-label">등급</span>
-          <select class="e-select" onchange="updateField(${d.id},'grade',this.value)">
-            <option value="">선택</option>
-            ${['black','gold','silver'].map(g=>`<option value="${g}"${d.grade===g?' selected':''}>${GRADE_MAP[g].label}</option>`).join('')}
-          </select>
+// ── 상세 팝업 ─────────────────────────────
+let detailId = null;
+
+function openDetail(id){
+  detailId = id;
+  const d = DATA.find(x=>x.id===id);
+  document.getElementById('dm-name').textContent = d.name;
+  document.getElementById('dm-location').innerHTML = `📍 ${d.location}`;
+  const gi = GRADE_MAP[d.grade]||{};
+  const si = STATUS_MAP[d.status]||STATUS_MAP.plan;
+  document.getElementById('dm-badges').innerHTML = `
+    ${d.grade?`<span class="badge ${gi.cls||''}">${gi.label||d.grade}</span>`:''}
+    <span class="status-chip ${si.cls}">${si.icon} ${si.label}</span>`;
+  renderDetailBody(d);
+  document.getElementById('detailBg').classList.add('on');
+}
+
+function closeDetail(){
+  document.getElementById('detailBg').classList.remove('on');
+  detailId = null;
+}
+
+function renderDetailBody(d){
+  const notes = NOTES_STORE[d.id]||[];
+  const execChips = EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePersonDetail('exec','${n}')">${n}</span>`).join('');
+  const consultChips = CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePersonDetail('consult','${n}')">${n}</span>`).join('');
+  const notesList = notes.length
+    ? notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${d.id},'${n.id}')">삭제</button></div><div class="note-text">${n.text}</div></div>`).join('')
+    : `<div class="note-empty">활동 노트가 없습니다</div>`;
+
+  document.getElementById('dmBody').innerHTML = `
+    <!-- 좌: 대행사 정보 -->
+    <div class="dm-section">
+      <div class="dm-sec-title"><span class="dot" style="background:var(--blue)"></span>대행사 정보</div>
+      <div class="dm-field"><span class="dm-label">대행사명</span><input class="e-input" id="dd_name" value="${d.name}"></div>
+      <div class="dm-field"><span class="dm-label">위치</span><input class="e-input" id="dd_location" value="${d.location||''}"></div>
+      <div class="dm-field"><span class="dm-label">미팅 일자</span><input class="e-input" type="date" id="dd_date" value="${d.date||''}"></div>
+      <div class="dm-field"><span class="dm-label">조직수</span><input class="e-input" id="dd_org" value="${d.org||''}"></div>
+      <div class="dm-field"><span class="dm-label">접점 (소통자)</span><input class="e-input" id="dd_contact" value="${d.contact||''}"></div>
+      <div class="dm-field"><span class="dm-label">소통자 직급</span><input class="e-input" id="dd_rank" value="${d.rank||''}"></div>
+      <div class="dm-field"><span class="dm-label">소통자 연락처</span><input class="e-input" id="dd_phone" value="${d.phone||''}"></div>
+      <div class="dm-field"><span class="dm-label">등급</span>
+        <select class="e-select" id="dd_grade">
+          <option value="">선택</option>
+          ${['black','gold','silver'].map(g=>`<option value="${g}"${d.grade===g?' selected':''}>${GRADE_MAP[g].label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="dm-field"><span class="dm-label">계약 상태</span>
+        <select class="e-select" id="dd_status">
+          ${Object.entries(STATUS_MAP).map(([v,s])=>`<option value="${v}"${d.status===v?' selected':''}>${s.icon} ${s.label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="dm-field"><span class="dm-label">비고</span><textarea class="e-textarea" id="dd_note" style="height:80px">${d.note||''}</textarea></div>
+    </div>
+
+    <!-- 우: 출장 인원 + 활동 노트 -->
+    <div class="dm-section">
+      <div class="dm-sec-title"><span class="dot" style="background:var(--purple)"></span>출장 인원</div>
+      <div class="dm-field"><span class="dm-label">대외협력팀</span><div class="people-chips" id="dd_exec_chips">${execChips}</div></div>
+      <div class="dm-field"><span class="dm-label">컨설턴트</span><div class="people-chips" id="dd_consult_chips">${consultChips}</div></div>
+    </div>
+
+    <!-- 활동 노트: 전체 폭 -->
+    <div class="act-section dm-section full" style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:16px">
+      <div class="act-head">
+        <div class="act-title"><span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;flex-shrink:0"></span>활동 노트 <span class="act-cnt" id="dm-note-cnt">${notes.length}</span>건</div>
+        <button class="btn-add-note" onclick="showNoteInput(${d.id})">＋ 노트 추가</button>
+      </div>
+      <div class="notes-list" id="notes-${d.id}">${notesList}</div>
+      <div class="note-input-wrap" id="ni-${d.id}">
+        <textarea class="note-textarea" id="nt-${d.id}" placeholder="고객과의 통화 내용, 미팅 결과, 특이사항 등"></textarea>
+        <div class="note-footer">
+          <button class="btn-nc cancel" onclick="hideNoteInput(${d.id})">취소</button>
+          <button class="btn-nc save" onclick="saveNote(${d.id})">저장</button>
         </div>
-        <div class="exp-field"><span class="exp-label">비고</span><textarea class="e-textarea" onchange="updateField(${d.id},'note',this.value)">${d.note||''}</textarea></div>
       </div>
     </div>
-    <div class="exp-divider"></div>
-    <div class="exp-col">
-      <div class="exp-col-title"><span class="dot" style="background:var(--purple)"></span>출장 인원</div>
-      <div class="exp-fields">
-        <div class="exp-field"><span class="exp-label">대외협력팀</span><div class="people-chips">${execChips}</div></div>
-        <div class="exp-field"><span class="exp-label">컨설턴트</span><div class="people-chips">${consultChips}</div></div>
-      </div>
-      <!-- 활동 노트 -->
-      <div class="act-section">
-        <div class="act-head">
-          <div class="act-title"><span style="width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;display:inline-block"></span>활동 노트 <span class="act-cnt">${notes.length}</span>건</div>
-          <button class="btn-add-note" onclick="showNoteInput(${d.id})">＋ 노트 추가</button>
-        </div>
-        <div class="notes-list" id="notes-${d.id}">${notesList}</div>
-        <div class="note-input-wrap" id="ni-${d.id}">
-          <textarea class="note-textarea" id="nt-${d.id}" placeholder="고객과의 통화 내용, 미팅 결과, 특이사항 등"></textarea>
-          <div class="note-footer">
-            <button class="btn-nc cancel" onclick="hideNoteInput(${d.id})">취소</button>
-            <button class="btn-nc save" onclick="saveNote(${d.id})">저장</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>`;
+  `;
 }
 
-function toggleExpand(id){
-  if(openId===id){ openId=null; }
-  else { openId=id; }
-  render();
-  if(openId!==null){
-    setTimeout(()=>{ const el=document.getElementById('exp-'+openId); if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
-  }
-}
-
-function updateField(id,key,val){
-  const d=DATA.find(x=>x.id===id); if(d) d[key]=val;
-  if(key==='grade'||key==='status'){ updateSummary(); }
-}
-
-function togglePerson(id,type,name){
-  const d=DATA.find(x=>x.id===id); if(!d)return;
-  const arr=type==='exec'?d.execTeam:d.consultTeam;
-  const idx=arr.indexOf(name);
+function togglePersonDetail(type, name){
+  const d = DATA.find(x=>x.id===detailId); if(!d) return;
+  const arr = type==='exec' ? d.execTeam : d.consultTeam;
+  const idx = arr.indexOf(name);
   if(idx>-1) arr.splice(idx,1); else arr.push(name);
-  // 칩만 갱신
-  const chips=type==='exec'
-    ?EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePerson(${id},'exec','${n}')">${n}</span>`).join('')
-    :CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePerson(${id},'consult','${n}')">${n}</span>`).join('');
-  const container=type==='exec'?document.querySelectorAll(`[id="exp-${id}"] .people-chips`)[0]:document.querySelectorAll(`[id="exp-${id}"] .people-chips`)[1];
-  if(container) container.innerHTML=chips;
+  // 칩 갱신
+  const chips = type==='exec'
+    ? EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePersonDetail('exec','${n}')">${n}</span>`).join('')
+    : CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePersonDetail('consult','${n}')">${n}</span>`).join('');
+  const el = document.getElementById(type==='exec'?'dd_exec_chips':'dd_consult_chips');
+  if(el) el.innerHTML = chips;
+}
+
+function saveDetail(){
+  const d = DATA.find(x=>x.id===detailId); if(!d) return;
+  d.name = document.getElementById('dd_name').value;
+  d.location = document.getElementById('dd_location').value;
+  d.date = document.getElementById('dd_date').value;
+  d.org = document.getElementById('dd_org').value;
+  d.contact = document.getElementById('dd_contact').value;
+  d.rank = document.getElementById('dd_rank').value;
+  d.phone = document.getElementById('dd_phone').value;
+  d.grade = document.getElementById('dd_grade').value;
+  d.status = document.getElementById('dd_status').value;
+  d.note = document.getElementById('dd_note').value;
+  // 헤더 배지 갱신
+  const gi = GRADE_MAP[d.grade]||{};
+  const si = STATUS_MAP[d.status]||STATUS_MAP.plan;
+  document.getElementById('dm-name').textContent = d.name;
+  document.getElementById('dm-location').innerHTML = `📍 ${d.location}`;
+  document.getElementById('dm-badges').innerHTML = `
+    ${d.grade?`<span class="badge ${gi.cls||''}">${gi.label||d.grade}</span>`:''}
+    <span class="status-chip ${si.cls}">${si.icon} ${si.label}</span>`;
+  updateSummary(); render();
+  const btn = document.querySelector('.btn-dm-save');
+  btn.textContent='✓ 저장됨'; btn.style.background='var(--green)'; btn.style.color='#fff';
+  setTimeout(()=>{ btn.textContent='저장'; btn.style.background=''; btn.style.color=''; }, 1400);
+}
+
+function deleteFromDetail(){
+  if(!confirm('삭제하시겠습니까?')) return;
+  DATA = DATA.filter(x=>x.id!==detailId);
+  delete NOTES_STORE[detailId];
+  closeDetail(); render();
 }
 
 // ── 활동 노트 ─────────────────────────────
@@ -704,7 +778,7 @@ function submitForm(){
 }
 function deleteItem(id){
   if(!confirm('삭제하시겠습니까?'))return;
-  DATA=DATA.filter(x=>x.id!==id); delete NOTES_STORE[id]; openId=null; render();
+  DATA=DATA.filter(x=>x.id!==id); delete NOTES_STORE[id]; render();
 }
 
 // ── 초기화 ────────────────────────────────
