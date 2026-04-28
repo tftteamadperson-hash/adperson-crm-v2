@@ -99,21 +99,20 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
 
 /* 대행사 카드 */
-.agency-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.agency-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s,box-shadow .2s;display:flex;flex-direction:column}
 .agency-card:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.3)}
-.agency-card.selected{border-color:rgba(201,168,76,.4)}
 
 /* 등급별 상단 선 */
 .agency-card.grade-black{border-top:3px solid var(--black-grade)}
 .agency-card.grade-gold{border-top:3px solid var(--gold-grade)}
 .agency-card.grade-silver{border-top:3px solid var(--silver-grade)}
 
-.card-body{padding:16px 18px}
+.card-body{padding:16px 18px;display:flex;flex-direction:column;flex:1}
 .card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
 .card-name-wrap{}
 .card-agency-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.2}
 .card-location{font-size:12px;color:var(--text2);margin-top:3px;display:flex;align-items:center;gap:4px}
-.card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;min-height:26px}
 
 /* 배지 */
 .badge{display:inline-flex;align-items:center;justify-content:center;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
@@ -135,16 +134,19 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .smenu-item:hover{background:rgba(255,255,255,.06);color:var(--text)}
 .smenu-item.cur{color:var(--gold-light);font-weight:700}
 
-/* 카드 메타 */
-.card-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+/* 카드 메타 - 항상 2행 고정 */
+.card-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;min-height:46px}
 .card-meta-row{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2)}
 .micon{font-size:11px;color:var(--text3);width:14px;text-align:center;flex-shrink:0}
 .card-date{color:var(--blue);font-weight:600}
 .person-tag{padding:3px 9px;border-radius:12px;font-size:12px;font-weight:600}
 .person-tag.exec{background:rgba(91,156,246,.15);color:var(--blue)}
 .person-tag.consult{background:rgba(167,139,250,.15);color:var(--purple)}
-.card-people{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-.card-people-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+/* 인원 섹션 - 항상 동일 높이 */
+.card-people-section{flex:1;margin-bottom:8px}
+.card-people{display:flex;flex-wrap:wrap;gap:5px;min-height:26px;align-content:flex-start}
+.card-people-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;margin-top:6px}
+.card-people-label:first-child{margin-top:0}
 
 /* 카드 하단 */
 .card-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-top:1px solid var(--border)}
@@ -387,7 +389,6 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
     <div class="dm-body" id="dmBody"></div>
 
     <div class="dm-footer">
-      <button class="btn-sm btn-del" onclick="deleteFromDetail()" style="padding:9px 16px;font-size:13px">삭제</button>
       <button class="btn-dm-save" onclick="saveDetail()">저장</button>
     </div>
   </div>
@@ -460,7 +461,7 @@ let NOTES_STORE = {};
 DATA.forEach(d => { NOTES_STORE[d.id] = d.notes || []; });
 
 const EXEC_ALL = ['김정후','김창완','최웅','조계현','이세호','기여운','최연전','김재영','최은정'];
-const CONSULT_ALL = ['박경화','박혜은','박민경','조승현','강아름','백선중','전정훈','박나라'];
+const CONSULT_ALL = ['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'];
 const STATUS_MAP = {plan:{label:'미팅 예정',cls:'s-plan',icon:'📅'},meet:{label:'미팅 완료',cls:'s-meet',icon:'🤝'},nego:{label:'계약 협의',cls:'s-nego',icon:'💬'},done:{label:'계약 완료',cls:'s-done',icon:'✅'},hold:{label:'보류',cls:'s-hold',icon:'⏸'}};
 const GRADE_MAP = {black:{label:'◆ BLACK',cls:'bg-black',cardCls:'grade-black',goal:2},gold:{label:'★ GOLD',cls:'bg-gold',cardCls:'grade-gold',goal:5},silver:{label:'● SILVER',cls:'bg-silver',cardCls:'grade-silver',goal:20}};
 const GRADE_TARGETS = {black:2,gold:5,silver:20};
@@ -528,6 +529,11 @@ function getFiltered(){
     if(statusFilter!=='all'&&d.status!==statusFilter) return false;
     if(q&&!d.name.toLowerCase().includes(q)&&!d.location.toLowerCase().includes(q)) return false;
     return true;
+  }).sort((a,b)=>{
+    if(!a.date&&!b.date) return 0;
+    if(!a.date) return 1;
+    if(!b.date) return -1;
+    return new Date(a.date)-new Date(b.date);
   });
 }
 
@@ -569,17 +575,15 @@ function render(){
           ${d.date?`<span style="font-size:12px;color:var(--blue);font-weight:600">📅 ${formatDate(d.date)}</span>`:''}
           ${d.org?`<span style="font-size:12px;color:var(--text3)">👥 ${d.org}</span>`:''}
         </div>
-        ${d.contact?`<div class="card-meta">
-          <div class="card-meta-row"><span class="micon">👤</span>${d.contact}${d.rank?' · '+d.rank:''}</div>
-          ${d.phone?`<div class="card-meta-row"><span class="micon">📞</span>${d.phone}</div>`:''}
-        </div>`:`<div class="card-meta">
-          <div class="card-meta-row" style="color:var(--text3)"><span class="micon">👤</span>소통자 미입력</div>
-        </div>`}
-        <div style="margin-bottom:8px">
+        <div class="card-meta">
+          <div class="card-meta-row"><span class="micon">👤</span>${d.contact?`${d.contact}${d.rank?' · '+d.rank:''}`:'<span style="color:var(--text3)">소통자 미입력</span>'}</div>
+          <div class="card-meta-row"><span class="micon">📞</span>${d.phone||'<span style="color:var(--text3)">—</span>'}</div>
+        </div>
+        <div class="card-people-section">
           <div class="card-people-label">대외협력팀</div>
-          <div class="card-people">${d.execTeam.length ? d.execTeam.map(n=>`<span class="person-tag exec">${n}</span>`).join('') : '<span style="color:var(--text3);font-size:12px">—</span>'}</div>
-          <div class="card-people-label" style="margin-top:6px">컨설턴트</div>
-          <div class="card-people">${d.consultTeam.length ? d.consultTeam.map(n=>`<span class="person-tag consult">${n}</span>`).join('') : '<span style="color:var(--text3);font-size:12px">—</span>'}</div>
+          <div class="card-people">${d.execTeam.length?d.execTeam.map(n=>`<span class="person-tag exec">${n}</span>`).join(''):'<span style="color:var(--text3);font-size:12px">—</span>'}</div>
+          <div class="card-people-label">컨설턴트</div>
+          <div class="card-people">${d.consultTeam.length?d.consultTeam.map(n=>`<span class="person-tag consult">${n}</span>`).join(''):'<span style="color:var(--text3);font-size:12px">—</span>'}</div>
         </div>
       </div>
       <div class="card-footer">
