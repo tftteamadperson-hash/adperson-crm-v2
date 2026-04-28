@@ -11,13 +11,23 @@
   const u = sessionStorage.getItem('crm_user');
   if(!u){ window.location.href='index.html'; return; }
   const user = JSON.parse(u);
-  // 사이드바 이름/권한 표시
-  const nameEl = document.getElementById('sbUserName');
-  const roleEl = document.getElementById('sbUserRole');
-  const avEl   = document.getElementById('sbUserAv');
-  if(nameEl) nameEl.textContent = user.name + (user.role==='admin'?' 팀장':user.role==='exec'?' 부장':' 어시');
-  if(roleEl) roleEl.textContent = user.role==='admin'?'관리자':user.role==='exec'?'실행파트':'운영파트';
-  if(avEl)   avEl.textContent   = user.name[0];
+  const RANKS = {adperson1:'본부장',adperson2:'팀장',adperson3:'파트장',adperson4:'메인',adperson5:'어쏘',adperson6:'어쏘',adperson7:'CX',adperson8:'어시',adperson9:'어시'};
+  const rank = RANKS[user.id]||'';
+  const roleLabel = user.role==='admin'?'관리자':user.role==='exec'?'실행파트':'운영파트';
+  // 사이드바
+  const nameEl = document.getElementById('sbUserName') || document.getElementById('sbName');
+  const roleEl = document.getElementById('sbUserRole') || document.getElementById('sbRole');
+  const avEl   = document.getElementById('sbUserAv')  || document.getElementById('sbAvatar');
+  if(nameEl) nameEl.textContent = `${user.name} ${rank}`;
+  if(roleEl) roleEl.textContent = roleLabel;
+  if(avEl){
+    const savedPhoto = sessionStorage.getItem('profile_photo_'+user.id);
+    if(savedPhoto){ avEl.innerHTML=`<img src="${savedPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`; }
+    else { avEl.textContent = user.name[0]; }
+  }
+  // 내 KPI 이름
+  const kpiName = document.getElementById('myKpiName');
+  if(kpiName) kpiName.textContent = `(${user.name})`;
 })();
 
 </script>
@@ -285,7 +295,39 @@ body.light-mode .sb-section{color:#5a7a9a}
 [data-theme="light"] .sb-item.active{background:rgba(201,168,76,.12) !important;color:#8a6010 !important;border-left-color:var(--gold) !important}
 [data-theme="light"] .sb-section{color:var(--text3) !important}
 [data-theme="light"] .sb-brand{color:#7a5a08 !important}
-[data-theme="light"] .sb-brand span,[data-theme="light"] .sb-coming{color:var(--text3) !important}
+[data-theme="light"] .sb-brand span,
+/* ── 라이트 모드 골드/색상 가독성 보정 ── */
+[data-theme="light"] { --gold:#9a6800; --gold-light:#7a5200; }
+[data-theme="light"] .sb-role { color:#9a6800 !important }
+[data-theme="light"] .badge.bg-gold, [data-theme="light"] .b-manage,
+[data-theme="light"] .b-tm-mid, [data-theme="light"] [style*="color:var(--gold)"],
+[data-theme="light"] [style*="color:var(--gold-light)"] { color:#7a5200 !important }
+[data-theme="light"] .card-date, [data-theme="light"] .tc-date-val { color:#1a5fa0 !important }
+[data-theme="light"] .status-chip.s-done, [data-theme="light"] .b-done { color:#1a7a50 !important }
+[data-theme="light"] .status-chip.s-plan, [data-theme="light"] .b-lead { color:#3a5070 !important }
+[data-theme="light"] .mc-up { color:#1a7a50 !important }
+[data-theme="light"] .mc-down { color:#c03030 !important }
+[data-theme="light"] .realtime { color:#1a7a50 !important }
+[data-theme="light"] .realtime::before { background:#1a7a50 !important }
+[data-theme="light"] .btn-new {
+  background:linear-gradient(135deg,#c8900a,#a07008) !important;
+  color:#fff !important;
+}
+[data-theme="light"] .col-head, [data-theme="light"] .filter-bar,
+[data-theme="light"] .topbar { background:var(--bg2) !important }
+[data-theme="light"] .col, [data-theme="light"] .truck-card,
+[data-theme="light"] .agency-card, [data-theme="light"] .card { background:var(--bg2) !important }
+[data-theme="light"] .card-agency-name, [data-theme="light"] .tc-site,
+[data-theme="light"] .card-name { color:var(--text) !important }
+[data-theme="light"] thead th { background:var(--bg2) !important; color:var(--text3) !important }
+[data-theme="light"] tbody td { color:var(--text2) !important }
+[data-theme="light"] .td-name { color:var(--text) !important }
+[data-theme="light"] .e-input, [data-theme="light"] .e-select, [data-theme="light"] .e-textarea,
+[data-theme="light"] .pw-input { background:var(--bg3) !important; color:var(--text) !important; border-color:var(--border) !important }
+[data-theme="light"] .expand-inner, [data-theme="light"] .detail-overlay { background:var(--bg) !important }
+[data-theme="light"] .sb-coming { color:var(--text3) !important; background:rgba(0,0,0,.08) !important }
+
+[data-theme="light"] .sb-coming{color:var(--text3) !important}
 [data-theme="light"] .topbar{background:var(--bg2) !important;border-color:var(--border) !important}
 [data-theme="light"] body{background:var(--bg) !important}
 
