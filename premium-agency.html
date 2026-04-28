@@ -430,11 +430,11 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
       <div class="sec-head full"><span class="dot" style="background:var(--purple)"></span>출장 인원</div>
       <div class="mf full">
         <label class="ml">대외협력팀</label>
-        <div class="m-chips" id="m_exec_chips"></div>
+        <div class="m-chips" style="flex-direction:column;gap:6px;align-items:flex-start" id="m_exec_chips"></div>
       </div>
       <div class="mf full">
         <label class="ml">컨설턴트</label>
-        <div class="m-chips" id="m_consult_chips"></div>
+        <div class="m-chips" style="flex-direction:column;gap:6px;align-items:flex-start" id="m_consult_chips"></div>
       </div>
       <div class="sec-div"></div>
       <div class="mf full"><label class="ml">비고</label><textarea class="m-textarea" id="m_note" placeholder="특이사항, 추가 메모 등"></textarea></div>
@@ -462,6 +462,31 @@ DATA.forEach(d => { NOTES_STORE[d.id] = d.notes || []; });
 
 const EXEC_ALL = ['김정후','김창완','최웅','조계현','이세호','기여운','최연전','김재영','최은정'];
 const CONSULT_ALL = ['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'];
+
+// 줄 구분 그룹 정의
+const EXEC_ROWS = [['김정후','김창완','최웅'],['조계현','이세호','기여운','최연전'],['김재영','최은정']];
+const CONSULT_ROWS = [['박경화','박민경','강아름','전정훈'],['박혜은','조승현','백선중','박나라']];
+
+function renderChipRows(rows, selected, type, onClickFn){
+  return rows.map(row=>`
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${row.map(n=>{
+        const isSel = selected.includes(n);
+        const selCls = type==='exec'?(isSel?'sel-exec':''):(isSel?'sel-consult':'');
+        return `<span class="pchip ${selCls}" onclick="${onClickFn}('${n}')">${n}</span>`;
+      }).join('')}
+    </div>`).join('');}
+
+function renderModalChipRows(rows, selected, type){
+  return rows.map(row=>`
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${row.map(n=>{
+        const isSel = selected.has(n);
+        const selCls = type==='exec'?(isSel?'sel-e':''):(isSel?'sel-c':'');
+        return `<span class="mpchip ${selCls}" onclick="toggleModal('${type}','${n}')">${n}</span>`;
+      }).join('')}
+    </div>`).join('');
+}
 const STATUS_MAP = {plan:{label:'미팅 예정',cls:'s-plan',icon:'📅'},meet:{label:'미팅 완료',cls:'s-meet',icon:'🤝'},nego:{label:'계약 협의',cls:'s-nego',icon:'💬'},done:{label:'계약 완료',cls:'s-done',icon:'✅'},hold:{label:'보류',cls:'s-hold',icon:'⏸'}};
 const GRADE_MAP = {black:{label:'◆ BLACK',cls:'bg-black',cardCls:'grade-black',goal:2},gold:{label:'★ GOLD',cls:'bg-gold',cardCls:'grade-gold',goal:5},silver:{label:'● SILVER',cls:'bg-silver',cardCls:'grade-silver',goal:20}};
 const GRADE_TARGETS = {black:2,gold:5,silver:20};
@@ -622,8 +647,8 @@ function closeDetail(){
 
 function renderDetailBody(d){
   const notes = NOTES_STORE[d.id]||[];
-  const execChips = EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePersonDetail('exec','${n}')">${n}</span>`).join('');
-  const consultChips = CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePersonDetail('consult','${n}')">${n}</span>`).join('');
+  const execChips = renderChipRows(EXEC_ROWS, d.execTeam, 'exec', 'togglePersonDetail');
+  const consultChips = renderChipRows(CONSULT_ROWS, d.consultTeam, 'consult', 'togglePersonDetail');
   const notesList = notes.length
     ? notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${d.id},'${n.id}')">삭제</button></div><div class="note-text">${n.text}</div></div>`).join('')
     : `<div class="note-empty">활동 노트가 없습니다</div>`;
@@ -656,8 +681,8 @@ function renderDetailBody(d){
     <!-- 우: 출장 인원 + 활동 노트 -->
     <div class="dm-section">
       <div class="dm-sec-title"><span class="dot" style="background:var(--purple)"></span>출장 인원</div>
-      <div class="dm-field"><span class="dm-label">대외협력팀</span><div class="people-chips" id="dd_exec_chips">${execChips}</div></div>
-      <div class="dm-field"><span class="dm-label">컨설턴트</span><div class="people-chips" id="dd_consult_chips">${consultChips}</div></div>
+      <div class="dm-field"><span class="dm-label">대외협력팀</span><div class="people-chips" style="flex-direction:column;gap:6px;align-items:flex-start" id="dd_exec_chips">${execChips}</div></div>
+      <div class="dm-field"><span class="dm-label">컨설턴트</span><div class="people-chips" style="flex-direction:column;gap:6px;align-items:flex-start" id="dd_consult_chips">${consultChips}</div></div>
     </div>
 
     <!-- 활동 노트: 전체 폭 -->
@@ -685,8 +710,8 @@ function togglePersonDetail(type, name){
   if(idx>-1) arr.splice(idx,1); else arr.push(name);
   // 칩 갱신
   const chips = type==='exec'
-    ? EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePersonDetail('exec','${n}')">${n}</span>`).join('')
-    : CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePersonDetail('consult','${n}')">${n}</span>`).join('');
+    ? renderChipRows(EXEC_ROWS, d.execTeam, 'exec', 'togglePersonDetail')
+    : renderChipRows(CONSULT_ROWS, d.consultTeam, 'consult', 'togglePersonDetail');
   const el = document.getElementById(type==='exec'?'dd_exec_chips':'dd_consult_chips');
   if(el) el.innerHTML = chips;
 }
@@ -751,8 +776,8 @@ function deleteNote(id,nid){
 
 // ── 신규 등록 모달 ────────────────────────
 function buildModalChips(){
-  document.getElementById('m_exec_chips').innerHTML=EXEC_ALL.map(n=>`<span class="mpchip${mExecSel.has(n)?' sel-e':''}" onclick="toggleModal('exec','${n}')">${n}</span>`).join('');
-  document.getElementById('m_consult_chips').innerHTML=CONSULT_ALL.map(n=>`<span class="mpchip${mConsultSel.has(n)?' sel-c':''}" onclick="toggleModal('consult','${n}')">${n}</span>`).join('');
+  document.getElementById('m_exec_chips').innerHTML = renderModalChipRows(EXEC_ROWS, mExecSel, 'exec');
+  document.getElementById('m_consult_chips').innerHTML = renderModalChipRows(CONSULT_ROWS, mConsultSel, 'consult');
 }
 function toggleModal(type,name){
   const set=type==='exec'?mExecSel:mConsultSel;
