@@ -275,6 +275,18 @@ function toggleLightMode(){
   var u = sessionStorage.getItem('crm_user');
   if(u){ var uid = JSON.parse(u).id; if(localStorage.getItem('crm_light_'+uid)==='1') document.documentElement.setAttribute('data-theme','light'); }
 })();
+
+// 접근 권한 메뉴: 허용 계정만 표시
+(function(){
+  var ALLOWED = ['adperson1','adperson2','adperson3','adperson8'];
+  var u = sessionStorage.getItem('crm_user');
+  if(u){
+    var uid = JSON.parse(u).id;
+    var menuEl = document.getElementById('menuAccessMgmt');
+    if(menuEl && ALLOWED.indexOf(uid) === -1) menuEl.style.display = 'none';
+  }
+})();
+
 </script>
 </head>
 <body>
@@ -309,7 +321,7 @@ function toggleLightMode(){
   </nav>
     <div class="sb-bottom">
     <a class="sb-item" id="lightModeBtn" onclick="toggleLightMode()" style="cursor:pointer"><span class="icon">🌙</span>라이트 모드</a>
-    <a class="sb-item" href="admin-accounts.html"><span class="icon">⚙️</span>계정 관리</a>
+    <a class="sb-item" id="menuAccessMgmt" href="admin-accounts.html"><span class="icon">⚙️</span>접근 권한</a>
     <a class="sb-item" href="mypage.html"><span class="icon">👤</span>마이페이지</a>
     <a class="sb-item" href="index.html"><span class="icon">🚪</span>로그아웃</a>
   </div>
