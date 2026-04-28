@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분양의신 VIP Membership CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;700&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #D4A94A;
+    --gold-light: #F5D98B;
+    --gold-dark: #8B6914;
+    --white: #FFFFFF;
+    --dark: #0A0800;
+    --navy: #0D1B2A;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--dark);
+    overflow: hidden;
+    cursor: none;
+  }
+
+  /* ── CANVAS ── */
+  #canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  #cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    box-shadow: 0 0 12px 4px rgba(212,169,74,0.7);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    transition: transform 0.08s ease, opacity 0.2s;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(212,169,74,0.4);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9998;
+    transition: transform 0.18s ease, width 0.2s, height 0.2s;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+  }
+
+  .logo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .logo-main {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--gold-light);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 20px rgba(212,169,74,0.6);
+  }
+  .logo-main span { color: var(--white); }
+  .logo-sub {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.12em;
+  }
+
+  .btn-access {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(212,169,74,0.35);
+    padding: 10px 24px;
+    border-radius: 4px;
+    cursor: none;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+  .btn-access:hover {
+    background: rgba(212,169,74,0.15);
+    border-color: var(--gold);
+    color: var(--gold-light);
+    box-shadow: 0 0 20px rgba(212,169,74,0.2);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(56px, 8vw, 110px);
+    color: var(--white);
+    text-align: center;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    text-shadow: 0 0 60px rgba(212,169,74,0.15);
+    animation: fadeUp 1.4s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-sub {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: clamp(11px, 1.2vw, 15px);
+    letter-spacing: 0.35em;
+    color: rgba(255,255,255,0.5);
+    margin-top: 18px;
+    animation: fadeUp 1.4s 0.3s ease forwards;
+    opacity: 0;
+  }
+
+  /* ── BOTTOM LEFT ── */
+  .tagline {
+    position: fixed;
+    bottom: 48px;
+    left: 36px;
+    z-index: 10;
+    animation: fadeUp 1.4s 0.6s ease forwards;
+    opacity: 0;
+  }
+  .tagline-main {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 3vw, 38px);
+    color: var(--white);
+    line-height: 1.2;
+  }
+  .tagline-main strong {
+    font-weight: 900;
+    font-style: italic;
+  }
+  .tagline-desc {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.45);
+    margin-top: 10px;
+    line-height: 1.8;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: fixed;
+    bottom: 20px;
+    left: 36px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    z-index: 10;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── SCROLL INDICATOR ── */
+  .scroll-hint {
+    position: fixed;
+    bottom: 40px;
+    right: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+    opacity: 0;
+    animation: fadeIn 2s 1.5s ease forwards;
+  }
+  .scroll-hint span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.3);
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(212,169,74,0.6), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── LOGIN MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: rgba(13, 22, 38, 0.97);
+    border: 1px solid rgba(212,169,74,0.25);
+    border-radius: 16px;
+    padding: 40px;
+    width: 420px;
+    max-width: 90vw;
+    position: relative;
+    box-shadow: 0 0 80px rgba(0,0,0,0.7), 0 0 40px rgba(212,169,74,0.08);
+    transform: translateY(20px);
+    transition: transform 0.4s ease;
+  }
+  .modal-overlay.active .modal {
+    transform: translateY(0);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .modal-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .modal-logo-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--gold-light);
+  }
+  .modal-logo-name span { color: var(--white); }
+  .modal-org {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.06em;
+  }
+
+  .modal-close {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    cursor: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--white);
+  }
+
+  .modal-title {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .modal-desc {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 28px;
+  }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 0.04em;
+  }
+  .form-input-wrap { position: relative; }
+  .form-input {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .form-input::placeholder { color: rgba(255,255,255,0.2); }
+  .form-input:focus {
+    border-color: rgba(212,169,74,0.5);
+    box-shadow: 0 0 0 3px rgba(212,169,74,0.08);
+  }
+  .pw-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    cursor: none;
+    transition: color 0.2s;
+  }
+  .pw-toggle:hover { color: rgba(255,255,255,0.7); }
+
+  .btn-login {
+    width: 100%;
+    padding: 16px;
+    background: var(--white);
+    color: var(--dark);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: none;
+    margin-top: 8px;
+    transition: all 0.25s ease;
+  }
+  .btn-login:hover {
+    background: var(--gold-light);
+    box-shadow: 0 4px 24px rgba(212,169,74,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-login:active { transform: translateY(0); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 1;   transform: scaleY(1.15); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-main">분양의신 <span>·</span> CRM</div>
+    <div class="logo-sub">광고인㈜ 대외협력팀</div>
+  </div>
+  <button class="btn-access" onclick="openModal()">시스템 접속</button>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1 class="hero-title">VIP Membership</h1>
+  <p class="hero-sub">BUNYANGOE &nbsp;·&nbsp; CRM SYSTEM</p>
+</div>
+
+<!-- TAGLINE -->
+<div class="tagline">
+  <div class="tagline-main">
+    <strong>First Mover</strong> in Real<br>Estate Sales
+  </div>
+  <div class="tagline-desc">
+    분양 산업의 판도를 바꾸는 새로운 기준.<br>
+    대한민국 분양 생태계를 선도하는 퍼스트무버, 분양의신.
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>© 2026 광고인㈜ · 분양의신 · All rights reserved.</footer>
+
+<!-- SCROLL HINT -->
+<div class="scroll-hint">
+  <div class="scroll-line"></div>
+  <span>ENTER</span>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-logo-row">
+        <div>
+          <div class="modal-logo-name">분양의신 <span>·</span> CRM</div>
+          <div class="modal-org">광고인㈜ 대외협력팀</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-title">CRM 시스템 접속</div>
+    <div class="modal-desc">아이디와 비밀번호를 입력하세요</div>
+
+    <div class="form-group">
+      <label class="form-label">아이디</label>
+      <div class="form-input-wrap">
+        <input class="form-input" type="text" placeholder="아이디를 입력하세요" id="idInput">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">비밀번호</label>
+      <div class="form-input-wrap">
+        <input class="form-input" type="password" placeholder="비밀번호를 입력하세요" id="pwInput">
+        <span class="pw-toggle" onclick="togglePw()">보기</span>
+      </div>
+    </div>
+
+    <button class="btn-login" onclick="handleLogin()">로그인</button>
+  </div>
+</div>
+
+<script>
+// ── CURSOR ──────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mouseX = 0, mouseY = 0;
+let ringX = 0, ringY = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top  = mouseY + 'px';
+});
+
+(function animRing() {
+  ringX += (mouseX - ringX) * 0.12;
+  ringY += (mouseY - ringY) * 0.12;
+  cursorRing.style.left = ringX + 'px';
+  cursorRing.style.top  = ringY + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.addEventListener('mousedown', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(0.6)';
+  cursorRing.style.width = '24px'; cursorRing.style.height = '24px';
+});
+document.addEventListener('mouseup', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+  cursorRing.style.width = '36px'; cursorRing.style.height = '36px';
+});
+
+// ── PARTICLES ───────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+let particles = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor(fromMouse) {
+    this.reset(fromMouse);
+  }
+  reset(fromMouse) {
+    if (fromMouse) {
+      this.x = mouseX + (Math.random() - 0.5) * 40;
+      this.y = mouseY + (Math.random() - 0.5) * 40;
+      this.r = Math.random() * 3 + 1;
+      this.life = 1;
+      this.decay = 0.025 + Math.random() * 0.02;
+      this.vx = (Math.random() - 0.5) * 1.5;
+      this.vy = -(Math.random() * 1.5 + 0.5);
+      this.mouse = true;
+    } else {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.r = Math.random() * 18 + 4;
+      this.baseR = this.r;
+      this.life = Math.random();
+      this.decay = 0.0015 + Math.random() * 0.003;
+      this.vx = (Math.random() - 0.5) * 0.25;
+      this.vy = -(Math.random() * 0.3 + 0.05);
+      this.mouse = false;
+      this.hue = 38 + (Math.random() - 0.5) * 20;
+      this.sat = 55 + Math.random() * 30;
+      this.bri = 55 + Math.random() * 30;
+    }
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= this.decay;
+    if (!this.mouse) {
+      this.r = this.baseR * (0.6 + 0.4 * Math.sin(this.life * Math.PI));
+    }
+    if (this.life <= 0) {
+      if (this.mouse) { this.dead = true; }
+      else { this.reset(false); this.y = H + this.r; this.life = 1; }
+    }
+    if (!this.mouse && this.y + this.r < 0) {
+      this.reset(false); this.y = H + this.r;
+    }
+  }
+  draw() {
+    ctx.save();
+    if (this.mouse) {
+      const grd = ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.r*2);
+      grd.addColorStop(0, `rgba(245,217,139,${this.life * 0.9})`);
+      grd.addColorStop(1, `rgba(212,169,74,0)`);
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r * 2, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    } else {
+      const a = this.life * 0.55;
+      const grd = ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.r);
+      grd.addColorStop(0, `hsla(${this.hue},${this.sat}%,${this.bri}%,${a})`);
+      grd.addColorStop(0.4, `hsla(${this.hue},${this.sat-10}%,${this.bri-10}%,${a*0.5})`);
+      grd.addColorStop(1, `hsla(${this.hue},40%,30%,0)`);
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+// Init ambient particles
+for (let i = 0; i < 80; i++) particles.push(new Particle(false));
+
+// Mouse trail
+let lastMouseSpawn = 0;
+document.addEventListener('mousemove', () => {
+  const now = Date.now();
+  if (now - lastMouseSpawn > 30) {
+    for (let i = 0; i < 3; i++) particles.push(new Particle(true));
+    lastMouseSpawn = now;
+  }
+});
+
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Dark vignette base
+  const vgrd = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.8);
+  vgrd.addColorStop(0, 'rgba(18,10,0,0.0)');
+  vgrd.addColorStop(1, 'rgba(4,2,0,0.75)');
+  ctx.fillStyle = 'rgba(8,5,0,1)';
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = vgrd;
+  ctx.fillRect(0,0,W,H);
+
+  particles = particles.filter(p => !p.dead);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(loop);
+}
+loop();
+
+// ── MODAL ───────────────────────────────────────────
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('active');
+  setTimeout(() => document.getElementById('idInput').focus(), 400);
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+function togglePw() {
+  const el = document.getElementById('pwInput');
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+function handleLogin() {
+  const id = document.getElementById('idInput').value.trim();
+  const pw = document.getElementById('pwInput').value;
+  if (!id || !pw) {
+    alert('아이디와 비밀번호를 입력해주세요.');
+    return;
+  }
+  // 여기에 실제 로그인 로직 연결 예정
+  alert('로그인 기능은 추후 연결 예정입니다.');
+}
+
+// 시스템 접속 버튼 / ENTER 키
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('modalOverlay').classList.contains('active')) {
+    openModal();
+  }
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>
