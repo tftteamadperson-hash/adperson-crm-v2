@@ -11,7 +11,7 @@
   --border:#1e3050;--border2:#2a3f60;
   --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:rgba(201,168,76,.13);
   --text:#eaf0f8;--text2:#96aec8;--text3:#4d6480;
-  --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;--purple:#a78bfa;
+  --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;--purple:#a78bfa;--orange:#fb923c;
   --sidebar:220px;--radius:10px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -24,9 +24,9 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .sb-brand{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.04em;line-height:1.3}
 .sb-brand span{display:block;font-size:9px;font-weight:300;color:var(--text3)}
 .sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0}
-.sb-uname{font-size:13px;font-weight:600}
-.sb-role{font-size:11px;color:var(--gold);font-weight:500}
+.sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0;overflow:hidden}
+.sb-av img{width:100%;height:100%;object-fit:cover}
+.sb-uname{font-size:13px;font-weight:600}.sb-role{font-size:11px;color:var(--gold);font-weight:500}
 .sb-nav{flex:1;padding:8px 0}
 .sb-section{padding:10px 16px 4px;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase}
 .sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
@@ -45,14 +45,41 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .content::-webkit-scrollbar{width:4px}
 .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 
-.page-grid{display:grid;grid-template-columns:340px 1fr;gap:20px;max-width:960px}
+.page-grid{display:grid;grid-template-columns:300px 1fr;gap:20px;max-width:920px}
 
-/* 프로필 카드 */
-.profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;display:flex;flex-direction:column;align-items:center;gap:0;position:relative;overflow:hidden}
+/* ── 프로필 카드 ── */
+.profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 22px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;height:fit-content}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:.6}
-.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:2px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--gold-light);margin-bottom:14px;box-shadow:0 0 24px rgba(201,168,76,.15)}
-.profile-name{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
-.profile-role{font-size:12px;font-weight:600;padding:3px 12px;border-radius:12px;margin-bottom:20px}
+
+/* 프로필 사진 영역 */
+.profile-photo-wrap{position:relative;margin-bottom:16px;cursor:pointer}
+.profile-photo{
+  width:88px;height:88px;border-radius:50%;
+  background:linear-gradient(135deg,#1e4d8c,#0d2d5a);
+  border:2px solid rgba(201,168,76,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;font-weight:700;color:var(--gold-light);
+  overflow:hidden;transition:all .2s;
+  box-shadow:0 0 24px rgba(201,168,76,.12);
+}
+.profile-photo img{width:100%;height:100%;object-fit:cover;display:none}
+.profile-photo-overlay{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(0,0,0,.55);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .2s;
+  gap:2px;
+}
+.profile-photo-wrap:hover .profile-photo-overlay{opacity:1}
+.photo-icon{font-size:18px}
+.photo-text{font-size:10px;font-weight:600;color:#fff;letter-spacing:.04em}
+.photo-input{display:none}
+
+/* 이름 + 직급 */
+.profile-name-row{display:flex;align-items:baseline;gap:6px;margin-bottom:6px}
+.profile-name{font-size:20px;font-weight:700;color:var(--text)}
+.profile-rank{font-size:14px;font-weight:500;color:var(--text3)}
+.profile-role-badge{font-size:11px;font-weight:600;padding:3px 12px;border-radius:12px;margin-bottom:22px}
 .role-admin{background:rgba(201,168,76,.15);color:var(--gold-light);border:1px solid rgba(201,168,76,.3)}
 .role-exec{background:rgba(91,156,246,.15);color:var(--blue);border:1px solid rgba(91,156,246,.3)}
 .role-ops{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
@@ -62,13 +89,13 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .pil{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
 .piv{font-size:13px;font-weight:500;color:var(--text)}
 
-/* 섹션 카드 */
+/* ── 우측 섹션 카드 ── */
 .sec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:16px}
 .sec-card:last-child{margin-bottom:0}
 .sec-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .sec-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
-/* 비밀번호 변경 폼 */
+/* 비밀번호 */
 .pw-form{display:flex;flex-direction:column;gap:12px}
 .pw-field{display:flex;flex-direction:column;gap:5px}
 .pw-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
@@ -76,32 +103,48 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .pw-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 40px 10px 12px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
 .pw-input:focus{border-color:rgba(201,168,76,.45)}
 .pw-input::placeholder{color:var(--text3)}
-.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);cursor:pointer;transition:color .2s}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);cursor:pointer;transition:color .2s;user-select:none}
 .pw-toggle:hover{color:var(--text2)}
 .pw-hint{font-size:11px;color:var(--text3)}
 .pw-hint.ok{color:var(--green)}
 .pw-hint.err{color:var(--red)}
-
 .btn-pw-save{align-self:flex-start;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;border-radius:6px;padding:10px 24px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.04em}
 .btn-pw-save:hover{box-shadow:0 4px 14px rgba(201,168,76,.3);transform:translateY(-1px)}
 
-/* 본인 실적 */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* 실적 섹션 */
+.stats-period-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;margin-top:0}
+.stats-period-label + .stats-period-label{margin-top:16px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:0}
 .stat-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
 .stat-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em;margin-bottom:6px}
 .stat-val{font-size:22px;font-weight:700;color:var(--text);line-height:1}
-.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
-.stat-val.c-green{color:var(--green)}
-.stat-val.c-blue{color:var(--blue)}
-.stat-val.c-gold{color:var(--gold-light)}
+.stat-unit{font-size:12px;font-weight:400;color:var(--text3);margin-left:3px}
+.stat-change{font-size:11px;margin-top:5px;font-weight:600}
+.ch-up{color:var(--green)}
+.ch-down{color:var(--red)}
+.ch-same{color:var(--text3)}
 
-.alert-box{padding:12px 16px;border-radius:8px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-top:10px;display:none}
+/* 알림 박스 */
+.alert-box{padding:11px 15px;border-radius:8px;font-size:12px;font-weight:500;display:none;align-items:center;gap:8px;margin-top:6px}
 .alert-box.show{display:flex}
 .alert-success{background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.25);color:var(--green)}
 .alert-error{background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.25);color:var(--red)}
+
+/* ── 라이트 모드 ── */
+body.light-mode {
+  --bg:#f0f4f8;--bg2:#ffffff;--bg3:#e8eef5;--bg4:#dce5ef;--bg5:#f7f9fc;
+  --border:#c8d8e8;--border2:#a0b8cc;
+  --text:#1a2740;--text2:#3a5070;--text3:#6a8aaa;
+}
+body.light-mode .sb-top,body.light-mode .sb-user,body.light-mode .sidebar{background:#1a2a42;border-color:#243858}
+body.light-mode .sb-item{color:#a0bcd8}
+body.light-mode .sb-item:hover{background:rgba(255,255,255,.08);color:#fff}
+body.light-mode .sb-item.active{background:rgba(201,168,76,.15);color:var(--gold-light)}
+body.light-mode .sb-section{color:#5a7a9a}
 </style>
 </head>
 <body>
+
 <aside class="sidebar">
   <div class="sb-top">
     <img src="./logo-gold.png" class="sb-logo" alt="분양의신" onerror="this.style.display='none'">
@@ -129,8 +172,10 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
     <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">🎁</span>리워드 관리<span class="sb-coming">준비중</span></a>
     <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">👑</span>분양회 회원 관리<span class="sb-coming">준비중</span></a>
   </nav>
-  <div class="sb-bottom">
-    <a class="sb-item active"><span class="icon">👤</span>마이페이지</a>
+    <div class="sb-bottom">
+    <a class="sb-item" id="lightModeBtn" onclick="toggleLightMode()" style="cursor:pointer"><span class="icon">🌙</span>라이트 모드</a>
+    <a class="sb-item" href="admin-accounts.html"><span class="icon">⚙️</span>계정 관리</a>
+    <a class="sb-item active" href="mypage.html"><span class="icon">👤</span>마이페이지</a>
     <a class="sb-item" href="index.html"><span class="icon">🚪</span>로그아웃</a>
   </div>
 </aside>
@@ -144,17 +189,33 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
     <div class="page-grid">
 
       <!-- 프로필 카드 -->
-      <div>
-        <div class="profile-card">
-          <div class="profile-avatar" id="profileAv">?</div>
-          <div class="profile-name" id="profileName">—</div>
-          <div class="profile-role" id="profileRole">—</div>
-          <div style="width:100%">
-            <div class="profile-info-row"><span class="pil">아이디</span><span class="piv" id="profileId">—</span></div>
-            <div class="profile-info-row"><span class="pil">권한</span><span class="piv" id="profileRoleText">—</span></div>
-            <div class="profile-info-row"><span class="pil">소속</span><span class="piv">대외협력팀</span></div>
-            <div class="profile-info-row"><span class="pil">회사</span><span class="piv">광고인㈜</span></div>
+      <div class="profile-card">
+        <!-- 사진 업로드 -->
+        <div class="profile-photo-wrap" onclick="document.getElementById('photoInput').click()">
+          <div class="profile-photo" id="profilePhoto">
+            <span id="profileInitial">?</span>
+            <img id="profileImg" src="" alt="프로필">
           </div>
+          <div class="profile-photo-overlay">
+            <span class="photo-icon">📷</span>
+            <span class="photo-text">사진 변경</span>
+          </div>
+        </div>
+        <input type="file" id="photoInput" class="photo-input" accept="image/*" onchange="handlePhoto(this)">
+
+        <!-- 이름 + 직급 -->
+        <div class="profile-name-row">
+          <span class="profile-name" id="profileName">—</span>
+          <span class="profile-rank" id="profileRank">—</span>
+        </div>
+        <div class="profile-role-badge" id="profileRoleBadge">—</div>
+
+        <!-- 정보 목록 -->
+        <div style="width:100%">
+          <div class="profile-info-row"><span class="pil">아이디</span><span class="piv" id="profileId">—</span></div>
+          <div class="profile-info-row"><span class="pil">권한</span><span class="piv" id="profileRoleText">—</span></div>
+          <div class="profile-info-row"><span class="pil">소속</span><span class="piv">대외협력팀</span></div>
+          <div class="profile-info-row"><span class="pil">회사</span><span class="piv">광고인㈜</span></div>
         </div>
       </div>
 
@@ -191,10 +252,15 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
           </div>
         </div>
 
-        <!-- 본인 실적 요약 -->
+        <!-- 월간 실적 -->
         <div class="sec-card">
-          <div class="sec-title"><span class="dot" style="background:var(--blue)"></span>이번 달 내 실적</div>
-          <div class="stats-grid" id="myStats"></div>
+          <div class="sec-title"><span class="dot" style="background:var(--blue)"></span>내 실적</div>
+
+          <div class="stats-period-label">📅 월간 실적 — 이번 달</div>
+          <div class="stats-grid" id="monthlyStats"></div>
+
+          <div class="stats-period-label" style="margin-top:18px">📆 주간 실적 — 이번 주</div>
+          <div class="stats-grid" id="weeklyStats"></div>
         </div>
       </div>
 
@@ -204,77 +270,120 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 
 <script>
 const ACCOUNTS={
-  'adperson1':{password:'rlawjdgn123',name:'김정후',role:'admin'},
-  'adperson2':{password:'rlackddhks123',name:'김창완',role:'admin'},
-  'adperson3':{password:'chldnd123',name:'최웅',role:'admin'},
-  'adperson4':{password:'whrPgus123',name:'조계현',role:'exec'},
-  'adperson5':{password:'dltpgh123',name:'이세호',role:'exec'},
-  'adperson6':{password:'rldudns123',name:'기여운',role:'exec'},
-  'adperson7':{password:'chlduswjs123',name:'최연전',role:'exec'},
-  'adperson8':{password:'rlawodud123',name:'김재영',role:'ops'},
-  'adperson9':{password:'chldmswjd123',name:'최은정',role:'ops'},
+  'adperson1':{password:'rlawjdgn123',  name:'김정후',rank:'본부장', role:'admin'},
+  'adperson2':{password:'rlackddhks123',name:'김창완',rank:'팀장',   role:'admin'},
+  'adperson3':{password:'chldnd123',    name:'최웅',  rank:'파트장', role:'admin'},
+  'adperson4':{password:'whrPgus123',   name:'조계현',rank:'메인',   role:'exec'},
+  'adperson5':{password:'dltpgh123',    name:'이세호',rank:'어쏘',   role:'exec'},
+  'adperson6':{password:'rldudns123',   name:'기여운',rank:'어쏘',   role:'exec'},
+  'adperson7':{password:'chlduswjs123', name:'최연전',rank:'CX',     role:'exec'},
+  'adperson8':{password:'rlawodud123',  name:'김재영',rank:'어시',   role:'ops'},
+  'adperson9':{password:'chldmswjd123', name:'최은정',rank:'어시',   role:'ops'},
 };
+const ROLE_LABEL={admin:'관리자',exec:'실행파트',ops:'운영파트'};
+const ROLE_CLS={admin:'role-admin',exec:'role-exec',ops:'role-ops'};
 
 // 세션 체크
-const userStr = sessionStorage.getItem('crm_user');
-if(!userStr){ window.location.href='index.html'; }
-const user = JSON.parse(userStr||'{}');
-let currentPw = ACCOUNTS[user.id]?.password || '';
+const userStr=sessionStorage.getItem('crm_user');
+if(!userStr){window.location.href='index.html';}
+const user=JSON.parse(userStr||'{}');
+const acc=ACCOUNTS[user.id]||{};
+let currentPw=acc.password||'';
+
+// 사이드바
+document.getElementById('sbUserAv').textContent=user.name?.[0]||'?';
+document.getElementById('sbUserName').textContent=`${user.name||'—'} ${acc.rank||''}`;
+document.getElementById('sbUserRole').textContent=ROLE_LABEL[user.role]||'—';
 
 // 프로필 채우기
-const roleLabelMap = {admin:'관리자',exec:'실행파트',ops:'운영파트'};
-const roleClsMap = {admin:'role-admin',exec:'role-exec',ops:'role-ops'};
-document.getElementById('sbUserAv').textContent = user.name?.[0]||'?';
-document.getElementById('sbUserName').textContent = user.name||'—';
-document.getElementById('sbUserRole').textContent = roleLabelMap[user.role]||'—';
-document.getElementById('profileAv').textContent = user.name?.[0]||'?';
-document.getElementById('profileName').textContent = user.name||'—';
-document.getElementById('profileId').textContent = user.id||'—';
-document.getElementById('profileRoleText').textContent = roleLabelMap[user.role]||'—';
-const roleEl = document.getElementById('profileRole');
-roleEl.textContent = roleLabelMap[user.role]||'—';
-roleEl.className = 'profile-role ' + (roleClsMap[user.role]||'');
+document.getElementById('profileName').textContent=user.name||'—';
+document.getElementById('profileRank').textContent=acc.rank||'';
+document.getElementById('profileId').textContent=user.id||'—';
+document.getElementById('profileRoleText').textContent=ROLE_LABEL[user.role]||'—';
+const badgeEl=document.getElementById('profileRoleBadge');
+badgeEl.textContent=ROLE_LABEL[user.role]||'—';
+badgeEl.className='profile-role-badge '+(ROLE_CLS[user.role]||'');
 
-// 실적 (더미)
-const statsData = [
-  {label:'담당 고객 수', val:'8', sub:'명', cls:''},
-  {label:'계약 완료', val:'3', sub:'건', cls:'c-green'},
-  {label:'이번 주 미팅', val:'2', sub:'건', cls:'c-blue'},
-  {label:'완판트럭 출장', val:'1', sub:'회', cls:'c-gold'},
+// 저장된 프로필 사진 복원
+const savedPhoto=sessionStorage.getItem('profile_photo_'+user.id);
+if(savedPhoto){
+  const img=document.getElementById('profileImg');
+  const init=document.getElementById('profileInitial');
+  img.src=savedPhoto; img.style.display='block'; init.style.display='none';
+  // 사이드바 아바타도 업데이트
+  const sbAv=document.getElementById('sbUserAv');
+  sbAv.innerHTML=`<img src="${savedPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+} else {
+  document.getElementById('profileInitial').textContent=user.name?.[0]||'?';
+}
+
+// 프로필 사진 업로드
+function handlePhoto(input){
+  if(!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const dataUrl=e.target.result;
+    const img=document.getElementById('profileImg');
+    const init=document.getElementById('profileInitial');
+    img.src=dataUrl; img.style.display='block'; init.style.display='none';
+    sessionStorage.setItem('profile_photo_'+user.id, dataUrl);
+    // 사이드바 아바타 실시간 업데이트
+    const sbAv=document.getElementById('sbUserAv');
+    sbAv.innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// 실적 더미 데이터
+const statFields=[
+  {label:'분양회 회비', val:'2', unit:'건', change:'+1', cls:'ch-up'},
+  {label:'연계매출',    val:'1,200', unit:'만원', change:'-300', cls:'ch-down'},
+  {label:'문자광고',    val:'5', unit:'건', change:'±0', cls:'ch-same'},
 ];
-document.getElementById('myStats').innerHTML = statsData.map(s=>`
-  <div class="stat-item">
-    <div class="stat-label">${s.label}</div>
-    <div class="stat-val ${s.cls}">${s.val}<span style="font-size:13px;font-weight:400;color:var(--text3);margin-left:3px">${s.sub}</span></div>
-  </div>`).join('');
+function renderStats(containerId, data){
+  document.getElementById(containerId).innerHTML=data.map(s=>`
+    <div class="stat-item">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-val">${s.val}<span class="stat-unit">${s.unit}</span></div>
+      <div class="stat-change ${s.cls}">전월 대비 ${s.change}</div>
+    </div>`).join('');
+}
+
+const monthlyData=[
+  {label:'분양회 회비', val:'5', unit:'건', change:'+2', cls:'ch-up'},
+  {label:'연계매출',    val:'4,800', unit:'만원', change:'+1,200', cls:'ch-up'},
+  {label:'문자광고',    val:'18', unit:'건', change:'-3', cls:'ch-down'},
+];
+const weeklyData=[
+  {label:'분양회 회비', val:'2', unit:'건', change:'전주 대비 +1', cls:'ch-up'},
+  {label:'연계매출',    val:'1,200', unit:'만원', change:'전주 대비 ±0', cls:'ch-same'},
+  {label:'문자광고',    val:'5', unit:'건', change:'전주 대비 -1', cls:'ch-down'},
+];
+renderStats('monthlyStats', monthlyData);
+renderStats('weeklyStats', weeklyData);
 
 // 비밀번호
-function togglePw(id, btn){ const el=document.getElementById(id); el.type=el.type==='password'?'text':'password'; btn.textContent=el.type==='password'?'보기':'숨기기'; }
+function togglePw(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'보기':'숨기기';}
 function checkPw(){
   const nv=document.getElementById('pwNew').value;
   const cv=document.getElementById('pwConfirm').value;
   const hint=document.getElementById('pwHint');
-  if(!cv){ hint.textContent=''; hint.className='pw-hint'; return; }
-  if(nv===cv){ hint.textContent='✓ 비밀번호가 일치합니다'; hint.className='pw-hint ok'; }
-  else { hint.textContent='비밀번호가 일치하지 않습니다'; hint.className='pw-hint err'; }
+  if(!cv){hint.textContent='';hint.className='pw-hint';return;}
+  if(nv===cv){hint.textContent='✓ 비밀번호가 일치합니다';hint.className='pw-hint ok';}
+  else{hint.textContent='비밀번호가 일치하지 않습니다';hint.className='pw-hint err';}
 }
 function changePw(){
   const cur=document.getElementById('pwCurrent').value;
   const nv=document.getElementById('pwNew').value;
   const cv=document.getElementById('pwConfirm').value;
-  const alert=document.getElementById('pwAlert');
-  const show=(msg,type)=>{ alert.textContent=msg; alert.className='alert-box show alert-'+type; setTimeout(()=>alert.className='alert-box',3000); };
-
-  if(!cur||!nv||!cv){ show('모든 항목을 입력해주세요.','error'); return; }
-  if(cur!==currentPw){ show('현재 비밀번호가 올바르지 않습니다.','error'); return; }
-  if(nv!==cv){ show('새 비밀번호가 일치하지 않습니다.','error'); return; }
-  if(nv.length<6){ show('비밀번호는 6자 이상이어야 합니다.','error'); return; }
-
-  ACCOUNTS[user.id].password = nv;
-  currentPw = nv;
-  document.getElementById('pwCurrent').value='';
-  document.getElementById('pwNew').value='';
-  document.getElementById('pwConfirm').value='';
+  const alertEl=document.getElementById('pwAlert');
+  const show=(msg,type)=>{alertEl.textContent=msg;alertEl.className='alert-box show alert-'+type;setTimeout(()=>alertEl.className='alert-box',3000);};
+  if(!cur||!nv||!cv){show('모든 항목을 입력해주세요.','error');return;}
+  if(cur!==currentPw){show('현재 비밀번호가 올바르지 않습니다.','error');return;}
+  if(nv!==cv){show('새 비밀번호가 일치하지 않습니다.','error');return;}
+  if(nv.length<6){show('비밀번호는 6자 이상이어야 합니다.','error');return;}
+  ACCOUNTS[user.id].password=nv; currentPw=nv;
+  ['pwCurrent','pwNew','pwConfirm'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pwHint').textContent='';
   show('비밀번호가 변경되었습니다.','success');
 }

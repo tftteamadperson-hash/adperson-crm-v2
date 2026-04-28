@@ -187,6 +187,18 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .section-head{grid-column:1/-1;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-top:2px}
 .section-head .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 .sb-coming{margin-left:auto;font-size:9px;color:var(--text3);background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
+
+/* ── 라이트 모드 ── */
+body.light-mode {
+  --bg:#f0f4f8;--bg2:#ffffff;--bg3:#e8eef5;--bg4:#dce5ef;--bg5:#f7f9fc;
+  --border:#c8d8e8;--border2:#a0b8cc;
+  --text:#1a2740;--text2:#3a5070;--text3:#6a8aaa;
+}
+body.light-mode .sb-top,body.light-mode .sb-user,body.light-mode .sidebar{background:#1a2a42;border-color:#243858}
+body.light-mode .sb-item{color:#a0bcd8}
+body.light-mode .sb-item:hover{background:rgba(255,255,255,.08);color:#fff}
+body.light-mode .sb-item.active{background:rgba(201,168,76,.15);color:var(--gold-light)}
+body.light-mode .sb-section{color:#5a7a9a}
 </style>
 </head>
 <body>
@@ -219,8 +231,8 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
     <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">🎁</span>리워드 관리<span class="sb-coming">준비중</span></a>
     <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">👑</span>분양회 회원 관리<span class="sb-coming">준비중</span></a>
   </nav>
-  <div class="sb-bottom">
-    <a class="sb-item"><span class="icon">🌙</span>라이트 모드</a>
+    <div class="sb-bottom">
+    <a class="sb-item" id="lightModeBtn" onclick="toggleLightMode()" style="cursor:pointer"><span class="icon">🌙</span>라이트 모드</a>
     <a class="sb-item" href="admin-accounts.html"><span class="icon">⚙️</span>계정 관리</a>
     <a class="sb-item" href="mypage.html"><span class="icon">👤</span>마이페이지</a>
     <a class="sb-item" href="index.html"><span class="icon">🚪</span>로그아웃</a>
