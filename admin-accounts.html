@@ -100,18 +100,62 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .sum-chip-val{font-size:18px;font-weight:700;color:var(--text)}
 .sum-chip-label{font-size:11px;color:var(--text3)}
 
-/* ── 라이트 모드 ── */
-body.light-mode {
-  --bg:#f0f4f8;--bg2:#ffffff;--bg3:#e8eef5;--bg4:#dce5ef;--bg5:#f7f9fc;
-  --border:#c8d8e8;--border2:#a0b8cc;
-  --text:#1a2740;--text2:#3a5070;--text3:#6a8aaa;
-}
+
+
 body.light-mode .sb-top,body.light-mode .sb-user,body.light-mode .sidebar{background:#1a2a42;border-color:#243858}
 body.light-mode .sb-item{color:#a0bcd8}
 body.light-mode .sb-item:hover{background:rgba(255,255,255,.08);color:#fff}
 body.light-mode .sb-item.active{background:rgba(201,168,76,.15);color:var(--gold-light)}
 body.light-mode .sb-section{color:#5a7a9a}
+
+/* ── 라이트 모드 전체 ── */
+[data-theme="light"]{
+  --bg:#eef2f7;--bg2:#ffffff;--bg3:#e4eaf2;--bg4:#d8e2ee;--bg5:#f0f4f9;
+  --border:#c0d0e0;--border2:#a0b8cc;
+  --text:#0d1f36;--text2:#2a4060;--text3:#6080a0;
+  --gold-dim:rgba(180,140,40,.12);
+}
+[data-theme="light"] .sidebar{background:var(--bg2) !important}
+[data-theme="light"] .sb-top,[data-theme="light"] .sb-user{background:var(--bg2) !important;border-color:var(--border) !important}
+[data-theme="light"] .sb-item{color:var(--text2) !important}
+[data-theme="light"] .sb-item:hover{background:rgba(0,0,0,.04) !important;color:var(--text) !important}
+[data-theme="light"] .sb-item.active{background:rgba(201,168,76,.12) !important;color:#8a6010 !important;border-left-color:var(--gold) !important}
+[data-theme="light"] .sb-section{color:var(--text3) !important}
+[data-theme="light"] .sb-brand{color:#7a5a08 !important}
+[data-theme="light"] .sb-brand span,[data-theme="light"] .sb-coming{color:var(--text3) !important}
+[data-theme="light"] .topbar{background:var(--bg2) !important;border-color:var(--border) !important}
+[data-theme="light"] body{background:var(--bg) !important}
+
 </style>
+<script>
+
+function toggleLightMode(){
+  var u = sessionStorage.getItem('crm_user');
+  var uid = u ? JSON.parse(u).id : 'guest';
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.removeItem('crm_light_'+uid);
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    localStorage.setItem('crm_light_'+uid,'1');
+  }
+  var btn = document.getElementById('lightModeBtn');
+  if(btn) btn.innerHTML = isLight ? '<span class="icon">🌙</span>라이트 모드' : '<span class="icon">☀️</span>다크 모드';
+}
+// 버튼 라벨 초기화
+(function(){
+  var btn = document.getElementById('lightModeBtn');
+  if(btn && document.documentElement.getAttribute('data-theme')==='light')
+    btn.innerHTML = '<span class="icon">☀️</span>다크 모드';
+})();
+
+// 라이트모드 즉시 적용 (깜빡임 방지)
+(function(){
+  var u = sessionStorage.getItem('crm_user');
+  if(u){ var uid = JSON.parse(u).id; if(localStorage.getItem('crm_light_'+uid)==='1') document.documentElement.setAttribute('data-theme','light'); }
+})();
+</script>
 </head>
 <body>
 
