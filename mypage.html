@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지 — 분양의신 CRM</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --bg:#080f1a;--bg2:#0d1623;--bg3:#111e30;--bg4:#162236;
+  --border:#1e3050;--border2:#2a3f60;
+  --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:rgba(201,168,76,.13);
+  --text:#eaf0f8;--text2:#96aec8;--text3:#4d6480;
+  --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;--purple:#a78bfa;
+  --sidebar:220px;--radius:10px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px}
+
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+.sb-top{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo{height:28px;width:auto;filter:drop-shadow(0 0 6px rgba(201,168,76,.4))}
+.sb-brand{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.04em;line-height:1.3}
+.sb-brand span{display:block;font-size:9px;font-weight:300;color:var(--text3)}
+.sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600}
+.sb-role{font-size:11px;color:var(--gold);font-weight:500}
+.sb-nav{flex:1;padding:8px 0}
+.sb-section{padding:10px 16px 4px;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:var(--gold-dim);color:var(--gold-light);border-left-color:var(--gold);font-weight:600}
+.sb-item .icon{font-size:14px;width:17px;text-align:center;flex-shrink:0}
+.sb-coming{margin-left:auto;font-size:9px;color:var(--text3);background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
+.sb-bottom{padding:10px 0;border-top:1px solid var(--border)}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;flex-shrink:0;gap:10px}
+.page-title{font-size:16px;font-weight:700}
+.page-desc{font-size:12px;color:var(--text3);margin-top:1px}
+
+.content{flex:1;overflow-y:auto;padding:28px 32px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+.page-grid{display:grid;grid-template-columns:340px 1fr;gap:20px;max-width:960px}
+
+/* 프로필 카드 */
+.profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;display:flex;flex-direction:column;align-items:center;gap:0;position:relative;overflow:hidden}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:.6}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:2px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--gold-light);margin-bottom:14px;box-shadow:0 0 24px rgba(201,168,76,.15)}
+.profile-name{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.profile-role{font-size:12px;font-weight:600;padding:3px 12px;border-radius:12px;margin-bottom:20px}
+.role-admin{background:rgba(201,168,76,.15);color:var(--gold-light);border:1px solid rgba(201,168,76,.3)}
+.role-exec{background:rgba(91,156,246,.15);color:var(--blue);border:1px solid rgba(91,156,246,.3)}
+.role-ops{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+
+.profile-info-row{width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.profile-info-row:last-child{border-bottom:none}
+.pil{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
+.piv{font-size:13px;font-weight:500;color:var(--text)}
+
+/* 섹션 카드 */
+.sec-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:16px}
+.sec-card:last-child{margin-bottom:0}
+.sec-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.sec-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* 비밀번호 변경 폼 */
+.pw-form{display:flex;flex-direction:column;gap:12px}
+.pw-field{display:flex;flex-direction:column;gap:5px}
+.pw-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
+.pw-input-wrap{position:relative}
+.pw-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 40px 10px 12px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
+.pw-input:focus{border-color:rgba(201,168,76,.45)}
+.pw-input::placeholder{color:var(--text3)}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);cursor:pointer;transition:color .2s}
+.pw-toggle:hover{color:var(--text2)}
+.pw-hint{font-size:11px;color:var(--text3)}
+.pw-hint.ok{color:var(--green)}
+.pw-hint.err{color:var(--red)}
+
+.btn-pw-save{align-self:flex-start;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;border-radius:6px;padding:10px 24px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.btn-pw-save:hover{box-shadow:0 4px 14px rgba(201,168,76,.3);transform:translateY(-1px)}
+
+/* 본인 실적 */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.stat-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em;margin-bottom:6px}
+.stat-val{font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.stat-val.c-green{color:var(--green)}
+.stat-val.c-blue{color:var(--blue)}
+.stat-val.c-gold{color:var(--gold-light)}
+
+.alert-box{padding:12px 16px;border-radius:8px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-top:10px;display:none}
+.alert-box.show{display:flex}
+.alert-success{background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.25);color:var(--green)}
+.alert-error{background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.25);color:var(--red)}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-top">
+    <img src="./logo-gold.png" class="sb-logo" alt="분양의신" onerror="this.style.display='none'">
+    <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av" id="sbUserAv">?</div>
+    <div><div class="sb-uname" id="sbUserName">—</div><div class="sb-role" id="sbUserRole">—</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">총괄</div>
+    <a class="sb-item" href="dashboard.html"><span class="icon">📊</span>대시보드</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📅</span>월간 실적<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📆</span>주간 실적<span class="sb-coming">준비중</span></a>
+    <div class="sb-section">실행</div>
+    <a class="sb-item" href="customers.html"><span class="icon">👥</span>고객 DB</a>
+    <a class="sb-item" href="pipeline.html"><span class="icon">🔀</span>파이프라인</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">⭐</span>분양회 입회자<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📰</span>취재 · 아티클<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="premium-agency.html"><span class="icon">🏢</span>프리미엄 대행사</a>
+    <a class="sb-item" href="wanpan.html"><span class="icon">🚚</span>완판트럭</a>
+    <div class="sb-section">운영</div>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📋</span>매출일보<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">💰</span>통합 매출 관리<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">🎁</span>리워드 관리<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">👑</span>분양회 회원 관리<span class="sb-coming">준비중</span></a>
+  </nav>
+  <div class="sb-bottom">
+    <a class="sb-item active"><span class="icon">👤</span>마이페이지</a>
+    <a class="sb-item" href="index.html"><span class="icon">🚪</span>로그아웃</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <span style="font-size:18px">👤</span>
+    <div><div class="page-title">마이페이지</div><div class="page-desc">프로필 확인 및 계정 설정</div></div>
+  </div>
+  <div class="content">
+    <div class="page-grid">
+
+      <!-- 프로필 카드 -->
+      <div>
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAv">?</div>
+          <div class="profile-name" id="profileName">—</div>
+          <div class="profile-role" id="profileRole">—</div>
+          <div style="width:100%">
+            <div class="profile-info-row"><span class="pil">아이디</span><span class="piv" id="profileId">—</span></div>
+            <div class="profile-info-row"><span class="pil">권한</span><span class="piv" id="profileRoleText">—</span></div>
+            <div class="profile-info-row"><span class="pil">소속</span><span class="piv">대외협력팀</span></div>
+            <div class="profile-info-row"><span class="pil">회사</span><span class="piv">광고인㈜</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 우측 -->
+      <div>
+        <!-- 비밀번호 변경 -->
+        <div class="sec-card">
+          <div class="sec-title"><span class="dot" style="background:var(--gold)"></span>비밀번호 변경</div>
+          <div class="pw-form">
+            <div class="pw-field">
+              <span class="pw-label">현재 비밀번호</span>
+              <div class="pw-input-wrap">
+                <input class="pw-input" type="password" id="pwCurrent" placeholder="현재 비밀번호 입력">
+                <span class="pw-toggle" onclick="togglePw('pwCurrent',this)">보기</span>
+              </div>
+            </div>
+            <div class="pw-field">
+              <span class="pw-label">새 비밀번호</span>
+              <div class="pw-input-wrap">
+                <input class="pw-input" type="password" id="pwNew" placeholder="새 비밀번호 입력" oninput="checkPw()">
+                <span class="pw-toggle" onclick="togglePw('pwNew',this)">보기</span>
+              </div>
+            </div>
+            <div class="pw-field">
+              <span class="pw-label">새 비밀번호 확인</span>
+              <div class="pw-input-wrap">
+                <input class="pw-input" type="password" id="pwConfirm" placeholder="새 비밀번호 재입력" oninput="checkPw()">
+                <span class="pw-toggle" onclick="togglePw('pwConfirm',this)">보기</span>
+              </div>
+              <span class="pw-hint" id="pwHint"></span>
+            </div>
+            <button class="btn-pw-save" onclick="changePw()">비밀번호 변경</button>
+            <div class="alert-box" id="pwAlert"></div>
+          </div>
+        </div>
+
+        <!-- 본인 실적 요약 -->
+        <div class="sec-card">
+          <div class="sec-title"><span class="dot" style="background:var(--blue)"></span>이번 달 내 실적</div>
+          <div class="stats-grid" id="myStats"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const ACCOUNTS={
+  'adperson1':{password:'rlawjdgn123',name:'김정후',role:'admin'},
+  'adperson2':{password:'rlackddhks123',name:'김창완',role:'admin'},
+  'adperson3':{password:'chldnd123',name:'최웅',role:'admin'},
+  'adperson4':{password:'whrPgus123',name:'조계현',role:'exec'},
+  'adperson5':{password:'dltpgh123',name:'이세호',role:'exec'},
+  'adperson6':{password:'rldudns123',name:'기여운',role:'exec'},
+  'adperson7':{password:'chlduswjs123',name:'최연전',role:'exec'},
+  'adperson8':{password:'rlawodud123',name:'김재영',role:'ops'},
+  'adperson9':{password:'chldmswjd123',name:'최은정',role:'ops'},
+};
+
+// 세션 체크
+const userStr = sessionStorage.getItem('crm_user');
+if(!userStr){ window.location.href='index.html'; }
+const user = JSON.parse(userStr||'{}');
+let currentPw = ACCOUNTS[user.id]?.password || '';
+
+// 프로필 채우기
+const roleLabelMap = {admin:'관리자',exec:'실행파트',ops:'운영파트'};
+const roleClsMap = {admin:'role-admin',exec:'role-exec',ops:'role-ops'};
+document.getElementById('sbUserAv').textContent = user.name?.[0]||'?';
+document.getElementById('sbUserName').textContent = user.name||'—';
+document.getElementById('sbUserRole').textContent = roleLabelMap[user.role]||'—';
+document.getElementById('profileAv').textContent = user.name?.[0]||'?';
+document.getElementById('profileName').textContent = user.name||'—';
+document.getElementById('profileId').textContent = user.id||'—';
+document.getElementById('profileRoleText').textContent = roleLabelMap[user.role]||'—';
+const roleEl = document.getElementById('profileRole');
+roleEl.textContent = roleLabelMap[user.role]||'—';
+roleEl.className = 'profile-role ' + (roleClsMap[user.role]||'');
+
+// 실적 (더미)
+const statsData = [
+  {label:'담당 고객 수', val:'8', sub:'명', cls:''},
+  {label:'계약 완료', val:'3', sub:'건', cls:'c-green'},
+  {label:'이번 주 미팅', val:'2', sub:'건', cls:'c-blue'},
+  {label:'완판트럭 출장', val:'1', sub:'회', cls:'c-gold'},
+];
+document.getElementById('myStats').innerHTML = statsData.map(s=>`
+  <div class="stat-item">
+    <div class="stat-label">${s.label}</div>
+    <div class="stat-val ${s.cls}">${s.val}<span style="font-size:13px;font-weight:400;color:var(--text3);margin-left:3px">${s.sub}</span></div>
+  </div>`).join('');
+
+// 비밀번호
+function togglePw(id, btn){ const el=document.getElementById(id); el.type=el.type==='password'?'text':'password'; btn.textContent=el.type==='password'?'보기':'숨기기'; }
+function checkPw(){
+  const nv=document.getElementById('pwNew').value;
+  const cv=document.getElementById('pwConfirm').value;
+  const hint=document.getElementById('pwHint');
+  if(!cv){ hint.textContent=''; hint.className='pw-hint'; return; }
+  if(nv===cv){ hint.textContent='✓ 비밀번호가 일치합니다'; hint.className='pw-hint ok'; }
+  else { hint.textContent='비밀번호가 일치하지 않습니다'; hint.className='pw-hint err'; }
+}
+function changePw(){
+  const cur=document.getElementById('pwCurrent').value;
+  const nv=document.getElementById('pwNew').value;
+  const cv=document.getElementById('pwConfirm').value;
+  const alert=document.getElementById('pwAlert');
+  const show=(msg,type)=>{ alert.textContent=msg; alert.className='alert-box show alert-'+type; setTimeout(()=>alert.className='alert-box',3000); };
+
+  if(!cur||!nv||!cv){ show('모든 항목을 입력해주세요.','error'); return; }
+  if(cur!==currentPw){ show('현재 비밀번호가 올바르지 않습니다.','error'); return; }
+  if(nv!==cv){ show('새 비밀번호가 일치하지 않습니다.','error'); return; }
+  if(nv.length<6){ show('비밀번호는 6자 이상이어야 합니다.','error'); return; }
+
+  ACCOUNTS[user.id].password = nv;
+  currentPw = nv;
+  document.getElementById('pwCurrent').value='';
+  document.getElementById('pwNew').value='';
+  document.getElementById('pwConfirm').value='';
+  document.getElementById('pwHint').textContent='';
+  show('비밀번호가 변경되었습니다.','success');
+}
+</script>
+</body>
+</html>
