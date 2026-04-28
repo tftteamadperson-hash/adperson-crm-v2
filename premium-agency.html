@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>프리미엄 대행사 — 분양의신 CRM</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --bg:#080f1a;--bg2:#0d1623;--bg3:#111e30;--bg4:#162236;--bg5:#0a1828;
+  --border:#1e3050;--border2:#2a3f60;
+  --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:rgba(201,168,76,.13);
+  --text:#eaf0f8;--text2:#96aec8;--text3:#4d6480;
+  --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;--purple:#a78bfa;--orange:#fb923c;
+  --black-grade:#e2e8f0;--gold-grade:#F0D080;--silver-grade:#94a3b8;
+  --sidebar:220px;--radius:10px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px}
+
+/* 사이드바 */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+.sb-top{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo{height:28px;width:auto;filter:drop-shadow(0 0 6px rgba(201,168,76,.4))}
+.sb-brand{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.04em;line-height:1.3}
+.sb-brand span{display:block;font-size:9px;font-weight:300;color:var(--text3)}
+.sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600}
+.sb-role{font-size:11px;color:var(--gold);font-weight:500}
+.sb-nav{flex:1;padding:8px 0}
+.sb-section{padding:10px 16px 4px;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:var(--gold-dim);color:var(--gold-light);border-left-color:var(--gold);font-weight:600}
+.sb-item .icon{font-size:14px;width:17px;text-align:center;flex-shrink:0}
+.sb-bottom{padding:10px 0;border-top:1px solid var(--border)}
+
+/* 메인 */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.page-title{font-size:16px;font-weight:700}
+.page-desc{font-size:12px;color:var(--text3);margin-top:1px}
+.btn-new{display:flex;align-items:center;gap:6px;background:var(--gold);color:#160d00;border:none;border-radius:6px;padding:9px 18px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .2s}
+.btn-new:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.3)}
+
+/* ── 상단 요약 카드 ── */
+.summary-row{display:flex;gap:10px;padding:14px 24px 0;flex-shrink:0}
+.sum-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:13px 18px;display:flex;align-items:center;gap:12px;flex:1;cursor:pointer;transition:all .18s;user-select:none}
+.sum-card:hover{border-color:var(--border2);background:var(--bg4)}
+.sum-card.active-filter{border-color:var(--gold);background:rgba(201,168,76,.07);box-shadow:0 0 0 1px rgba(201,168,76,.2)}
+.sum-card.active-filter .sum-label{color:var(--gold-light)}
+.sum-icon{font-size:20px}
+.sum-val{font-size:20px;font-weight:700;line-height:1}
+.sum-label{font-size:11px;color:var(--text3);margin-top:3px;transition:color .18s}
+
+/* 등급 진행 바 카드 */
+.grade-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:13px 18px;flex:1;cursor:pointer;transition:all .18s;user-select:none}
+.grade-card:hover{border-color:var(--border2);background:var(--bg4)}
+.grade-card.active-filter{border-color:var(--gold);background:rgba(201,168,76,.07)}
+.grade-card.active-filter .grade-name{color:var(--gold-light)}
+.grade-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.grade-name{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.grade-name.g-black{color:var(--black-grade)}
+.grade-name.g-gold{color:var(--gold-grade)}
+.grade-name.g-silver{color:var(--silver-grade)}
+.grade-fraction{font-size:18px;font-weight:700;color:var(--text)}
+.grade-fraction span{font-size:12px;font-weight:400;color:var(--text3)}
+.grade-bar-wrap{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.grade-bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.g-black-fill{background:linear-gradient(to right,#64748b,var(--black-grade))}
+.g-gold-fill{background:linear-gradient(to right,var(--gold),var(--gold-light))}
+.g-silver-fill{background:linear-gradient(to right,#475569,var(--silver-grade))}
+.grade-pct{font-size:10px;color:var(--text3);margin-top:5px;text-align:right}
+
+/* 필터바 */
+.filter-bar{display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;flex-wrap:wrap}
+.search-wrap{position:relative;width:220px;flex-shrink:0}
+.search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px 8px 30px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
+.search-wrap input:focus{border-color:rgba(201,168,76,.4)}
+.search-wrap input::placeholder{color:var(--text3)}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:11px;pointer-events:none}
+.fdivider{width:1px;height:22px;background:var(--border);margin:0 2px}
+.filter-btns{display:flex;gap:6px}
+.fbtn{padding:7px 14px;border-radius:20px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:500;cursor:pointer;background:var(--bg3);border:1px solid var(--border);color:var(--text2);transition:all .18s}
+.fbtn:hover{border-color:var(--border2);color:var(--text)}
+.fbtn.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light);font-weight:600}
+.reset-btn{padding:7px 13px;border-radius:20px;background:none;border:1px solid var(--border);font-family:'Pretendard',sans-serif;font-size:12px;color:var(--text3);cursor:pointer;transition:all .18s}
+.reset-btn:hover{border-color:var(--gold);color:var(--gold)}
+.total-info{margin-left:auto;font-size:12px;color:var(--text3);white-space:nowrap}
+.total-info strong{color:var(--text2);font-weight:600}
+
+/* 카드 그리드 */
+.content{flex:1;overflow-y:auto;padding:16px 24px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+
+/* 대행사 카드 */
+.agency-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.agency-card:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.agency-card.selected{border-color:rgba(201,168,76,.4)}
+
+/* 등급별 상단 선 */
+.agency-card.grade-black{border-top:3px solid var(--black-grade)}
+.agency-card.grade-gold{border-top:3px solid var(--gold-grade)}
+.agency-card.grade-silver{border-top:3px solid var(--silver-grade)}
+
+.card-body{padding:16px 18px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.card-name-wrap{}
+.card-agency-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.2}
+.card-location{font-size:12px;color:var(--text2);margin-top:3px;display:flex;align-items:center;gap:4px}
+.card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+
+/* 배지 */
+.badge{display:inline-flex;align-items:center;justify-content:center;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
+.bg-black{background:rgba(226,232,240,.12);color:var(--black-grade);border:1px solid rgba(226,232,240,.2)}
+.bg-gold{background:rgba(240,208,128,.15);color:var(--gold-grade);border:1px solid rgba(240,208,128,.25)}
+.bg-silver{background:rgba(148,163,184,.12);color:var(--silver-grade);border:1px solid rgba(148,163,184,.2)}
+
+/* 상태 드롭다운 */
+.status-wrap{position:relative;display:inline-block}
+.status-chip{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:'Pretendard',sans-serif;transition:all .18s}
+.s-plan{background:rgba(100,130,160,.15);color:var(--text2)}
+.s-meet{background:rgba(91,156,246,.15);color:var(--blue)}
+.s-nego{background:rgba(251,146,60,.15);color:var(--orange)}
+.s-done{background:rgba(45,212,160,.15);color:var(--green)}
+.s-hold{background:rgba(240,96,96,.1);color:var(--red)}
+.status-menu{position:absolute;top:calc(100%+6px);right:0;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:5px;z-index:100;min-width:130px;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
+.status-menu.show{display:block}
+.smenu-item{padding:8px 12px;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;color:var(--text2);display:flex;align-items:center;gap:7px}
+.smenu-item:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.smenu-item.cur{color:var(--gold-light);font-weight:700}
+
+/* 카드 메타 */
+.card-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.card-meta-row{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2)}
+.micon{font-size:11px;color:var(--text3);width:14px;text-align:center;flex-shrink:0}
+.card-date{color:var(--blue);font-weight:600}
+.person-tag{padding:3px 9px;border-radius:12px;font-size:12px;font-weight:600}
+.person-tag.exec{background:rgba(91,156,246,.15);color:var(--blue)}
+.person-tag.consult{background:rgba(167,139,250,.15);color:var(--purple)}
+.card-people{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.card-people-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+
+/* 카드 하단 */
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-top:1px solid var(--border)}
+.card-note-preview{font-size:12px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:10px}
+.card-actions{display:flex;gap:6px}
+.btn-sm{font-family:'Pretendard',sans-serif;font-size:11px;font-weight:600;padding:5px 11px;border-radius:5px;cursor:pointer;transition:all .18s}
+.btn-detail{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:var(--gold-light)}
+.btn-detail:hover{background:rgba(201,168,76,.2)}
+.btn-del{background:rgba(240,96,96,.08);border:1px solid rgba(240,96,96,.2);color:var(--red)}
+.btn-del:hover{background:rgba(240,96,96,.18)}
+
+/* ── 인라인 확장 ── */
+.expand-row{background:var(--bg5);border-top:1px solid rgba(201,168,76,.2);border-bottom:2px solid rgba(201,168,76,.2);overflow:hidden;max-height:0;opacity:0;transform:translateY(-4px);transition:max-height .4s cubic-bezier(.4,0,.2,1),opacity .3s ease .05s,transform .3s ease .05s;pointer-events:none}
+.expand-row.open{max-height:700px;opacity:1;transform:translateY(0);pointer-events:all;padding:20px 22px}
+
+.exp-layout{display:grid;grid-template-columns:1fr 1px 1fr;gap:0;column-gap:0}
+.exp-col{padding:0 24px}
+.exp-col:first-child{padding-left:0}
+.exp-col:last-child{padding-right:0}
+.exp-divider{background:var(--border);align-self:stretch}
+.exp-col-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.exp-col-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.exp-fields{display:flex;flex-direction:column;gap:10px}
+.exp-field{display:flex;flex-direction:column;gap:5px}
+.exp-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
+.e-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;width:100%}
+.e-input:focus{border-color:rgba(201,168,76,.45)}
+.e-input::placeholder{color:var(--text3)}
+.e-select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);cursor:pointer;outline:none;transition:border-color .2s;width:100%}
+.e-select:focus{border-color:rgba(201,168,76,.45)}
+.e-textarea{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;height:72px;transition:border-color .2s;width:100%;line-height:1.7}
+.e-textarea:focus{border-color:rgba(201,168,76,.45)}
+.e-textarea::placeholder{color:var(--text3)}
+
+/* 인원 칩 */
+.people-chips{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;min-height:40px}
+.pchip{padding:4px 11px;border-radius:14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;background:var(--bg4);border:1px solid var(--border);color:var(--text3)}
+.pchip:hover{border-color:var(--border2);color:var(--text2)}
+.pchip.sel-exec{background:rgba(91,156,246,.18);border-color:rgba(91,156,246,.5);color:var(--blue);font-weight:700}
+.pchip.sel-consult{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.5);color:var(--purple);font-weight:700}
+
+/* 활동 노트 */
+.act-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.act-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.act-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.act-cnt{font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;background:rgba(91,156,246,.15);color:var(--blue)}
+.btn-add-note{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;background:var(--blue);border:none;color:#fff;cursor:pointer;transition:all .2s}
+.btn-add-note:hover{background:#4a8be0}
+.notes-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.note-card{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px 13px}
+.note-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.note-date{font-size:10px;font-weight:600;color:var(--text3)}
+.nc-del{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:3px;font-family:'Pretendard',sans-serif;transition:color .15s}
+.nc-del:hover{color:var(--red)}
+.note-text{font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap}
+.note-empty{text-align:center;padding:16px 0;color:var(--text3);font-size:12px}
+.note-input-wrap{display:none;border-top:1px solid var(--border);padding-top:12px}
+.note-input-wrap.show{display:block}
+.note-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;height:80px;transition:border-color .2s;line-height:1.7}
+.note-textarea:focus{border-color:rgba(201,168,76,.45)}
+.note-textarea::placeholder{color:var(--text3)}
+.note-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.btn-nc{font-family:'Pretendard',sans-serif;font-size:12px;padding:7px 14px;border-radius:6px;cursor:pointer;transition:all .2s}
+.btn-nc.cancel{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-nc.save{background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;font-weight:700}
+
+/* 확장 하단 버튼 */
+.exp-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.btn-exp-save{font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:6px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.btn-exp-save:hover{box-shadow:0 4px 14px rgba(201,168,76,.3)}
+.btn-exp-del{font-family:'Pretendard',sans-serif;font-size:13px;padding:9px 16px;border-radius:6px;background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.25);color:var(--red);cursor:pointer;transition:all .2s}
+.btn-exp-del:hover{background:rgba(240,96,96,.2)}
+
+/* 신규 등록 모달 */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(5px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-bg.on{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:580px;max-width:96vw;max-height:90vh;overflow-y:auto;padding:28px;scrollbar-width:thin;transform:translateY(16px) scale(.98);transition:transform .35s ease}
+.modal-bg.on .modal{transform:translateY(0) scale(1)}
+.modal::-webkit-scrollbar{width:3px}
+.modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:22px;opacity:.5}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:22px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.mf{display:flex;flex-direction:column;gap:5px}
+.mf.full{grid-column:1/-1}
+.ml{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.04em}
+.ml .req{color:var(--red);margin-left:2px}
+.m-input,.m-select,.m-textarea{font-family:'Pretendard',sans-serif;font-size:14px;color:var(--text);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;outline:none;transition:border-color .2s;width:100%}
+.m-input:focus,.m-select:focus,.m-textarea:focus{border-color:rgba(201,168,76,.45)}
+.m-input::placeholder,.m-textarea::placeholder{color:var(--text3)}
+.m-textarea{resize:vertical;min-height:72px;line-height:1.6}
+.sec-div{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0}
+.sec-head{grid-column:1/-1;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.sec-head .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.m-chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;min-height:44px}
+.mpchip{padding:5px 12px;border-radius:16px;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;background:var(--bg4);border:1px solid var(--border);color:var(--text3)}
+.mpchip:hover{border-color:var(--border2);color:var(--text2)}
+.mpchip.sel-e{background:rgba(91,156,246,.18);border-color:rgba(91,156,246,.5);color:var(--blue);font-weight:700}
+.mpchip.sel-c{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.5);color:var(--purple);font-weight:700}
+.modal-footer{display:flex;gap:8px;margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);border-radius:6px;padding:11px;font-family:'Pretendard',sans-serif;font-size:14px;color:var(--text2);cursor:pointer;transition:all .2s}
+.btn-submit{flex:2;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;border-radius:6px;padding:11px;font-family:'Pretendard',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-submit:hover{box-shadow:0 4px 16px rgba(201,168,76,.35)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:var(--text3);gap:12px;grid-column:1/-1}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.agency-card{animation:fadeIn .2s ease}
+</style>
+</head>
+<body>
+
+<!-- 사이드바 -->
+<aside class="sidebar">
+  <div class="sb-top">
+    <img src="./logo-gold.png" class="sb-logo" alt="분양의신" onerror="this.style.display='none'">
+    <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av">김</div>
+    <div><div class="sb-uname">김창완 팀장</div><div class="sb-role">관리자</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">총괄</div>
+    <a class="sb-item"><span class="icon">📊</span>대시보드</a>
+    <a class="sb-item"><span class="icon">📅</span>월간 실적</a>
+    <a class="sb-item"><span class="icon">📆</span>주간 실적</a>
+    <div class="sb-section">실행</div>
+    <a class="sb-item"><span class="icon">👥</span>고객 DB</a>
+    <a class="sb-item"><span class="icon">🔀</span>파이프라인</a>
+    <a class="sb-item"><span class="icon">⭐</span>분양회 입회자</a>
+    <a class="sb-item"><span class="icon">📰</span>취재 · 아티클</a>
+    <a class="sb-item active"><span class="icon">🏢</span>프리미엄 대행사</a>
+    <a class="sb-item"><span class="icon">🚚</span>완판트럭</a>
+    <div class="sb-section">운영</div>
+    <a class="sb-item"><span class="icon">📋</span>매출일보</a>
+    <a class="sb-item"><span class="icon">💰</span>통합 매출 관리</a>
+    <a class="sb-item"><span class="icon">🎁</span>리워드 관리</a>
+    <a class="sb-item"><span class="icon">👑</span>분양회 회원 관리</a>
+  </nav>
+  <div class="sb-bottom">
+    <a class="sb-item"><span class="icon">🌙</span>라이트 모드</a>
+    <a class="sb-item"><span class="icon">🚪</span>로그아웃</a>
+  </div>
+</aside>
+
+<!-- 메인 -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span style="font-size:18px">🏢</span>
+      <div><div class="page-title">프리미엄 대행사</div><div class="page-desc">분양의신 앱 파트너 대행사 관리 (목표: Black 2 · Gold 5 · Silver 20)</div></div>
+    </div>
+    <button class="btn-new" onclick="openModal()">＋ 신규 등록</button>
+  </div>
+
+  <!-- 요약 카드 -->
+  <div class="summary-row">
+    <div class="sum-card active-filter" id="sc-all" onclick="setGradeFilter('all',this)">
+      <span class="sum-icon">🏢</span>
+      <div><div class="sum-val" id="cnt-all">—</div><div class="sum-label">전체 접촉</div></div>
+    </div>
+    <div class="sum-card" id="sc-done" onclick="setGradeFilter('done',this)">
+      <span class="sum-icon">✅</span>
+      <div><div class="sum-val" style="color:var(--green)" id="cnt-done">—</div><div class="sum-label">계약 완료</div></div>
+    </div>
+    <div class="grade-card" id="sc-black" onclick="setGradeFilter('black',this)">
+      <div class="grade-top">
+        <span class="grade-name g-black">◆ BLACK</span>
+        <span class="grade-fraction" id="frac-black">0<span>/2</span></span>
+      </div>
+      <div class="grade-bar-wrap"><div class="grade-bar-fill g-black-fill" id="bar-black" style="width:0%"></div></div>
+      <div class="grade-pct" id="pct-black">0%</div>
+    </div>
+    <div class="grade-card" id="sc-gold" onclick="setGradeFilter('gold',this)">
+      <div class="grade-top">
+        <span class="grade-name g-gold">★ GOLD</span>
+        <span class="grade-fraction" id="frac-gold">0<span>/5</span></span>
+      </div>
+      <div class="grade-bar-wrap"><div class="grade-bar-fill g-gold-fill" id="bar-gold" style="width:0%"></div></div>
+      <div class="grade-pct" id="pct-gold">0%</div>
+    </div>
+    <div class="grade-card" id="sc-silver" onclick="setGradeFilter('silver',this)">
+      <div class="grade-top">
+        <span class="grade-name g-silver">● SILVER</span>
+        <span class="grade-fraction" id="frac-silver">0<span>/20</span></span>
+      </div>
+      <div class="grade-bar-wrap"><div class="grade-bar-fill g-silver-fill" id="bar-silver" style="width:0%"></div></div>
+      <div class="grade-pct" id="pct-silver">0%</div>
+    </div>
+  </div>
+
+  <!-- 필터바 -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <span class="si">🔍</span>
+      <input type="text" id="searchInput" placeholder="대행사명, 지역 검색..." oninput="render()">
+    </div>
+    <div class="fdivider"></div>
+    <div class="filter-btns" id="statusFilterBtns"></div>
+    <button class="reset-btn" onclick="resetAll()">↺ 초기화</button>
+    <div class="total-info">전체 <strong id="totalCnt">—</strong>개사</div>
+  </div>
+
+  <!-- 카드 그리드 -->
+  <div class="content">
+    <div class="card-grid" id="cardGrid"></div>
+  </div>
+</div>
+
+<!-- 신규 등록 모달 -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">프리미엄 대행사 신규 등록</div>
+    <div class="modal-grid">
+      <div class="sec-head full"><span class="dot" style="background:var(--gold)"></span>대행사 정보</div>
+      <div class="mf"><label class="ml">대행사명<span class="req">*</span></label><input class="m-input" id="m_name" placeholder="예: 태성부동산"></div>
+      <div class="mf"><label class="ml">대행사 위치<span class="req">*</span></label><input class="m-input" id="m_location" placeholder="예: 서울 강남구"></div>
+      <div class="mf"><label class="ml">미팅 일자</label><input class="m-input" id="m_date" type="date"></div>
+      <div class="mf"><label class="ml">조직수</label><input class="m-input" id="m_org" placeholder="예: 50명"></div>
+      <div class="mf"><label class="ml">등급</label>
+        <select class="m-select" id="m_grade">
+          <option value="">선택</option>
+          <option value="black">◆ BLACK</option>
+          <option value="gold">★ GOLD</option>
+          <option value="silver">● SILVER</option>
+        </select>
+      </div>
+      <div class="mf"><label class="ml">계약 상태</label>
+        <select class="m-select" id="m_status">
+          <option value="plan">미팅 예정</option>
+          <option value="meet">미팅 완료</option>
+          <option value="nego">계약 협의</option>
+          <option value="done">계약 완료</option>
+          <option value="hold">보류</option>
+        </select>
+      </div>
+      <div class="sec-div"></div>
+      <div class="sec-head full"><span class="dot" style="background:var(--blue)"></span>소통자 정보</div>
+      <div class="mf"><label class="ml">접점 (소통자)</label><input class="m-input" id="m_contact" placeholder="홍길동"></div>
+      <div class="mf"><label class="ml">소통자 직급</label><input class="m-input" id="m_rank" placeholder="예: 본부장"></div>
+      <div class="mf full"><label class="ml">소통자 연락처</label><input class="m-input" id="m_phone" placeholder="010-0000-0000"></div>
+      <div class="sec-div"></div>
+      <div class="sec-head full"><span class="dot" style="background:var(--purple)"></span>출장 인원</div>
+      <div class="mf full">
+        <label class="ml">대외협력팀</label>
+        <div class="m-chips" id="m_exec_chips"></div>
+      </div>
+      <div class="mf full">
+        <label class="ml">컨설턴트</label>
+        <div class="m-chips" id="m_consult_chips"></div>
+      </div>
+      <div class="sec-div"></div>
+      <div class="mf full"><label class="ml">비고</label><textarea class="m-textarea" id="m_note" placeholder="특이사항, 추가 메모 등"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-submit" id="submitBtn" onclick="submitForm()">등록</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 데이터 ─────────────────────────────────
+let DATA = [
+  {id:1,name:'조선에스에셋',location:'서울 강남구',date:'2026-04-20',org:'80명',grade:'black',status:'nego',contact:'이정민',rank:'대표',phone:'010-1234-5678',execTeam:['김창완','최웅'],consultTeam:['박경화'],note:'분양의신 앱 광고 집행 관심 높음. 5월 내 계약 가능성.',notes:[]},
+  {id:2,name:'한림부동산개발',location:'부산 해운대구',date:'2026-04-15',org:'60명',grade:'gold',status:'meet',contact:'박준호',rank:'본부장',phone:'010-9876-5432',execTeam:['김창완'],consultTeam:['박민경'],note:'1차 미팅 완료. 조직 규모 대비 광고비 예산 검토 중.',notes:[]},
+  {id:3,name:'대한종합건설',location:'대구 수성구',date:'2026-04-10',org:'120명',grade:'gold',status:'plan',contact:'최수진',rank:'팀장',phone:'010-5555-3333',execTeam:['최웅'],consultTeam:[],note:'',notes:[]},
+  {id:4,name:'미래에셋리얼티',location:'인천 송도',date:'2026-04-08',org:'45명',grade:'silver',status:'meet',contact:'김도현',rank:'이사',phone:'010-7777-8888',execTeam:['김창완','최웅'],consultTeam:['강아름'],note:'인천/경기 중심 활동. LMS 관심 있음.',notes:[{id:'n1',date:'4. 15.',text:'2차 미팅 일정 조율 중. 대표이사 직접 미팅 요청'}]},
+  {id:5,name:'현대분양컨설팅',location:'광주 북구',date:'2026-03-28',org:'35명',grade:'silver',status:'hold',contact:'박영수',rank:'본부장',phone:'010-2222-4444',execTeam:['최웅'],consultTeam:['전정훈'],note:'현재 타 플랫폼 계약 중. 계약 만료 후 재접촉 예정.',notes:[]},
+  {id:6,name:'스마트부동산',location:'대전 서구',date:'2026-04-22',org:'28명',grade:'silver',status:'plan',contact:'이민지',rank:'팀장',phone:'010-6666-9999',execTeam:['김창완'],consultTeam:[],note:'',notes:[]},
+];
+
+let NOTES_STORE = {};
+DATA.forEach(d => { NOTES_STORE[d.id] = d.notes || []; });
+
+const EXEC_ALL = ['김정후','김창완','최웅','조계현','이세호','기여운','최연전','김재영','최은정'];
+const CONSULT_ALL = ['박경화','박혜은','박민경','조승현','강아름','백선중','전정훈','박나라'];
+const STATUS_MAP = {plan:{label:'미팅 예정',cls:'s-plan',icon:'📅'},meet:{label:'미팅 완료',cls:'s-meet',icon:'🤝'},nego:{label:'계약 협의',cls:'s-nego',icon:'💬'},done:{label:'계약 완료',cls:'s-done',icon:'✅'},hold:{label:'보류',cls:'s-hold',icon:'⏸'}};
+const GRADE_MAP = {black:{label:'◆ BLACK',cls:'bg-black',cardCls:'grade-black',goal:2},gold:{label:'★ GOLD',cls:'bg-gold',cardCls:'grade-gold',goal:5},silver:{label:'● SILVER',cls:'bg-silver',cardCls:'grade-silver',goal:20}};
+const GRADE_TARGETS = {black:2,gold:5,silver:20};
+
+let gradeFilter='all', statusFilter='all', openId=null, editId=null;
+let mExecSel=new Set(), mConsultSel=new Set(), openMenuId=null;
+
+// ── 요약 카드 ─────────────────────────────
+function updateSummary(){
+  document.getElementById('cnt-all').textContent = DATA.length;
+  document.getElementById('cnt-done').textContent = DATA.filter(d=>d.status==='done').length;
+  ['black','gold','silver'].forEach(g=>{
+    const contracted = DATA.filter(d=>d.grade===g&&d.status==='done').length;
+    const total = DATA.filter(d=>d.grade===g).length;
+    const goal = GRADE_TARGETS[g];
+    const pct = Math.round(contracted/goal*100);
+    document.getElementById('frac-'+g).innerHTML = `${contracted}<span>/${goal}</span>`;
+    document.getElementById('bar-'+g).style.width = Math.min(pct,100)+'%';
+    document.getElementById('pct-'+g).textContent = `${pct}% 달성 (접촉 ${total}개사)`;
+  });
+}
+
+function setGradeFilter(g, btn){
+  gradeFilter=g; statusFilter='all';
+  document.querySelectorAll('.sum-card,.grade-card').forEach(c=>c.classList.remove('active-filter'));
+  btn.classList.add('active-filter');
+  buildStatusFilter(); render();
+}
+
+// ── 상태 필터 버튼 ────────────────────────
+function buildStatusFilter(){
+  const btns = [
+    {val:'all',label:'전체 상태'},
+    ...Object.entries(STATUS_MAP).map(([v,s])=>({val:v,label:s.label}))
+  ];
+  document.getElementById('statusFilterBtns').innerHTML = btns.map(b=>
+    `<button class="fbtn${statusFilter===b.val?' active':''}" onclick="setStatusFilter('${b.val}')">${b.label}</button>`
+  ).join('');
+}
+
+function setStatusFilter(v){ statusFilter=v; buildStatusFilter(); render(); }
+
+function resetAll(){
+  gradeFilter='all'; statusFilter='all';
+  document.getElementById('searchInput').value='';
+  document.querySelectorAll('.sum-card,.grade-card').forEach(c=>c.classList.remove('active-filter'));
+  document.getElementById('sc-all').classList.add('active-filter');
+  buildStatusFilter(); render();
+}
+
+// ── 상태 드롭다운 ────────────────────────
+function toggleMenu(id,e){ e.stopPropagation(); if(openMenuId===id){closeMenus();return;} closeMenus(); openMenuId=id; document.getElementById('sm-'+id).classList.add('show'); }
+function closeMenus(){ document.querySelectorAll('.status-menu').forEach(m=>m.classList.remove('show')); openMenuId=null; }
+document.addEventListener('click',closeMenus);
+function setStatus(id,val,e){ e.stopPropagation(); const d=DATA.find(x=>x.id===id); if(d)d.status=val; closeMenus(); updateSummary(); render(); }
+
+// ── 필터 ──────────────────────────────────
+function getFiltered(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  return DATA.filter(d=>{
+    if(gradeFilter==='done'&&d.status!=='done') return false;
+    else if(gradeFilter==='black'&&d.grade!=='black') return false;
+    else if(gradeFilter==='gold'&&d.grade!=='gold') return false;
+    else if(gradeFilter==='silver'&&d.grade!=='silver') return false;
+    if(statusFilter!=='all'&&d.status!==statusFilter) return false;
+    if(q&&!d.name.toLowerCase().includes(q)&&!d.location.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+// ── 카드 렌더 ─────────────────────────────
+function formatDate(s){ if(!s)return'—'; const d=new Date(s); return`${d.getMonth()+1}월 ${d.getDate()}일`; }
+
+function render(){
+  const filtered=getFiltered();
+  document.getElementById('totalCnt').textContent=filtered.length;
+  updateSummary();
+  const grid=document.getElementById('cardGrid');
+  if(!filtered.length){
+    grid.innerHTML=`<div class="empty-state"><div style="font-size:36px">🏢</div><div style="font-size:14px">조건에 맞는 대행사가 없습니다</div></div>`;
+    return;
+  }
+  let html='';
+  filtered.forEach(d=>{
+    const si=STATUS_MAP[d.status]||STATUS_MAP.plan;
+    const gi=GRADE_MAP[d.grade]||{};
+    const notes=NOTES_STORE[d.id]||[];
+    const execTags=d.execTeam.map(n=>`<span class="person-tag exec">${n}</span>`).join('');
+    const consultTags=d.consultTeam.map(n=>`<span class="person-tag consult">${n}</span>`).join('');
+    const menuItems=Object.entries(STATUS_MAP).map(([v,s])=>`<div class="smenu-item${v===d.status?' cur':''}" onclick="setStatus(${d.id},'${v}',event)">${s.icon} ${s.label}</div>`).join('');
+    const isOpen=openId===d.id;
+    // 확장 내용
+    const expContent=isOpen?buildExpand(d):'';
+    html+=`
+    <div class="agency-card ${gi.cardCls||''} ${isOpen?'selected':''}" data-id="${d.id}">
+      <div class="card-body">
+        <div class="card-head">
+          <div class="card-name-wrap">
+            <div class="card-agency-name">${d.name}</div>
+            <div class="card-location">📍 ${d.location}</div>
+          </div>
+          <div class="status-wrap" onclick="event.stopPropagation()">
+            <button class="status-chip ${si.cls}" onclick="toggleMenu(${d.id},event)">${si.icon} ${si.label} ▾</button>
+            <div class="status-menu" id="sm-${d.id}">${menuItems}</div>
+          </div>
+        </div>
+        <div class="card-badges">
+          ${d.grade?`<span class="badge ${gi.cls||''}">${gi.label||d.grade}</span>`:''}
+          ${d.date?`<span style="font-size:12px;color:var(--blue);font-weight:600">📅 ${formatDate(d.date)}</span>`:''}
+          ${d.org?`<span style="font-size:12px;color:var(--text3)">👥 ${d.org}</span>`:''}
+        </div>
+        ${d.contact?`<div class="card-meta">
+          <div class="card-meta-row"><span class="micon">👤</span>${d.contact}${d.rank?' · '+d.rank:''}</div>
+          ${d.phone?`<div class="card-meta-row"><span class="micon">📞</span>${d.phone}</div>`:''}
+        </div>`:''}
+        ${(d.execTeam.length||d.consultTeam.length)?`
+        <div style="margin-bottom:8px">
+          ${execTags?`<div class="card-people-label">대외협력팀</div><div class="card-people">${execTags}</div>`:''}
+          ${consultTags?`<div class="card-people-label" style="margin-top:5px">컨설턴트</div><div class="card-people">${consultTags}</div>`:''}
+        </div>`:''}
+      </div>
+      <div class="card-footer">
+        <div class="card-note-preview">${notes.length?`📝 활동노트 ${notes.length}건`:(d.note||'비고 없음')}</div>
+        <div class="card-actions" onclick="event.stopPropagation()">
+          <button class="btn-sm btn-detail" onclick="toggleExpand(${d.id})">${isOpen?'닫기':'상세 ▾'}</button>
+          <button class="btn-sm btn-del" onclick="deleteItem(${d.id})">삭제</button>
+        </div>
+      </div>
+      <div class="expand-row${isOpen?' open':''}" id="exp-${d.id}">${expContent}</div>
+    </div>`;
+  });
+  grid.innerHTML=html;
+  // open 상태 복원
+  if(openId!==null){
+    const el=document.getElementById('exp-'+openId);
+    if(el&&!el.classList.contains('open')){
+      el.innerHTML=buildExpand(DATA.find(x=>x.id===openId));
+      requestAnimationFrame(()=>el.classList.add('open'));
+    }
+  }
+}
+
+// ── 인라인 확장 ───────────────────────────
+function buildExpand(d){
+  const notes=NOTES_STORE[d.id]||[];
+  const execChips=EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePerson(${d.id},'exec','${n}')">${n}</span>`).join('');
+  const consultChips=CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePerson(${d.id},'consult','${n}')">${n}</span>`).join('');
+  const notesList=notes.length
+    ?notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${d.id},'${n.id}')">삭제</button></div><div class="note-text">${n.text}</div></div>`).join('')
+    :`<div class="note-empty">활동 노트가 없습니다</div>`;
+  return `
+  <div class="exp-layout">
+    <div class="exp-col">
+      <div class="exp-col-title"><span class="dot" style="background:var(--blue)"></span>대행사 정보</div>
+      <div class="exp-fields">
+        <div class="exp-field"><span class="exp-label">대행사명</span><input class="e-input" value="${d.name}" onchange="updateField(${d.id},'name',this.value)"></div>
+        <div class="exp-field"><span class="exp-label">위치</span><input class="e-input" value="${d.location||''}" placeholder="예: 서울 강남구" onchange="updateField(${d.id},'location',this.value)"></div>
+        <div class="exp-field"><span class="exp-label">미팅 일자</span><input class="e-input" type="date" value="${d.date||''}" onchange="updateField(${d.id},'date',this.value)"></div>
+        <div class="exp-field"><span class="exp-label">조직수</span><input class="e-input" value="${d.org||''}" placeholder="예: 50명" onchange="updateField(${d.id},'org',this.value)"></div>
+        <div class="exp-field"><span class="exp-label">접점 (소통자)</span><input class="e-input" value="${d.contact||''}" onchange="updateField(${d.id},'contact',this.value)"></div>
+        <div class="exp-field"><span class="exp-label">소통자 직급</span><input class="e-input" value="${d.rank||''}" onchange="updateField(${d.id},'rank',this.value)"></div>
+        <div class="exp-field"><span class="exp-label">소통자 연락처</span><input class="e-input" value="${d.phone||''}" onchange="updateField(${d.id},'phone',this.value)"></div>
+        <div class="exp-field"><span class="exp-label">등급</span>
+          <select class="e-select" onchange="updateField(${d.id},'grade',this.value)">
+            <option value="">선택</option>
+            ${['black','gold','silver'].map(g=>`<option value="${g}"${d.grade===g?' selected':''}>${GRADE_MAP[g].label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="exp-field"><span class="exp-label">비고</span><textarea class="e-textarea" onchange="updateField(${d.id},'note',this.value)">${d.note||''}</textarea></div>
+      </div>
+    </div>
+    <div class="exp-divider"></div>
+    <div class="exp-col">
+      <div class="exp-col-title"><span class="dot" style="background:var(--purple)"></span>출장 인원</div>
+      <div class="exp-fields">
+        <div class="exp-field"><span class="exp-label">대외협력팀</span><div class="people-chips">${execChips}</div></div>
+        <div class="exp-field"><span class="exp-label">컨설턴트</span><div class="people-chips">${consultChips}</div></div>
+      </div>
+      <!-- 활동 노트 -->
+      <div class="act-section">
+        <div class="act-head">
+          <div class="act-title"><span style="width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;display:inline-block"></span>활동 노트 <span class="act-cnt">${notes.length}</span>건</div>
+          <button class="btn-add-note" onclick="showNoteInput(${d.id})">＋ 노트 추가</button>
+        </div>
+        <div class="notes-list" id="notes-${d.id}">${notesList}</div>
+        <div class="note-input-wrap" id="ni-${d.id}">
+          <textarea class="note-textarea" id="nt-${d.id}" placeholder="고객과의 통화 내용, 미팅 결과, 특이사항 등"></textarea>
+          <div class="note-footer">
+            <button class="btn-nc cancel" onclick="hideNoteInput(${d.id})">취소</button>
+            <button class="btn-nc save" onclick="saveNote(${d.id})">저장</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleExpand(id){
+  if(openId===id){ openId=null; }
+  else { openId=id; }
+  render();
+  if(openId!==null){
+    setTimeout(()=>{ const el=document.getElementById('exp-'+openId); if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
+  }
+}
+
+function updateField(id,key,val){
+  const d=DATA.find(x=>x.id===id); if(d) d[key]=val;
+  if(key==='grade'||key==='status'){ updateSummary(); }
+}
+
+function togglePerson(id,type,name){
+  const d=DATA.find(x=>x.id===id); if(!d)return;
+  const arr=type==='exec'?d.execTeam:d.consultTeam;
+  const idx=arr.indexOf(name);
+  if(idx>-1) arr.splice(idx,1); else arr.push(name);
+  // 칩만 갱신
+  const chips=type==='exec'
+    ?EXEC_ALL.map(n=>`<span class="pchip${d.execTeam.includes(n)?' sel-exec':''}" onclick="togglePerson(${id},'exec','${n}')">${n}</span>`).join('')
+    :CONSULT_ALL.map(n=>`<span class="pchip${d.consultTeam.includes(n)?' sel-consult':''}" onclick="togglePerson(${id},'consult','${n}')">${n}</span>`).join('');
+  const container=type==='exec'?document.querySelectorAll(`[id="exp-${id}"] .people-chips`)[0]:document.querySelectorAll(`[id="exp-${id}"] .people-chips`)[1];
+  if(container) container.innerHTML=chips;
+}
+
+// ── 활동 노트 ─────────────────────────────
+function showNoteInput(id){ document.getElementById('ni-'+id).classList.add('show'); document.getElementById('nt-'+id).focus(); }
+function hideNoteInput(id){ document.getElementById('ni-'+id).classList.remove('show'); document.getElementById('nt-'+id).value=''; }
+function saveNote(id){
+  const text=document.getElementById('nt-'+id).value.trim(); if(!text)return;
+  const today=new Date(); const nid='n'+Date.now();
+  if(!NOTES_STORE[id]) NOTES_STORE[id]=[];
+  NOTES_STORE[id].unshift({id:nid,date:`${today.getMonth()+1}. ${today.getDate()}.`,text});
+  hideNoteInput(id);
+  // 노트 목록만 갱신
+  const notes=NOTES_STORE[id];
+  document.getElementById('notes-'+id).innerHTML=notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${id},'${n.id}')">삭제</button></div><div class="note-text">${n.text}</div></div>`).join('');
+  // 카운트 갱신
+  const cntEl=document.querySelector(`#exp-${id} .act-cnt`); if(cntEl) cntEl.textContent=notes.length;
+}
+function deleteNote(id,nid){
+  if(!confirm('삭제하시겠습니까?'))return;
+  NOTES_STORE[id]=NOTES_STORE[id].filter(n=>n.id!==nid);
+  const notes=NOTES_STORE[id];
+  document.getElementById('notes-'+id).innerHTML=notes.length
+    ?notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${id},'${n.id}')">삭제</button></div><div class="note-text">${n.text}</div></div>`).join('')
+    :'<div class="note-empty">활동 노트가 없습니다</div>';
+  const cntEl=document.querySelector(`#exp-${id} .act-cnt`); if(cntEl) cntEl.textContent=notes.length;
+}
+
+// ── 신규 등록 모달 ────────────────────────
+function buildModalChips(){
+  document.getElementById('m_exec_chips').innerHTML=EXEC_ALL.map(n=>`<span class="mpchip${mExecSel.has(n)?' sel-e':''}" onclick="toggleModal('exec','${n}')">${n}</span>`).join('');
+  document.getElementById('m_consult_chips').innerHTML=CONSULT_ALL.map(n=>`<span class="mpchip${mConsultSel.has(n)?' sel-c':''}" onclick="toggleModal('consult','${n}')">${n}</span>`).join('');
+}
+function toggleModal(type,name){
+  const set=type==='exec'?mExecSel:mConsultSel;
+  if(set.has(name))set.delete(name); else set.add(name);
+  buildModalChips();
+}
+function openModal(){
+  editId=null; mExecSel=new Set(); mConsultSel=new Set();
+  ['m_name','m_location','m_contact','m_rank','m_phone','m_org','m_note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m_date').value='';
+  document.getElementById('m_grade').value='';
+  document.getElementById('m_status').value='plan';
+  document.getElementById('modalTitle').textContent='프리미엄 대행사 신규 등록';
+  document.getElementById('submitBtn').textContent='등록';
+  buildModalChips();
+  document.getElementById('modalBg').classList.add('on');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('on'); }
+function submitForm(){
+  const name=document.getElementById('m_name').value.trim();
+  const location=document.getElementById('m_location').value.trim();
+  if(!name||!location){alert('대행사명과 위치는 필수입니다.');return;}
+  const obj={name,location,date:document.getElementById('m_date').value,org:document.getElementById('m_org').value,grade:document.getElementById('m_grade').value,status:document.getElementById('m_status').value,contact:document.getElementById('m_contact').value,rank:document.getElementById('m_rank').value,phone:document.getElementById('m_phone').value,execTeam:[...mExecSel],consultTeam:[...mConsultSel],note:document.getElementById('m_note').value};
+  const newId=Math.max(...DATA.map(d=>d.id),0)+1;
+  obj.id=newId; DATA.unshift(obj); NOTES_STORE[newId]=[];
+  closeModal(); openId=newId; render();
+}
+function deleteItem(id){
+  if(!confirm('삭제하시겠습니까?'))return;
+  DATA=DATA.filter(x=>x.id!==id); delete NOTES_STORE[id]; openId=null; render();
+}
+
+// ── 초기화 ────────────────────────────────
+buildStatusFilter();
+render();
+</script>
+</body>
+</html>
