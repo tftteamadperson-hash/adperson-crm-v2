@@ -121,28 +121,44 @@ tbody tr.expand-row td{padding:0;border:none}
   background:var(--bg5);
   border-top:1px solid rgba(201,168,76,.2);
   border-bottom:2px solid rgba(201,168,76,.25);
-  padding:20px 24px;
   overflow:hidden;
   max-height:0;
-  transition:max-height .35s cubic-bezier(.4,0,.2,1), padding .35s ease;
+  opacity:0;
+  transform:translateY(-6px);
+  transition:max-height .45s cubic-bezier(.4,0,.2,1),
+             opacity .35s ease .05s,
+             transform .35s ease .05s;
+  pointer-events:none;
 }
-.expand-inner.open{max-height:500px}
-.expand-inner.closed{max-height:0;padding-top:0;padding-bottom:0}
+.expand-inner.open{
+  max-height:600px;
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:all;
+  padding:22px 28px;
+}
 
-/* 확장 패널 내부 레이아웃 */
-.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;column-gap:48px}
-.exp-col{display:flex;flex-direction:column;gap:14px}
+/* 확장 패널 내부 레이아웃: 좌(미팅전) | 우(미팅후) */
+.exp-grid{
+  display:grid;
+  grid-template-columns:1fr 1px 1fr;
+  gap:0;
+  column-gap:0;
+}
+.exp-col{display:flex;flex-direction:column;gap:14px;padding:0 28px}
+.exp-col:first-child{padding-left:0}
+.exp-col:last-child{padding-right:0}
 .exp-col-title{
   font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;
-  padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px;
-  display:flex;align-items:center;gap:6px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:2px;
+  display:flex;align-items:center;gap:7px;
 }
 .exp-col-title .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .exp-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.exp-field{display:flex;flex-direction:column;gap:5px}
+.exp-field{display:flex;flex-direction:column;gap:6px}
 .exp-field.full{grid-column:1/-1}
 .exp-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
-.exp-divider{width:1px;background:var(--border);margin:0}
+.exp-divider{width:1px;background:var(--border);margin:0 0;align-self:stretch}
 
 /* 인풋 */
 .e-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 11px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
@@ -537,9 +553,7 @@ function renderTable(){
 
   let html='';
   filtered.forEach((d,i)=>{
-    const isOpen=openId===d.id;
-    const hlCls=d.result==='계약완료'?'hl-done':d.result==='예약완료'?'hl-book':'';
-    html+=`<tr class="data-row ${hlCls}${isOpen?' selected':''}" onclick="toggleRow(${d.id})">
+    html+=`<tr class="data-row ${hlCls}" data-id="${d.id}" onclick="toggleRow(${d.id})">
       <td style="color:var(--text3);font-size:12px">${i+1}</td>
       <td class="left td-name">${d.name}</td>
       <td>${d.rank||'<span class="dash">—</span>'}</td>
@@ -551,29 +565,53 @@ function renderTable(){
       <td>${stageBadge(d.stage)}</td>
       <td>${resultBadge(d.result)}</td>
       <td style="font-size:13px">${d.exec||'<span class="dash">—</span>'}</td>
-      <td><span class="row-arr">${isOpen?'▾':'›'}</span></td>
+      <td><span class="row-arr">›</span></td>
     </tr>`;
-    // 확장 행
+    // 확장 행 - 항상 렌더, open 클래스로만 제어
     html+=`<tr class="expand-row" id="exp_tr_${d.id}">
       <td colspan="12">
-        <div class="expand-inner${isOpen?' open':' closed'}" id="exp_${d.id}">
+        <div class="expand-inner" id="exp_${d.id}">
           ${expandHTML(d)}
         </div>
       </td>
     </tr>`;
   });
   tbody.innerHTML=html;
+  // openId 상태 복원
+  if(openId!==null){
+    const el=document.getElementById('exp_'+openId);
+    const tr=document.querySelector(`[data-id="${openId}"]`);
+    const arr=document.querySelector(`[data-id="${openId}"] .row-arr`);
+    if(el){requestAnimationFrame(()=>el.classList.add('open'))}
+    if(tr) tr.classList.add('selected');
+    if(arr) arr.textContent='▾';
+  }
 }
 
 function toggleRow(id){
-  if(openId===id){openId=null}else{openId=id}
-  renderTable();
-  // 열린 행으로 스크롤
-  if(openId){
+  const wasOpen = openId === id;
+  // 이전에 열린 행 닫기
+  if(openId !== null){
+    const prev = document.getElementById('exp_'+openId);
+    const prevTr = document.querySelector(`[data-id="${openId}"]`);
+    const prevArr = document.querySelector(`[data-id="${openId}"] .row-arr`);
+    if(prev) prev.classList.remove('open');
+    if(prevTr) prevTr.classList.remove('selected');
+    if(prevArr){prevArr.textContent='›';prevArr.style.transform=''}
+  }
+  openId = wasOpen ? null : id;
+  if(openId !== null){
+    const next = document.getElementById('exp_'+openId);
+    const nextTr = document.querySelector(`[data-id="${openId}"]`);
+    const nextArr = document.querySelector(`[data-id="${openId}"] .row-arr`);
+    if(next) next.classList.add('open');
+    if(nextTr) nextTr.classList.add('selected');
+    if(nextArr){nextArr.textContent='▾';nextArr.style.transform=''}
+    // 열린 영역으로 부드럽게 스크롤
     setTimeout(()=>{
-      const el=document.getElementById('exp_tr_'+openId);
-      if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'});
-    },50);
+      const expTr = document.getElementById('exp_tr_'+openId);
+      if(expTr) expTr.scrollIntoView({behavior:'smooth',block:'nearest'});
+    },80);
   }
 }
 
