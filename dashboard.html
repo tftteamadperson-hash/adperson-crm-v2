@@ -5,7 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>대외협력팀 종합 대시보드</title>
 <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+// ── 세션 체크 & 사용자 표시 ──
+(function(){
+  const u = sessionStorage.getItem('crm_user');
+  if(!u){ window.location.href='index.html'; return; }
+  const user = JSON.parse(u);
+  // 사이드바 이름/권한 표시
+  const nameEl = document.getElementById('sbUserName');
+  const roleEl = document.getElementById('sbUserRole');
+  const avEl   = document.getElementById('sbUserAv');
+  if(nameEl) nameEl.textContent = user.name + (user.role==='admin'?' 팀장':user.role==='exec'?' 부장':' 어시');
+  if(roleEl) roleEl.textContent = user.role==='admin'?'관리자':user.role==='exec'?'실행파트':'운영파트';
+  if(avEl)   avEl.textContent   = user.name[0];
+})();
+
+</script>
 <style>
 :root{
   --bg:#080f1a;

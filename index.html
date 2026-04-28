@@ -407,13 +407,42 @@ function openModal(){document.getElementById('overlay').classList.add('on');setT
 function closeModal(){document.getElementById('overlay').classList.remove('on')}
 function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal()}
 function togglePw(){const el=document.getElementById('pwInput');el.type=el.type==='password'?'text':'password'}
+const ACCOUNTS={
+  'adperson1':{password:'rlawjdgn123',name:'김정후',role:'admin'},
+  'adperson2':{password:'rlackddhks123',name:'김창완',role:'admin'},
+  'adperson3':{password:'chldnd123',name:'최웅',role:'admin'},
+  'adperson4':{password:'whrPgus123',name:'조계현',role:'exec'},
+  'adperson5':{password:'dltpgh123',name:'이세호',role:'exec'},
+  'adperson6':{password:'rldudns123',name:'기여운',role:'exec'},
+  'adperson7':{password:'chlduswjs123',name:'최연전',role:'exec'},
+  'adperson8':{password:'rlawodud123',name:'김재영',role:'ops'},
+  'adperson9':{password:'chldmswjd123',name:'최은정',role:'ops'},
+};
+
 function handleLogin(){
   const id=document.getElementById('idInput'),pw=document.getElementById('pwInput');
   let ok=true;
   if(!id.value.trim()){id.classList.add('err');setTimeout(()=>id.classList.remove('err'),400);ok=false}
   if(!pw.value){pw.classList.add('err');setTimeout(()=>pw.classList.remove('err'),400);ok=false}
   if(!ok)return;
-  window.location.href = 'dashboard.html';
+
+  const acc=ACCOUNTS[id.value.trim()];
+  if(!acc||acc.password!==pw.value){
+    id.classList.add('err');pw.classList.add('err');
+    setTimeout(()=>{id.classList.remove('err');pw.classList.remove('err')},500);
+    let errEl=document.getElementById('loginErr');
+    if(!errEl){
+      errEl=document.createElement('div');errEl.id='loginErr';
+      errEl.style.cssText='font-size:12px;color:#f06060;text-align:center;margin-top:10px;font-family:Pretendard,sans-serif;letter-spacing:.04em;';
+      document.querySelector('.btn-login').insertAdjacentElement('afterend',errEl);
+    }
+    errEl.textContent='아이디 또는 비밀번호가 올바르지 않습니다.';
+    setTimeout(()=>{if(errEl)errEl.textContent=''},2500);
+    return;
+  }
+
+  sessionStorage.setItem('crm_user',JSON.stringify({id:id.value.trim(),name:acc.name,role:acc.role}));
+  window.location.href='dashboard.html';
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){if(document.getElementById('overlay').classList.contains('on'))handleLogin();else if(document.getElementById('main').classList.contains('show'))openModal()}

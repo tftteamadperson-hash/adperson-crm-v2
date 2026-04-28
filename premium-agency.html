@@ -282,8 +282,8 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
     <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
   </div>
   <div class="sb-user">
-    <div class="sb-av">김</div>
-    <div><div class="sb-uname">김창완 팀장</div><div class="sb-role">관리자</div></div>
+    <div class="sb-av" id="sbUserAv">김</div>
+    <div><div class="sb-uname" id="sbUserName">김창완 팀장</div><div class="sb-role" id="sbUserRole">관리자</div></div>
   </div>
   <nav class="sb-nav">
     <div class="sb-section">총괄</div>
@@ -814,6 +814,21 @@ function deleteItem(id){
 // ── 초기화 ────────────────────────────────
 buildStatusFilter();
 render();
+
+// ── 세션 체크 & 사용자 표시 ──
+(function(){
+  const u = sessionStorage.getItem('crm_user');
+  if(!u){ window.location.href='index.html'; return; }
+  const user = JSON.parse(u);
+  // 사이드바 이름/권한 표시
+  const nameEl = document.getElementById('sbUserName');
+  const roleEl = document.getElementById('sbUserRole');
+  const avEl   = document.getElementById('sbUserAv');
+  if(nameEl) nameEl.textContent = user.name + (user.role==='admin'?' 팀장':user.role==='exec'?' 부장':' 어시');
+  if(roleEl) roleEl.textContent = user.role==='admin'?'관리자':user.role==='exec'?'실행파트':'운영파트';
+  if(avEl)   avEl.textContent   = user.name[0];
+})();
+
 </script>
 </body>
 </html>
