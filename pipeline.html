@@ -12,7 +12,7 @@
   --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:rgba(201,168,76,.13);
   --text:#eaf0f8;--text2:#96aec8;--text3:#4d6480;
   --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;--purple:#a78bfa;--orange:#fb923c;
-  --col-w:260px;--sidebar:220px;--radius:8px;
+  --sidebar:220px;--radius:8px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px}
@@ -25,7 +25,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .sb-brand{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.04em;line-height:1.3}
 .sb-brand span{display:block;font-size:9px;font-weight:300;color:var(--text3)}
 .sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.sb-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+.sb-avatar-sm{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0}
 .sb-uname{font-size:13px;font-weight:600}
 .sb-role{font-size:11px;color:var(--gold);font-weight:500}
 .sb-nav{flex:1;padding:8px 0}
@@ -37,21 +37,17 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .sb-bottom{padding:10px 0;border-top:1px solid var(--border)}
 
 /* ── 메인 ── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;z-index:10}
 .topbar-left{display:flex;align-items:center;gap:10px}
 .page-title{font-size:16px;font-weight:700}
 .page-desc{font-size:12px;color:var(--text3);margin-top:1px}
-.realtime{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px}
+.realtime{font-size:11px;color:var(--green);display:flex;align-items:center;gap:5px}
 .realtime::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ── 필터바 ── */
-.filter-bar{
-  display:flex;align-items:center;gap:8px;
-  padding:12px 24px;border-bottom:1px solid var(--border);
-  background:var(--bg2);flex-shrink:0;flex-wrap:wrap;
-}
+/* 필터바 */
+.filter-bar{display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
 .search-wrap{position:relative;width:220px;flex-shrink:0}
 .search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px 8px 30px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
 .search-wrap input:focus{border-color:rgba(201,168,76,.4)}
@@ -67,82 +63,56 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .total-info{margin-left:auto;font-size:12px;color:var(--text3)}
 .total-info strong{color:var(--text2);font-weight:600}
 
-/* ── 칸반 보드 ── */
-.board-wrap{flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 24px;display:flex;gap:14px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-.board-wrap::-webkit-scrollbar{height:5px}
-.board-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
-/* 컬럼 */
+/* ── 칸반 보드: 5컬럼 균등 분배 ── */
+.board-wrap{flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 24px;display:flex;gap:12px}
 .col{
-  width:var(--col-w);min-width:var(--col-w);
-  display:flex;flex-direction:column;gap:0;
-  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
-  overflow:hidden;
+  flex:1;min-width:200px;max-width:320px;
+  display:flex;flex-direction:column;
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;
 }
-
-.col-head{
-  padding:12px 14px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;position:sticky;top:0;background:var(--bg2);
-}
+.col-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .col-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700}
 .col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .col-count{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;min-width:22px;text-align:center}
-
-.col-body{flex:1;overflow-y:auto;padding:10px 10px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.col-body{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 .col-body::-webkit-scrollbar{width:3px}
 .col-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.empty-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 10px;color:var(--text3);font-size:12px;gap:8px;opacity:.5;text-align:center}
 
-.empty-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;color:var(--text3);font-size:12px;gap:8px;opacity:.6}
-.empty-col .eicon{font-size:24px}
+/* 컬럼 색상 */
+.col-meeting{border-top:2px solid var(--blue)}
+.col-done{border-top:2px solid var(--green)}
+.col-book{border-top:2px solid var(--purple)}
+.col-doc{border-top:2px solid var(--orange)}
+.col-manage{border-top:2px solid var(--gold)}
+.dot-meeting{background:var(--blue)}.dot-done{background:var(--green)}.dot-book{background:var(--purple)}.dot-doc{background:var(--orange)}.dot-manage{background:var(--gold-light)}
+.cnt-meeting{background:rgba(91,156,246,.15);color:var(--blue)}
+.cnt-done{background:rgba(45,212,160,.15);color:var(--green)}
+.cnt-book{background:rgba(167,139,250,.15);color:var(--purple)}
+.cnt-doc{background:rgba(251,146,60,.15);color:var(--orange)}
+.cnt-manage{background:rgba(240,208,128,.15);color:var(--gold-light)}
 
 /* ── 카드 ── */
-.card{
-  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
-  padding:12px 13px;transition:border-color .18s,transform .18s,box-shadow .18s;
-  cursor:default;
-}
-.card:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
-
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:default;transition:border-color .18s,box-shadow .18s}
+.card:hover{border-color:var(--border2);box-shadow:0 3px 12px rgba(0,0,0,.25)}
 .card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
-.card-avatar{
-  width:30px;height:30px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:#fff;flex-shrink:0;
-}
+.card-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
 .card-info{flex:1;margin-left:8px}
-.card-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2}
+.card-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.2}
 .card-sub{font-size:11px;color:var(--text3);margin-top:1px}
 .card-detail-btn{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .card-detail-btn:hover{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold-light)}
-
-.card-stage{display:inline-flex;margin-bottom:7px}
-.card-meta{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
-.card-meta-row{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2)}
-.card-meta-row .micon{font-size:11px;color:var(--text3);width:14px;text-align:center;flex-shrink:0}
+.card-stage{margin-bottom:6px}
+.card-meta{display:flex;flex-direction:column;gap:3px;margin-bottom:7px}
+.card-meta-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.micon{font-size:10px;color:var(--text3);width:13px;text-align:center;flex-shrink:0}
 .card-date{color:var(--blue);font-weight:600}
-
-/* 활동 노트 프리뷰 */
-.note-preview{
-  background:var(--bg5);border:1px solid var(--border);border-radius:5px;
-  padding:7px 9px;margin-bottom:6px;
-}
-.note-item{font-size:11px;color:var(--text2);line-height:1.6;display:flex;gap:6px}
-.note-date{color:var(--text3);flex-shrink:0;font-size:10px}
-.note-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.note-more{font-size:10px;color:var(--text3);margin-top:3px}
-.note-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:3px}
-.note-edit-btn,.note-del-btn{font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:1px 4px;border-radius:3px;transition:color .15s}
-.note-edit-btn:hover{color:var(--blue)}
-.note-del-btn:hover{color:var(--red)}
-
-.card-note-btn{
-  width:100%;text-align:left;
-  font-family:'Pretendard',sans-serif;font-size:11px;font-weight:500;
-  color:var(--text3);background:none;border:none;cursor:pointer;
-  padding:5px 0 0;transition:color .15s;
-  display:flex;align-items:center;gap:4px;
-}
+.note-preview{background:var(--bg5);border:1px solid var(--border);border-radius:5px;padding:6px 8px;margin-bottom:5px}
+.note-prev-item{font-size:11px;color:var(--text2);line-height:1.6;display:flex;gap:5px;overflow:hidden}
+.note-prev-date{color:var(--text3);flex-shrink:0;font-size:10px}
+.note-prev-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.note-prev-more{font-size:10px;color:var(--text3);margin-top:2px}
+.card-note-btn{width:100%;text-align:left;font-family:'Pretendard',sans-serif;font-size:11px;font-weight:500;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 0 0;transition:color .15s}
 .card-note-btn:hover{color:var(--gold-light)}
 
 /* 배지 */
@@ -152,81 +122,139 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .b-retain{background:rgba(45,212,160,.12);color:var(--green);font-weight:600}
 .b-lead{color:var(--text3);font-size:10px}
 .b-tm-high{background:rgba(240,96,96,.16);color:var(--red);font-weight:700}
-.b-tm-mid{color:var(--text3)}
+.b-type-old{background:rgba(91,156,246,.12);color:var(--blue)}
+.b-type-new{background:rgba(45,212,160,.12);color:var(--green)}
+.b-type-ref{background:rgba(167,139,250,.12);color:var(--purple)}
 
-/* 컬럼 색상 */
-.dot-meeting{background:#5b9cf6}
-.dot-done{background:#2dd4a0}
-.dot-book{background:#a78bfa}
-.dot-doc{background:#fb923c}
-.dot-manage{background:#F0D080}
-.cnt-meeting{background:rgba(91,156,246,.15);color:var(--blue)}
-.cnt-done{background:rgba(45,212,160,.15);color:var(--green)}
-.cnt-book{background:rgba(167,139,250,.15);color:var(--purple)}
-.cnt-doc{background:rgba(251,146,60,.15);color:var(--orange)}
-.cnt-manage{background:rgba(240,208,128,.15);color:var(--gold-light)}
-.col-meeting{border-top:2px solid var(--blue)}
-.col-done{border-top:2px solid var(--green)}
-.col-book{border-top:2px solid var(--purple)}
-.col-doc{border-top:2px solid var(--orange)}
-.col-manage{border-top:2px solid var(--gold)}
+/* ── 상세 오버레이 (풀스크린) ── */
+.detail-overlay{
+  position:absolute;inset:0;
+  background:var(--bg);
+  z-index:200;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.detail-overlay.open{transform:translateX(0)}
 
-/* ── 활동 노트 모달 ── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(5px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
-.modal-bg.on{opacity:1;pointer-events:all}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:500px;max-width:95vw;max-height:80vh;overflow-y:auto;padding:26px;position:relative;box-shadow:0 0 60px rgba(0,0,0,.7);scrollbar-width:thin}
-.modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:18px;opacity:.5}
-.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.modal-who{display:flex;align-items:center;gap:10px}
-.modal-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
-.modal-wname{font-size:15px;font-weight:700}
-.modal-wsub{font-size:11px;color:var(--text3);margin-top:1px}
-.modal-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.modal-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
+/* 상세 헤더 */
+.detail-topbar{
+  height:56px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;padding:0 24px;
+  flex-shrink:0;
+}
+.back-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  color:var(--text2);font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.back-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.detail-avatar{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.detail-name{font-size:18px;font-weight:700;color:var(--text)}
+.detail-rank{font-size:13px;color:var(--text3);margin-left:6px}
+.detail-type-badge{margin-left:10px}
+.detail-topbar-right{margin-left:auto;display:flex;gap:8px}
+.edit-toggle-btn{
+  font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;
+  padding:7px 16px;border-radius:6px;
+  background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);
+  color:var(--gold-light);cursor:pointer;transition:all .2s;
+}
+.edit-toggle-btn:hover{background:rgba(201,168,76,.2)}
 
-.note-count-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.note-count-label{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
-.note-count-label .dot2{width:5px;height:5px;border-radius:50%;background:var(--blue)}
-.btn-add-note{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);cursor:pointer;transition:all .2s}
-.btn-add-note:hover{background:rgba(201,168,76,.2)}
+/* 상세 바디 */
+.detail-body{flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.detail-body::-webkit-scrollbar{width:4px}
+.detail-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 
-.notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.note-card{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:11px 13px}
-.note-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
-.note-card-date{font-size:10px;font-weight:600;color:var(--text3)}
-.note-card-acts{display:flex;gap:4px}
-.nc-btn{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 5px;border-radius:3px;transition:color .15s}
-.nc-btn:hover{color:var(--text)}
-.nc-btn.del:hover{color:var(--red)}
-.note-card-text{font-size:13px;color:var(--text2);line-height:1.7}
+/* 카드 그리드 */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px;margin:0 auto}
+.detail-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 22px}
+.detail-card.full{grid-column:1/-1}
+.dc-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.dc-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dc-title .edit-hint{font-size:10px;color:var(--gold);background:var(--gold-dim);padding:2px 8px;border-radius:10px;font-weight:500;text-transform:none;letter-spacing:0}
 
-.note-empty{text-align:center;padding:24px 0;color:var(--text3);font-size:13px}
+/* 정보 행 */
+.info-row{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid rgba(30,48,80,.5)}
+.info-row:last-child{border-bottom:none}
+.info-label{font-size:12px;color:var(--text3);width:100px;flex-shrink:0}
+.info-val{font-size:13px;color:var(--text);font-weight:500;flex:1;display:flex;align-items:center;gap:6px}
+.info-val.muted{color:var(--text3)}
 
-.note-input-area{border-top:1px solid var(--border);padding-top:14px}
+/* 편집 모드 인풋 */
+.e-input{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:6px 9px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;width:100%}
+.e-input:focus{border-color:rgba(201,168,76,.45)}
+.e-select{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:6px 9px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);cursor:pointer;outline:none;transition:border-color .2s;width:100%}
+.e-select:focus{border-color:rgba(201,168,76,.45)}
+.e-textarea{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 10px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:vertical;min-height:80px;transition:border-color .2s;width:100%;line-height:1.7}
+.e-textarea:focus{border-color:rgba(201,168,76,.45)}
+.e-textarea::placeholder{color:var(--text3)}
+
+/* 비고 박스 */
+.note-box{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:14px;font-size:13px;color:var(--text2);line-height:1.8;min-height:80px}
+.note-box.empty{color:var(--text3)}
+
+/* ── 활동 노트 ── */
+.act-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.act-label{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:7px}
+.act-label .dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0}
+.act-label .cnt{font-size:11px;font-weight:600;padding:1px 7px;border-radius:10px;background:rgba(91,156,246,.15);color:var(--blue)}
+.btn-add-note{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:6px;background:var(--blue);border:none;color:#fff;cursor:pointer;transition:all .2s}
+.btn-add-note:hover{background:#4a8be0;transform:translateY(-1px)}
+
+.notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.note-card{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px 14px}
+.note-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.note-card-date{font-size:11px;font-weight:600;color:var(--text3)}
+.nc-del{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:3px;transition:color .15s;font-family:'Pretendard',sans-serif}
+.nc-del:hover{color:var(--red);background:rgba(240,96,96,.1)}
+.note-card-text{font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap}
+
+.note-empty{text-align:center;padding:22px 0;color:var(--text3);font-size:13px}
+
+.note-input-wrap{border-top:1px solid var(--border);padding-top:14px;display:none}
+.note-input-wrap.show{display:block}
 .note-input-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em;margin-bottom:7px;display:block}
-.note-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;height:80px;transition:border-color .2s}
+.note-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;height:88px;transition:border-color .2s;line-height:1.7}
 .note-textarea:focus{border-color:rgba(201,168,76,.45)}
 .note-textarea::placeholder{color:var(--text3)}
-.note-input-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
-.btn-note-cancel{font-family:'Pretendard',sans-serif;font-size:12px;padding:7px 14px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s}
-.btn-note-cancel:hover{border-color:var(--text2)}
-.btn-note-save{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:700;padding:7px 18px;border-radius:6px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;cursor:pointer;transition:all .2s}
-.btn-note-save:hover{box-shadow:0 3px 12px rgba(201,168,76,.3)}
+.note-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.btn-nc{font-family:'Pretendard',sans-serif;font-size:12px;padding:7px 14px;border-radius:6px;cursor:pointer;transition:all .2s}
+.btn-nc.cancel{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-nc.cancel:hover{border-color:var(--text2)}
+.btn-nc.save{background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;font-weight:700}
+.btn-nc.save:hover{box-shadow:0 3px 12px rgba(201,168,76,.3)}
 
-/* 상세 모달 */
-.detail-modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:560px;max-width:95vw;max-height:85vh;overflow-y:auto;padding:26px;position:relative;box-shadow:0 0 60px rgba(0,0,0,.7);scrollbar-width:thin}
-.detail-modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:18px;opacity:.5}
-.dm-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.dm-field{display:flex;flex-direction:column;gap:5px}
-.dm-field.full{grid-column:1/-1}
-.dm-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase}
-.dm-val{font-size:13px;color:var(--text);font-weight:500;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;min-height:36px}
-.dm-val.empty{color:var(--text3)}
-.dm-sec{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;grid-column:1/-1;padding-bottom:6px;border-bottom:1px solid var(--border);margin-top:4px;display:flex;align-items:center;gap:6px}
-.dm-sec .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+/* 저장 버튼 */
+.detail-save-bar{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:var(--bg2)}
+.btn-discard{font-family:'Pretendard',sans-serif;font-size:13px;padding:9px 20px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s}
+.btn-discard:hover{border-color:var(--text2)}
+.btn-save-all{font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:6px;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.btn-save-all:hover{box-shadow:0 4px 16px rgba(201,168,76,.3)}
 
-@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.card{animation:fadeIn .25s ease}
+/* 활동노트 모달 (카드에서 열림) */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-bg.on{opacity:1;pointer-events:all}
+.note-modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:500px;max-width:94vw;max-height:80vh;overflow-y:auto;padding:24px;scrollbar-width:thin}
+.note-modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:18px;opacity:.45}
+.nm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.nm-who{display:flex;align-items:center;gap:10px}
+.nm-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.nm-name{font-size:15px;font-weight:700}
+.nm-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.nm-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.nm-close:hover{background:rgba(255,255,255,.12);color:var(--text)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeIn .2s ease}
 </style>
 </head>
 <body>
@@ -238,7 +266,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
     <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
   </div>
   <div class="sb-user">
-    <div class="sb-avatar">김</div>
+    <div class="sb-avatar-sm">김</div>
     <div><div class="sb-uname">김창완 팀장</div><div class="sb-role">관리자</div></div>
   </div>
   <nav class="sb-nav">
@@ -270,7 +298,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
   <div class="topbar">
     <div class="topbar-left">
       <span style="font-size:17px">🔀</span>
-      <div><div class="page-title">파이프라인</div><div class="page-desc" id="totalDesc">전체 — 명</div></div>
+      <div><div class="page-title">파이프라인</div><div class="page-desc" id="totalDesc">—</div></div>
     </div>
     <div class="realtime">실시간</div>
   </div>
@@ -279,7 +307,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
   <div class="filter-bar">
     <div class="search-wrap">
       <span class="si">🔍</span>
-      <input type="text" placeholder="고객명, 직급, 연락처 검색..." id="searchInput" oninput="render()">
+      <input type="text" placeholder="고객명, 직급, 연락처 검색..." id="searchInput" oninput="renderBoard()">
     </div>
     <div class="fdivider"></div>
     <div class="exec-btns">
@@ -294,121 +322,103 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 
   <!-- 칸반 보드 -->
   <div class="board-wrap">
-    <div class="col col-meeting" id="col-meeting">
-      <div class="col-head">
-        <div class="col-title"><span class="col-dot dot-meeting"></span>미팅 예정</div>
-        <span class="col-count cnt-meeting" id="cnt-meeting">0</span>
+    <div class="col col-meeting"><div class="col-head"><div class="col-title"><span class="col-dot dot-meeting"></span>미팅 예정</div><span class="col-count cnt-meeting" id="cnt-meeting">0</span></div><div class="col-body" id="body-meeting"></div></div>
+    <div class="col col-done"><div class="col-head"><div class="col-title"><span class="col-dot dot-done"></span>계약 완료</div><span class="col-count cnt-done" id="cnt-done">0</span></div><div class="col-body" id="body-done"></div></div>
+    <div class="col col-book"><div class="col-head"><div class="col-title"><span class="col-dot dot-book"></span>예약 완료</div><span class="col-count cnt-book" id="cnt-book">0</span></div><div class="col-body" id="body-book"></div></div>
+    <div class="col col-doc"><div class="col-head"><div class="col-title"><span class="col-dot dot-doc"></span>서류 수취</div><span class="col-count cnt-doc" id="cnt-doc">0</span></div><div class="col-body" id="body-doc"></div></div>
+    <div class="col col-manage"><div class="col-head"><div class="col-title"><span class="col-dot dot-manage"></span>관리 필요</div><span class="col-count cnt-manage" id="cnt-manage">0</span></div><div class="col-body" id="body-manage"></div></div>
+  </div>
+
+  <!-- ── 상세 오버레이 ── -->
+  <div class="detail-overlay" id="detailOverlay">
+    <div class="detail-topbar">
+      <button class="back-btn" onclick="closeDetail()">←</button>
+      <div class="detail-avatar" id="d-avatar"></div>
+      <div>
+        <span class="detail-name" id="d-name">—</span>
+        <span class="detail-rank" id="d-rank"></span>
       </div>
-      <div class="col-body" id="body-meeting"></div>
+      <span class="detail-type-badge" id="d-type-badge"></span>
+      <div class="detail-topbar-right">
+        <button class="edit-toggle-btn" id="editToggleBtn" onclick="toggleEditMode()">✏️ 수정</button>
+      </div>
     </div>
-    <div class="col col-done" id="col-done">
-      <div class="col-head">
-        <div class="col-title"><span class="col-dot dot-done"></span>계약 완료</div>
-        <span class="col-count cnt-done" id="cnt-done">0</span>
+
+    <div class="detail-body">
+      <div class="detail-grid" id="detailGrid">
+        <!-- JS로 채워짐 -->
       </div>
-      <div class="col-body" id="body-done"></div>
     </div>
-    <div class="col col-book" id="col-book">
-      <div class="col-head">
-        <div class="col-title"><span class="col-dot dot-book"></span>예약 완료</div>
-        <span class="col-count cnt-book" id="cnt-book">0</span>
-      </div>
-      <div class="col-body" id="body-book"></div>
-    </div>
-    <div class="col col-doc" id="col-doc">
-      <div class="col-head">
-        <div class="col-title"><span class="col-dot dot-doc"></span>서류 수취</div>
-        <span class="col-count cnt-doc" id="cnt-doc">0</span>
-      </div>
-      <div class="col-body" id="body-doc"></div>
-    </div>
-    <div class="col col-manage" id="col-manage">
-      <div class="col-head">
-        <div class="col-title"><span class="col-dot dot-manage"></span>관리 필요</div>
-        <span class="col-count cnt-manage" id="cnt-manage">0</span>
-      </div>
-      <div class="col-body" id="body-manage"></div>
+
+    <div class="detail-save-bar" id="detailSaveBar" style="display:none">
+      <button class="btn-discard" onclick="discardEdit()">취소</button>
+      <button class="btn-save-all" onclick="saveDetail()">저장</button>
     </div>
   </div>
 </div>
 
-<!-- 활동 노트 모달 -->
+<!-- 카드 활동노트 모달 (보드에서 바로 열기용) -->
 <div class="modal-bg" id="noteModal" onclick="if(event.target===this)closeNoteModal()">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-who">
-        <div class="modal-avatar" id="nm-avatar"></div>
-        <div><div class="modal-wname" id="nm-name"></div><div class="modal-wsub" id="nm-sub"></div></div>
+  <div class="note-modal">
+    <div class="nm-head">
+      <div class="nm-who">
+        <div class="nm-avatar" id="nm-avatar"></div>
+        <div><div class="nm-name" id="nm-name"></div><div class="nm-sub" id="nm-sub"></div></div>
       </div>
-      <button class="modal-close" onclick="closeNoteModal()">✕</button>
+      <button class="nm-close" onclick="closeNoteModal()">✕</button>
     </div>
-    <div class="note-count-row">
-      <div class="note-count-label"><span class="dot2"></span>활동 노트 <span id="nm-count">0</span>건</div>
-      <button class="btn-add-note" onclick="showNoteInput()">＋ 노트 추가</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="act-label"><span class="dot"></span>활동 노트 <span class="cnt" id="nm-cnt">0</span>건</div>
+      <button class="btn-add-note" onclick="showNoteInput('modal')">＋ 노트 추가</button>
     </div>
-    <div class="notes-list" id="notesList"></div>
-    <div class="note-input-area" id="noteInputArea" style="display:none">
+    <div class="notes-list" id="nm-list"></div>
+    <div class="note-input-wrap" id="nm-input">
       <label class="note-input-label">새 활동 노트</label>
-      <textarea class="note-textarea" id="noteTextarea" placeholder="고객과의 통화 내용, 관심도, 특이사항 등을 자유롭게 입력하세요."></textarea>
-      <div class="note-input-footer">
-        <button class="btn-note-cancel" onclick="hideNoteInput()">취소</button>
-        <button class="btn-note-save" onclick="saveNote()">저장</button>
+      <textarea class="note-textarea" id="nm-textarea" placeholder="고객과의 통화 내용, 관심도, 특이사항 등"></textarea>
+      <div class="note-footer">
+        <button class="btn-nc cancel" onclick="hideNoteInput('modal')">취소</button>
+        <button class="btn-nc save" onclick="saveNote('modal')">저장</button>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- 상세 모달 -->
-<div class="modal-bg" id="detailModal" onclick="if(event.target===this)closeDetailModal()">
-  <div class="detail-modal">
-    <div class="modal-head">
-      <div class="modal-who">
-        <div class="modal-avatar" id="dm-avatar"></div>
-        <div><div class="modal-wname" id="dm-name"></div><div class="modal-wsub" id="dm-sub"></div></div>
-      </div>
-      <button class="modal-close" onclick="closeDetailModal()">✕</button>
-    </div>
-    <div class="dm-grid" id="dm-grid"></div>
   </div>
 </div>
 
 <script>
-// ── 더미 데이터 ─────────────────────────────
+// ── 데이터 ─────────────────────────────────
 let DATA=[
-  {id:1,name:'김부성',rank:'본부장',phone:'010-5064-8707',type:'기존',tm:'중',date:'04.29',region:'평택',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
-  {id:2,name:'민혜경',rank:'팀장',phone:'010-5331-0550',type:'기존',tm:'중',date:'04.28',region:'용인',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'강아름',note:''},
-  {id:3,name:'홍원호',rank:'총괄본부장',phone:'010-5350-8955',type:'기존',tm:'중',date:'',region:'',result:'',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
-  {id:4,name:'강다연',rank:'팀장',phone:'010-9175-8837',type:'기존',tm:'상',date:'',region:'김포',result:'',stage:'프로스펙팅',exec:'조계현',consult:'강아름',note:''},
-  {id:5,name:'이정재',rank:'총괄본부장',phone:'010-4878-7464',type:'기존',tm:'상',date:'04.28',region:'인천',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'박민경',note:''},
-  {id:6,name:'이승엽',rank:'본부장',phone:'010-5391-8497',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'',note:''},
-  {id:7,name:'윤지민',rank:'팀장',phone:'010-9887-1734',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'전정훈',note:''},
-  {id:8,name:'오세혁',rank:'대표',phone:'010-5146-7442',type:'기존',tm:'상',date:'04.24',region:'경남 양산',result:'계약완료',stage:'딜클로징',exec:'최연전',consult:'박민경',note:''},
-  {id:9,name:'한세이',rank:'팀장',phone:'010-7791-7988',type:'기존',tm:'중',date:'03.24',region:'오산',result:'계약완료',stage:'리텐션',exec:'최연전',consult:'강아름',note:''},
-  {id:10,name:'진선화',rank:'본부장',phone:'010-6208-7523',type:'기존',tm:'상',date:'',region:'청주',result:'관리필요',stage:'',exec:'최연전',consult:'전정훈',note:''},
-  {id:11,name:'송태산',rank:'본부장',phone:'010-9787-6397',type:'신규',tm:'중',date:'04.24',region:'울산',result:'예약완료',stage:'프로스펙팅',exec:'조계현',consult:'',note:''},
-  {id:12,name:'김영성',rank:'팀장',phone:'010-8907-6151',type:'신규',tm:'중',date:'04.24',region:'김해',result:'계약완료',stage:'딜클로징',exec:'조계현',consult:'',note:''},
-  {id:13,name:'김소이',rank:'팀장',phone:'010-2755-6981',type:'기존',tm:'중',date:'04.29',region:'오산',result:'',stage:'',exec:'조계현',consult:'박민경',note:''},
-  {id:14,name:'김진태',rank:'팀장',phone:'010-6595-8944',type:'신규',tm:'상',date:'',region:'대전',result:'미팅불발',stage:'프로스펙팅',exec:'최연전',consult:'',note:''},
-  {id:15,name:'박정연',rank:'본부장',phone:'010-2069-4539',type:'기존',tm:'중',date:'',region:'오산',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',note:''},
-  {id:16,name:'박수근',rank:'본부장',phone:'010-6633-7866',type:'기존',tm:'중',date:'04.21',region:'서울 강서구',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'강아름',note:''},
-  {id:17,name:'김성호',rank:'팀장',phone:'010-3773-0018',type:'기존',tm:'중',date:'04.21',region:'성남시',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'강아름',note:''},
+  {id:1,name:'김부성',rank:'본부장',phone:'010-5064-8707',type:'기존',tm:'중',date:'04.29',region:'평택',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',memo:''},
+  {id:2,name:'민혜경',rank:'팀장',phone:'010-5331-0550',type:'기존',tm:'중',date:'04.28',region:'용인',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'강아름',memo:''},
+  {id:3,name:'홍원호',rank:'총괄본부장',phone:'010-5350-8955',type:'기존',tm:'중',date:'',region:'',result:'',stage:'프로스펙팅',exec:'조계현',consult:'박민경',memo:''},
+  {id:4,name:'강다연',rank:'팀장',phone:'010-9175-8837',type:'기존',tm:'상',date:'',region:'김포',result:'',stage:'프로스펙팅',exec:'조계현',consult:'강아름',memo:''},
+  {id:5,name:'이정재',rank:'총괄본부장',phone:'010-4878-7464',type:'기존',tm:'상',date:'04.28',region:'인천',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'박민경',memo:''},
+  {id:6,name:'이승엽',rank:'본부장',phone:'010-5391-8497',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'',memo:''},
+  {id:7,name:'윤지민',rank:'팀장',phone:'010-9887-1734',type:'기존',tm:'',date:'',region:'',result:'',stage:'',exec:'최연전',consult:'전정훈',memo:''},
+  {id:8,name:'오세혁',rank:'대표',phone:'010-5146-7442',type:'기존',tm:'상',date:'04.24',region:'경남 양산',result:'계약완료',stage:'딜클로징',exec:'최연전',consult:'박민경',memo:''},
+  {id:9,name:'한세이',rank:'팀장',phone:'010-7791-7988',type:'기존',tm:'중',date:'03.24',region:'오산',result:'계약완료',stage:'리텐션',exec:'최연전',consult:'강아름',memo:''},
+  {id:10,name:'진선화',rank:'본부장',phone:'010-6208-7523',type:'기존',tm:'상',date:'',region:'청주',result:'관리필요',stage:'',exec:'최연전',consult:'전정훈',memo:'1. 과거 계약 성공했으나 이후 개인사정(법적 소송)으로 불발\n\n2. 청주 레이원시티 본부장 투입예정 확인\n→ 최소 광고비 집행금액 2천'},
+  {id:11,name:'송태산',rank:'본부장',phone:'010-9787-6397',type:'신규',tm:'중',date:'04.24',region:'울산',result:'예약완료',stage:'프로스펙팅',exec:'조계현',consult:'',memo:''},
+  {id:12,name:'김영성',rank:'팀장',phone:'010-8907-6151',type:'신규',tm:'중',date:'04.24',region:'김해',result:'계약완료',stage:'딜클로징',exec:'조계현',consult:'',memo:''},
+  {id:13,name:'김소이',rank:'팀장',phone:'010-2755-6981',type:'기존',tm:'중',date:'04.29',region:'오산',result:'',stage:'',exec:'조계현',consult:'박민경',memo:''},
+  {id:14,name:'김진태',rank:'팀장',phone:'010-6595-8944',type:'신규',tm:'상',date:'',region:'대전',result:'',stage:'프로스펙팅',exec:'최연전',consult:'',memo:''},
+  {id:15,name:'박정연',rank:'본부장',phone:'010-2069-4539',type:'기존',tm:'중',date:'',region:'오산',result:'관리필요',stage:'프로스펙팅',exec:'조계현',consult:'박민경',memo:''},
+  {id:16,name:'박수근',rank:'본부장',phone:'010-6633-7866',type:'기존',tm:'중',date:'04.21',region:'서울 강서구',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'강아름',memo:''},
+  {id:17,name:'김성호',rank:'팀장',phone:'010-3773-0018',type:'기존',tm:'중',date:'04.21',region:'성남시',result:'계약완료',stage:'리텐션',exec:'조계현',consult:'강아름',memo:''},
 ];
-
-// 활동 노트 저장소: {id: [{date, text}]}
 let NOTES={};
-DATA.forEach(d=>{NOTES[d.id]=[]});
-// 샘플 노트
-NOTES[8]=[{id:'n1',date:'4. 23.',text:'1. 14:06 오세혁 대표와 통화 완료 2. 구루... 상세 논의 예정'}];
-NOTES[9]=[{id:'n2',date:'4. 27.',text:'1.5월 8일 호갱노노 관련하여 소통 → 주요...'},{id:'n3',date:'4. 21.',text:'1. 15:43 1차 TM 미수신 2. 16:30 2차 TM...'}];
+DATA.forEach(d=>NOTES[d.id]=[]);
+NOTES[8]=[{id:'n1',date:'4. 23.',text:'1. 14:06 오세혁 대표와 통화 완료\n2. 구루... 상세 논의 예정'}];
+NOTES[9]=[{id:'n2',date:'4. 27.',text:'1. 5월 8일 호갱노노 관련하여 소통\n→ 주요 내용 추가 확인 필요'},{id:'n3',date:'4. 21.',text:'1. 15:43 1차 TM 미수신\n2. 16:30 2차 TM 수신 완료'}];
 
-let activeExec=null;
-let noteTargetId=null;
-let detailTargetId=null;
+let activeExec=null, noteTarget=null, detailId=null, editMode=false;
 
-// ── 아바타 색상 ──────────────────────────────
-const COLORS=['#3b5bdb','#e67700','#2f9e44','#c92a2a','#5f3dc4','#0c8599','#d6336c','#495057'];
-function avatarColor(name){return COLORS[name.charCodeAt(0)%COLORS.length]}
-function avatarLetter(name){return name?name[0]:'?'}
+// ── 유틸 ───────────────────────────────────
+const COLORS=['#3b5bdb','#e67700','#2f9e44','#c92a2a','#5f3dc4','#0c8599','#d6336c','#087f5b'];
+const ac=n=>COLORS[n.charCodeAt(0)%COLORS.length];
+const al=n=>n?n[0]:'?';
+const stageBadge=v=>{const m={리드:'b-lead',프로스펙팅:'b-prospect',딜클로징:'b-deal',리텐션:'b-retain'};return v?`<span class="badge ${m[v]||''}">${v}</span>`:''};
+const typeBadge=v=>{const m={기존:'b-type-old',신규:'b-type-new',소개:'b-type-ref'};return v?`<span class="badge ${m[v]||''}">${v}</span>`:''};
+const tmBadge=v=>v==='상'?`<span class="badge b-tm-high">▲ 상</span>`:v?`<span style="font-size:12px;color:var(--text2)">${v}</span>`:'—';
+const dash=v=>v||'<span style="color:var(--text3)">—</span>';
 
 // ── 필터 ──────────────────────────────────
 function getFiltered(){
@@ -419,165 +429,238 @@ function getFiltered(){
     return true;
   });
 }
-
 function toggleExec(btn){
   const v=btn.dataset.exec;
-  if(activeExec===v){activeExec=null;btn.classList.remove('active')}
-  else{document.querySelectorAll('.exec-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeExec=v}
-  render();
+  activeExec=activeExec===v?null:v;
+  document.querySelectorAll('.exec-btn').forEach(b=>b.classList.toggle('active',b.dataset.exec===activeExec));
+  renderBoard();
 }
 function resetFilter(){
   activeExec=null;
   document.querySelectorAll('.exec-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('searchInput').value='';
-  render();
+  renderBoard();
 }
-
-// ── 배지 ──────────────────────────────────
-const stageBadge=v=>{const m={리드:'b-lead',프로스펙팅:'b-prospect',딜클로징:'b-deal',리텐션:'b-retain'};return v?`<span class="badge ${m[v]||''}">${v}</span>`:''};
-const tmBadge=v=>{if(v==='상')return`<span class="badge b-tm-high">▲ 상</span>`;if(v==='중')return`<span class="badge b-tm-mid">중</span>`;return''};
 
 // ── 카드 HTML ─────────────────────────────
 function cardHTML(d){
-  const color=avatarColor(d.name);
   const notes=NOTES[d.id]||[];
-  const notePreview=notes.length>0
-    ?`<div class="note-preview">${notes.slice(0,2).map(n=>`<div class="note-item"><span class="note-date">${n.date}</span><span class="note-text">${n.text}</span></div>`).join('')}${notes.length>2?`<div class="note-more">+${notes.length-2}개 더</div>`:''}</div>`
-    :'';
-  return `<div class="card" id="card-${d.id}">
+  const prev=notes.length>0
+    ?`<div class="note-preview">${notes.slice(0,2).map(n=>`<div class="note-prev-item"><span class="note-prev-date">${n.date}</span><span class="note-prev-text">${n.text.split('\n')[0]}</span></div>`).join('')}${notes.length>2?`<div class="note-prev-more">+${notes.length-2}개 더</div>`:''}</div>`:'';
+  return `<div class="card">
     <div class="card-head">
-      <div class="card-avatar" style="background:${color}">${avatarLetter(d.name)}</div>
-      <div class="card-info">
-        <div class="card-name">${d.name}</div>
-        <div class="card-sub">${d.rank||''}${d.exec?' · '+d.exec:''}</div>
-      </div>
-      <button class="card-detail-btn" onclick="openDetailModal(${d.id})">상세</button>
+      <div class="card-avatar" style="background:${ac(d.name)}">${al(d.name)}</div>
+      <div class="card-info"><div class="card-name">${d.name}</div><div class="card-sub">${d.rank||''}${d.exec?' · '+d.exec:''}</div></div>
+      <button class="card-detail-btn" onclick="openDetail(${d.id})">상세</button>
     </div>
     ${d.stage?`<div class="card-stage">${stageBadge(d.stage)}</div>`:''}
     <div class="card-meta">
-      ${d.phone?`<div class="card-meta-row"><span class="micon">📞</span><span>${d.phone}</span></div>`:''}
-      ${d.date||d.region?`<div class="card-meta-row"><span class="micon">📍</span><span>${d.date?`<span class="card-date">${d.date}일</span>`:''}${d.date&&d.region?' · ':''}${d.region||''}</span></div>`:''}
-      ${d.tm?`<div class="card-meta-row"><span class="micon">📡</span><span>TM감도 ${tmBadge(d.tm)}</span></div>`:''}
+      ${d.phone?`<div class="card-meta-row"><span class="micon">📞</span>${d.phone}</div>`:''}
+      ${(d.date||d.region)?`<div class="card-meta-row"><span class="micon">📍</span>${d.date?`<span class="card-date">${d.date}일</span>`:''}${d.date&&d.region?' · ':''}${d.region||''}</div>`:''}
+      ${d.tm?`<div class="card-meta-row"><span class="micon">📡</span>TM감도 ${tmBadge(d.tm)}</div>`:''}
     </div>
-    ${notePreview}
-    <button class="card-note-btn" onclick="openNoteModal(${d.id})">
-      📝 활동노트 ${notes.length>0?`(${notes.length}건)`:'입력하기'} →
-    </button>
+    ${prev}
+    <button class="card-note-btn" onclick="openNoteModal(${d.id})">📝 활동노트 ${notes.length?`(${notes.length}건)`:'입력하기'} →</button>
   </div>`;
 }
 
-// ── 렌더 ──────────────────────────────────
-function render(){
-  const filtered=getFiltered();
-  const total=filtered.length;
-  document.getElementById('totalDesc').textContent=`전체 ${DATA.length}명 중 ${total}명 표시`;
-  document.getElementById('totalInfo').innerHTML=`전체 <strong>${total}</strong>명 표시`;
-
+// ── 보드 렌더 ─────────────────────────────
+function renderBoard(){
+  const f=getFiltered();
+  document.getElementById('totalDesc').textContent=`전체 ${DATA.length}명 중 ${f.length}명 표시`;
+  document.getElementById('totalInfo').innerHTML=`전체 <strong>${f.length}</strong>명 표시`;
   const cols={
-    meeting: filtered.filter(d=>!d.result||d.result===''),
-    done:    filtered.filter(d=>d.result==='계약완료'),
-    book:    filtered.filter(d=>d.result==='예약완료'),
-    doc:     filtered.filter(d=>d.result==='서류수취'),
-    manage:  filtered.filter(d=>d.result==='관리필요'),
+    meeting:f.filter(d=>!d.result),
+    done:f.filter(d=>d.result==='계약완료'),
+    book:f.filter(d=>d.result==='예약완료'),
+    doc:f.filter(d=>d.result==='서류수취'),
+    manage:f.filter(d=>d.result==='관리필요'),
   };
-
-  Object.entries(cols).forEach(([key,list])=>{
-    document.getElementById('cnt-'+key).textContent=list.length;
-    const body=document.getElementById('body-'+key);
-    if(!list.length){
-      body.innerHTML=`<div class="empty-col"><div class="eicon">📭</div>없음</div>`;
-    } else {
-      body.innerHTML=list.map(d=>cardHTML(d)).join('');
-    }
+  Object.entries(cols).forEach(([k,list])=>{
+    document.getElementById('cnt-'+k).textContent=list.length;
+    document.getElementById('body-'+k).innerHTML=list.length
+      ?list.map(d=>cardHTML(d)).join('')
+      :`<div class="empty-col"><div style="font-size:22px">📭</div>없음</div>`;
   });
 }
 
-// ── 활동 노트 모달 ───────────────────────────
-function openNoteModal(id){
-  noteTargetId=id;
+// ── 상세 오버레이 ─────────────────────────
+function openDetail(id){
+  detailId=id; editMode=false;
   const d=DATA.find(x=>x.id===id);
-  const color=avatarColor(d.name);
-  document.getElementById('nm-avatar').style.background=color;
-  document.getElementById('nm-avatar').textContent=avatarLetter(d.name);
-  document.getElementById('nm-name').textContent=d.name+' — 활동 노트';
-  document.getElementById('nm-sub').textContent=(d.rank||'')+(d.exec?' · '+d.exec:'');
-  renderNoteList();
-  hideNoteInput();
-  document.getElementById('noteModal').classList.add('on');
+  // 헤더
+  const av=document.getElementById('d-avatar');
+  av.style.background=ac(d.name); av.textContent=al(d.name);
+  document.getElementById('d-name').textContent=d.name;
+  document.getElementById('d-rank').textContent=d.rank||'';
+  document.getElementById('d-type-badge').innerHTML=typeBadge(d.type);
+  document.getElementById('editToggleBtn').textContent='✏️ 수정';
+  document.getElementById('detailSaveBar').style.display='none';
+  renderDetailGrid(d, false);
+  document.getElementById('detailOverlay').classList.add('open');
 }
-function closeNoteModal(){document.getElementById('noteModal').classList.remove('on');noteTargetId=null}
+function closeDetail(){
+  document.getElementById('detailOverlay').classList.remove('open');
+  detailId=null; editMode=false;
+}
+function toggleEditMode(){
+  editMode=!editMode;
+  const d=DATA.find(x=>x.id===detailId);
+  renderDetailGrid(d, editMode);
+  document.getElementById('editToggleBtn').textContent=editMode?'취소':'✏️ 수정';
+  document.getElementById('detailSaveBar').style.display=editMode?'flex':'none';
+}
+function discardEdit(){
+  editMode=false;
+  const d=DATA.find(x=>x.id===detailId);
+  renderDetailGrid(d, false);
+  document.getElementById('editToggleBtn').textContent='✏️ 수정';
+  document.getElementById('detailSaveBar').style.display='none';
+}
 
-function renderNoteList(){
-  const notes=NOTES[noteTargetId]||[];
-  document.getElementById('nm-count').textContent=notes.length;
-  const list=document.getElementById('notesList');
-  if(!notes.length){list.innerHTML=`<div class="note-empty">활동 노트가 없습니다</div>`;return}
-  list.innerHTML=notes.map(n=>`
-    <div class="note-card" id="nc-${n.id}">
-      <div class="note-card-head">
-        <span class="note-card-date">${n.date}</span>
-        <div class="note-card-acts">
-          <button class="nc-btn del" onclick="deleteNote('${n.id}')">삭제</button>
+function renderDetailGrid(d, edit){
+  const notes=NOTES[d.id]||[];
+  const irow=(label,val,field,type='text',opts=[])=>{
+    let valHTML;
+    if(edit){
+      if(type==='select'){
+        valHTML=`<select class="e-select" id="ef_${field}"><option value="">선택</option>${opts.map(o=>`<option${d[field]===o?' selected':''}>${o}</option>`).join('')}</select>`;
+      } else if(type==='textarea'){
+        valHTML=`<textarea class="e-textarea" id="ef_${field}">${d[field]||''}</textarea>`;
+      } else {
+        valHTML=`<input class="e-input" id="ef_${field}" type="text" value="${d[field]||''}">`;
+      }
+    } else {
+      valHTML=`<span class="${val?'':'muted'}">${val||'—'}</span>`;
+    }
+    return `<div class="info-row"><span class="info-label">${label}</span><div class="info-val">${valHTML}</div></div>`;
+  };
+
+  document.getElementById('detailGrid').innerHTML=`
+    <!-- 기본 정보 -->
+    <div class="detail-card">
+      <div class="dc-title"><span class="dot" style="background:var(--blue)"></span>기본 정보</div>
+      ${irow('연락처',d.phone,'phone')}
+      ${irow('고객유형',d.type,'type','select',['신규','기존','소개'])}
+      ${irow('담당자',d.exec,'exec','select',['조계현','이세호','기여운','최연전'])}
+      ${irow('담당 컨설턴트',d.consult,'consult','select',['박경화','박혜은','박민경','조승현','강아름','백선중','전정훈','박나라'])}
+    </div>
+
+    <!-- 미팅 정보 -->
+    <div class="detail-card">
+      <div class="dc-title"><span class="dot" style="background:var(--gold)"></span>미팅 정보</div>
+      ${irow('미팅 일정',d.date,'date')}
+      ${irow('미팅 지역',d.region,'region')}
+      ${irow('미팅 결과',d.result,'result','select',['계약완료','예약완료','서류수취','관리필요','계약거부','미팅불발'])}
+    </div>
+
+    <!-- 영업 정보 -->
+    <div class="detail-card">
+      <div class="dc-title"><span class="dot" style="background:var(--green)"></span>영업 정보${edit?'<span class="edit-hint">수정 가능</span>':''}</div>
+      ${irow('TM 감도',d.tm,'tm','select',['상','중','하'])}
+      ${irow('관리 구간',d.stage,'stage','select',['리드','프로스펙팅','딜클로징','리텐션'])}
+    </div>
+
+    <!-- 비고 -->
+    <div class="detail-card">
+      <div class="dc-title"><span class="dot" style="background:var(--purple)"></span>비고</div>
+      ${edit
+        ?`<textarea class="e-textarea" id="ef_memo" style="min-height:110px">${d.memo||''}</textarea>`
+        :`<div class="note-box${d.memo?'':' empty'}" style="white-space:pre-wrap">${d.memo||'비고 없음'}</div>`
+      }
+    </div>
+
+    <!-- 활동 노트 -->
+    <div class="detail-card full">
+      <div class="act-head">
+        <div class="act-label"><span class="dot"></span>활동 노트 <span class="cnt" id="detail-note-cnt">${notes.length}</span>건</div>
+        <button class="btn-add-note" onclick="showNoteInput('detail')">＋ 노트 추가</button>
+      </div>
+      <div class="notes-list" id="detail-notes-list">
+        ${notes.length
+          ?notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-card-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${d.id},'${n.id}','detail')">삭제</button></div><div class="note-card-text">${n.text}</div></div>`).join('')
+          :'<div class="note-empty">활동 노트가 없습니다</div>'
+        }
+      </div>
+      <div class="note-input-wrap" id="detail-note-input">
+        <label class="note-input-label">새 활동 노트</label>
+        <textarea class="note-textarea" id="detail-note-textarea" placeholder="고객과의 통화 내용, 관심도, 특이사항 등"></textarea>
+        <div class="note-footer">
+          <button class="btn-nc cancel" onclick="hideNoteInput('detail')">취소</button>
+          <button class="btn-nc save" onclick="saveNote('detail')">저장</button>
         </div>
       </div>
-      <div class="note-card-text">${n.text.replace(/\n/g,'<br>')}</div>
-    </div>`).join('');
-}
-
-function showNoteInput(){document.getElementById('noteInputArea').style.display='block';document.getElementById('noteTextarea').focus()}
-function hideNoteInput(){document.getElementById('noteInputArea').style.display='none';document.getElementById('noteTextarea').value=''}
-
-function saveNote(){
-  const text=document.getElementById('noteTextarea').value.trim();
-  if(!text)return;
-  if(!NOTES[noteTargetId])NOTES[noteTargetId]=[];
-  const today=new Date();
-  const dateStr=`${today.getMonth()+1}. ${today.getDate()}.`;
-  const nid='n'+Date.now();
-  NOTES[noteTargetId].unshift({id:nid,date:dateStr,text});
-  hideNoteInput();
-  renderNoteList();
-  render(); // 카드 노트 프리뷰 업데이트
-}
-
-function deleteNote(nid){
-  if(!confirm('이 노트를 삭제하시겠습니까?'))return;
-  NOTES[noteTargetId]=NOTES[noteTargetId].filter(n=>n.id!==nid);
-  renderNoteList();
-  render();
-}
-
-// ── 상세 모달 ─────────────────────────────
-function openDetailModal(id){
-  const d=DATA.find(x=>x.id===id);
-  const color=avatarColor(d.name);
-  document.getElementById('dm-avatar').style.background=color;
-  document.getElementById('dm-avatar').textContent=avatarLetter(d.name);
-  document.getElementById('dm-name').textContent=d.name;
-  document.getElementById('dm-sub').textContent=(d.rank||'')+(d.phone?' · '+d.phone:'');
-
-  const val=(v,fallback='—')=>v?`<div class="dm-val">${v}</div>`:`<div class="dm-val empty">${fallback}</div>`;
-  document.getElementById('dm-grid').innerHTML=`
-    <div class="dm-sec"><span class="dot" style="background:var(--blue)"></span>미팅 전 정보</div>
-    <div class="dm-field"><div class="dm-label">고객명</div>${val(d.name)}</div>
-    <div class="dm-field"><div class="dm-label">직급</div>${val(d.rank)}</div>
-    <div class="dm-field"><div class="dm-label">연락처</div>${val(d.phone)}</div>
-    <div class="dm-field"><div class="dm-label">고객유형</div>${val(d.type)}</div>
-    <div class="dm-field"><div class="dm-label">TM 감도</div>${val(d.tm)}</div>
-    <div class="dm-field"><div class="dm-label">미팅 일정</div>${val(d.date)}</div>
-    <div class="dm-field full"><div class="dm-label">미팅 지역</div>${val(d.region)}</div>
-    <div class="dm-sec" style="margin-top:8px"><span class="dot" style="background:var(--gold)"></span>미팅 후 정보</div>
-    <div class="dm-field"><div class="dm-label">미팅 결과</div>${val(d.result)}</div>
-    <div class="dm-field"><div class="dm-label">관리 구간</div>${val(d.stage)}</div>
-    <div class="dm-field"><div class="dm-label">담당 실행파트</div>${val(d.exec)}</div>
-    <div class="dm-field"><div class="dm-label">담당 컨설턴트</div>${val(d.consult)}</div>
-    <div class="dm-field full"><div class="dm-label">비고</div>${val(d.note)}</div>
+    </div>
   `;
-  document.getElementById('detailModal').classList.add('on');
 }
-function closeDetailModal(){document.getElementById('detailModal').classList.remove('on')}
 
-render();
+function saveDetail(){
+  const d=DATA.find(x=>x.id===detailId);
+  ['phone','type','exec','consult','date','region','result','tm','stage','memo'].forEach(k=>{
+    const el=document.getElementById('ef_'+k);
+    if(el) d[k]=el.value;
+  });
+  editMode=false;
+  document.getElementById('editToggleBtn').textContent='✏️ 수정';
+  document.getElementById('detailSaveBar').style.display='none';
+  // 헤더 뱃지 업데이트
+  document.getElementById('d-type-badge').innerHTML=typeBadge(d.type);
+  renderDetailGrid(d, false);
+  renderBoard();
+}
+
+// ── 활동 노트 공통 ────────────────────────
+function showNoteInput(ctx){
+  document.getElementById(ctx==='detail'?'detail-note-input':'nm-input').classList.add('show');
+  document.getElementById(ctx==='detail'?'detail-note-textarea':'nm-textarea').focus();
+}
+function hideNoteInput(ctx){
+  const inp=document.getElementById(ctx==='detail'?'detail-note-input':'nm-input');
+  const ta=document.getElementById(ctx==='detail'?'detail-note-textarea':'nm-textarea');
+  inp.classList.remove('show'); ta.value='';
+}
+function saveNote(ctx){
+  const id=ctx==='detail'?detailId:noteTarget;
+  const text=document.getElementById(ctx==='detail'?'detail-note-textarea':'nm-textarea').value.trim();
+  if(!text)return;
+  const today=new Date();
+  const nid='n'+Date.now();
+  NOTES[id].unshift({id:nid,date:`${today.getMonth()+1}. ${today.getDate()}.`,text});
+  hideNoteInput(ctx);
+  if(ctx==='detail') renderDetailGrid(DATA.find(x=>x.id===id), editMode);
+  else renderNoteModal();
+  renderBoard();
+}
+function deleteNote(id, nid, ctx){
+  if(!confirm('삭제하시겠습니까?'))return;
+  NOTES[id]=NOTES[id].filter(n=>n.id!==nid);
+  if(ctx==='detail') renderDetailGrid(DATA.find(x=>x.id===id), editMode);
+  else renderNoteModal();
+  renderBoard();
+}
+
+// ── 카드 활동노트 모달 ────────────────────
+function openNoteModal(id){
+  noteTarget=id;
+  const d=DATA.find(x=>x.id===id);
+  document.getElementById('nm-avatar').style.background=ac(d.name);
+  document.getElementById('nm-avatar').textContent=al(d.name);
+  document.getElementById('nm-name').textContent=d.name+' — 활동 노트';
+  document.getElementById('nm-sub').textContent=(d.rank||'')+(d.exec?' · '+d.exec:'');
+  hideNoteInput('modal');
+  renderNoteModal();
+  document.getElementById('noteModal').classList.add('on');
+}
+function closeNoteModal(){document.getElementById('noteModal').classList.remove('on');noteTarget=null}
+function renderNoteModal(){
+  const notes=NOTES[noteTarget]||[];
+  document.getElementById('nm-cnt').textContent=notes.length;
+  document.getElementById('nm-list').innerHTML=notes.length
+    ?notes.map(n=>`<div class="note-card"><div class="note-card-head"><span class="note-card-date">${n.date}</span><button class="nc-del" onclick="deleteNote(${noteTarget},'${n.id}','modal')">삭제</button></div><div class="note-card-text">${n.text}</div></div>`).join('')
+    :'<div class="note-empty">활동 노트가 없습니다</div>';
+}
+
+renderBoard();
 </script>
 </body>
 </html>
