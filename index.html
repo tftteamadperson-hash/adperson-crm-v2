@@ -413,7 +413,7 @@ function handleLogin(){
   if(!id.value.trim()){id.classList.add('err');setTimeout(()=>id.classList.remove('err'),400);ok=false}
   if(!pw.value){pw.classList.add('err');setTimeout(()=>pw.classList.remove('err'),400);ok=false}
   if(!ok)return;
-  alert('로그인 기능은 추후 연결 예정입니다.');
+  window.location.href = 'dashboard.html';
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){if(document.getElementById('overlay').classList.contains('on'))handleLogin();else if(document.getElementById('main').classList.contains('show'))openModal()}

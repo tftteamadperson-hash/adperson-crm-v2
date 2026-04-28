@@ -218,6 +218,7 @@ tr.new-anim{animation:newRow 1.6s ease}
 .btn-cancel:hover{border-color:var(--text2)}
 .btn-submit{flex:2;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;border-radius:6px;padding:11px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
 .btn-submit:hover{box-shadow:0 4px 16px rgba(201,168,76,.3)}
+.sb-coming{margin-left:auto;font-size:9px;color:var(--text3);background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
 </style>
 </head>
 <body>
@@ -234,25 +235,25 @@ tr.new-anim{animation:newRow 1.6s ease}
   </div>
   <nav class="sb-nav">
     <div class="sb-section">총괄</div>
-    <a class="sb-item"><span class="icon">📊</span>대시보드</a>
-    <a class="sb-item"><span class="icon">📅</span>월간 실적</a>
-    <a class="sb-item"><span class="icon">📆</span>주간 실적</a>
+    <a class="sb-item" href="dashboard.html"><span class="icon">📊</span>대시보드</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📅</span>월간 실적<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📆</span>주간 실적<span class="sb-coming">준비중</span></a>
     <div class="sb-section">실행</div>
-    <a class="sb-item active"><span class="icon">👥</span>고객 DB</a>
-    <a class="sb-item"><span class="icon">🔀</span>파이프라인</a>
-    <a class="sb-item"><span class="icon">⭐</span>분양회 입회자</a>
-    <a class="sb-item"><span class="icon">📰</span>취재 · 아티클</a>
-    <a class="sb-item"><span class="icon">🏢</span>프리미엄 대행사</a>
-    <a class="sb-item"><span class="icon">🚚</span>완판트럭</a>
+    <a class="sb-item active" href="customers.html"><span class="icon">👥</span>고객 DB</a>
+    <a class="sb-item" href="pipeline.html"><span class="icon">🔀</span>파이프라인</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">⭐</span>분양회 입회자<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📰</span>취재 · 아티클<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="premium-agency.html"><span class="icon">🏢</span>프리미엄 대행사</a>
+    <a class="sb-item" href="wanpan.html"><span class="icon">🚚</span>완판트럭</a>
     <div class="sb-section">운영</div>
-    <a class="sb-item"><span class="icon">📋</span>매출일보</a>
-    <a class="sb-item"><span class="icon">💰</span>통합 매출 관리</a>
-    <a class="sb-item"><span class="icon">🎁</span>리워드 관리</a>
-    <a class="sb-item"><span class="icon">👑</span>분양회 회원 관리</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📋</span>매출일보<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">💰</span>통합 매출 관리<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">🎁</span>리워드 관리<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">👑</span>분양회 회원 관리<span class="sb-coming">준비중</span></a>
   </nav>
   <div class="sb-bottom">
     <a class="sb-item"><span class="icon">🌙</span>라이트 모드</a>
-    <a class="sb-item"><span class="icon">🚪</span>로그아웃</a>
+    <a class="sb-item" href="index.html"><span class="icon">🚪</span>로그아웃</a>
   </div>
 </aside>
 

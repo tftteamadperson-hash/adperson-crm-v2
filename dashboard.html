@@ -73,6 +73,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .sb-item .icon{font-size:14px;width:16px;text-align:center;flex-shrink:0}
 .sb-item .badge{margin-left:auto;background:var(--gold);color:#160d00;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
 .sb-item .tag-dev{margin-left:auto;font-size:9px;color:var(--text3);background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
+.sb-coming{margin-left:auto;font-size:9px;color:var(--text3);background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
 
 .sb-bottom{
   padding:10px 0;border-top:1px solid var(--border);
@@ -264,41 +265,26 @@ select{outline:none}
     </div>
   </div>
   <nav class="sb-nav">
-    <div class="sb-section">실행파트</div>
-    <a class="sb-item active"><span class="icon">📊</span>대시보드</a>
-    <a class="sb-item"><span class="icon">📋</span>업무전달</a>
-    <a class="sb-item"><span class="icon">👥</span>고객 DB</a>
-    <a class="sb-item"><span class="icon">🔀</span>파이프라인</a>
-    <a class="sb-item"><span class="icon">⭐</span>분양회 입회자</a>
-    <a class="sb-item"><span class="icon">🚚</span>완판트럭</a>
-    <a class="sb-item"><span class="icon">📅</span>운영캘린더</a>
-    <a class="sb-item"><span class="icon">📝</span>메모장</a>
-
-    <div class="sb-section">운영파트</div>
-    <a class="sb-item"><span class="icon">👑</span>분양회 회원관리</a>
-    <a class="sb-item"><span class="icon">📰</span>회원 컨텐츠 관리</a>
-    <a class="sb-item"><span class="icon">💰</span>통합매출관리</a>
-    <a class="sb-item"><span class="icon">🎁</span>리워드 관리</a>
-    <a class="sb-item"><span class="icon">🏆</span>인센티브 관리</a>
-    <a class="sb-item"><span class="icon">📄</span>견적서</a>
-
-    <div class="sb-section">정보제공</div>
-    <a class="sb-item"><span class="icon">🏗️</span>신규현장</a>
-    <a class="sb-item"><span class="icon">📡</span>광고 현운예지</a>
-    <a class="sb-item"><span class="icon">📈</span>광고내역기록</a>
-
-    <div class="sb-section">AI</div>
-    <a class="sb-item"><span class="icon">✨</span>AI 어시스턴트<span class="tag-dev">개발중</span></a>
-
-    <div class="sb-section">관리자 전용</div>
-    <a class="sb-item"><span class="icon">📉</span>팀 성과 분석</a>
-    <a class="sb-item"><span class="icon">🎯</span>KPI 설정</a>
-    <a class="sb-item"><span class="icon">💎</span>인센티브 관리</a>
-    <a class="sb-item"><span class="icon">🔐</span>계정관리</a>
+    <div class="sb-section">총괄</div>
+    <a class="sb-item active" href="dashboard.html"><span class="icon">📊</span>대시보드</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📅</span>월간 실적<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📆</span>주간 실적<span class="sb-coming">준비중</span></a>
+    <div class="sb-section">실행</div>
+    <a class="sb-item" href="customers.html"><span class="icon">👥</span>고객 DB</a>
+    <a class="sb-item" href="pipeline.html"><span class="icon">🔀</span>파이프라인</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">⭐</span>분양회 입회자<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📰</span>취재 · 아티클<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="premium-agency.html"><span class="icon">🏢</span>프리미엄 대행사</a>
+    <a class="sb-item" href="wanpan.html"><span class="icon">🚚</span>완판트럭</a>
+    <div class="sb-section">운영</div>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📋</span>매출일보<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">💰</span>통합 매출 관리<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">🎁</span>리워드 관리<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">👑</span>분양회 회원 관리<span class="sb-coming">준비중</span></a>
   </nav>
   <div class="sb-bottom">
     <a class="sb-item"><span class="icon">🌙</span>라이트 모드</a>
-    <a class="sb-item"><span class="icon">🚪</span>로그아웃</a>
+    <a class="sb-item" href="index.html"><span class="icon">🚪</span>로그아웃</a>
   </div>
 </aside>
 
