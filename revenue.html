@@ -258,8 +258,8 @@ td{padding:9px 6px;font-size:12px;color:var(--text2);white-space:nowrap;text-ali
       </div>
       <div class="tbl-wrap">
         <table><thead><tr>
-          <th>매출구분</th><th>고객명</th><th>직급</th><th>금액</th>
-          <th>결제일·환불일</th><th>계약경로</th><th>실행파트</th><th>컨설턴트</th><th>리워드·마일리지</th>
+          <th>계약경로</th><th>매출구분</th><th>고객명</th><th>직급</th><th>금액</th>
+          <th>결제일·환불일</th><th>실행파트</th><th>컨설턴트</th><th>리워드·마일리지</th>
         </tr></thead><tbody id="execBody"></tbody></table>
       </div>
     </div>
@@ -275,8 +275,8 @@ td{padding:9px 6px;font-size:12px;color:var(--text2);white-space:nowrap;text-ali
       </div>
       <div class="tbl-wrap">
         <table><thead><tr>
-          <th>매출구분</th><th>고객명</th><th>직급</th><th>발송매체</th><th>발송건수</th>
-          <th>금액</th><th>결제일·환불일</th><th>운영파트</th><th>컨설턴트</th><th>리워드·마일리지</th>
+          <th>발송매체</th><th>발송채널</th><th>고객명</th><th>직급</th><th>발송건수</th>
+          <th>금액</th><th>결제일·환불일</th><th>발송일</th><th>운영파트</th><th>컨설턴트</th><th>리워드·마일리지</th>
         </tr></thead><tbody id="opsBody"></tbody></table>
       </div>
     </div>
@@ -333,11 +333,11 @@ if(!EDATA.length){EDATA=[
   {id:5,saleType:'분양회',name:'이정재',rank:'총괄본부장',amount:5500000,vat:1,date:'2026-04-21',route:'분양회',exec:'조계현',consult:'박민경',rewardType:'reward',rewardAmt:275000,quarter:'3분기',note:''},
 ];saveE(EDATA);}
 if(!ODATA.length){ODATA=[
-  {id:1,saleType:'LMS',name:'김이태',rank:'본부장',amount:3300000,vat:0,count:30000,date:'2026-04-20',sendDate:'2026-04-23',ops:'김재영',consult:'박나라',rewardAmt:495000,quarter:'3분기',note:''},
-  {id:2,saleType:'LMS',name:'김이태',rank:'본부장',amount:4950000,vat:0,count:45000,date:'2026-04-22',sendDate:'2026-04-22',ops:'김재영',consult:'박나라',rewardAmt:742500,quarter:'3분기',note:''},
-  {id:3,saleType:'LMS',name:'김윤아',rank:'팀장',amount:3300000,vat:0,count:30000,date:'2026-04-15',sendDate:'2026-04-17',ops:'최은정',consult:'박민경',rewardAmt:495000,quarter:'3분기',note:''},
-  {id:4,saleType:'호갱노노',name:'오정연',rank:'실장',amount:1650000,vat:0,count:10000,date:'2026-03-05',sendDate:'2026-03-20',ops:'김재영',consult:'박나라',rewardAmt:82500,quarter:'2분기',note:''},
-  {id:5,saleType:'호갱노노',name:'김선호',rank:'본부장',amount:4950000,vat:0,count:30000,date:'2026-03-17',sendDate:'2026-03-19',ops:'김재영',consult:'백선중',rewardAmt:247500,quarter:'2분기',note:''},
+  {id:1,saleType:'LMS',name:'김이태',rank:'본부장',amount:3300000,vat:0,count:30000,sendChannel:'SKT',date:'2026-04-20',sendDate:'2026-04-23',ops:'김재영',consult:'박나라',rewardAmt:450000,quarter:'3분기',note:'SKT 20%'},
+  {id:2,saleType:'LMS',name:'김이태',rank:'본부장',amount:4950000,vat:0,count:45000,sendChannel:'국민카드',date:'2026-04-22',sendDate:'2026-04-22',ops:'김재영',consult:'박나라',rewardAmt:675000,quarter:'3분기',note:'BC카드 15%'},
+  {id:3,saleType:'LMS',name:'김윤아',rank:'팀장',amount:3300000,vat:0,count:30000,sendChannel:'국민카드',date:'2026-04-15',sendDate:'2026-04-17',ops:'최은정',consult:'박민경',rewardAmt:450000,quarter:'3분기',note:'BC카드 15%'},
+  {id:4,saleType:'호갱노노',name:'오정연',rank:'실장',amount:1650000,vat:0,count:10000,sendChannel:'채널톡',date:'2026-03-05',sendDate:'2026-03-20',ops:'김재영',consult:'박나라',rewardAmt:100000,quarter:'2분기',note:''},
+  {id:5,saleType:'호갱노노',name:'김선호',rank:'본부장',amount:4950000,vat:0,count:30000,sendChannel:'채널톡',date:'2026-03-17',sendDate:'2026-03-19',ops:'김재영',consult:'백선중',rewardAmt:300000,quarter:'2분기',note:''},
 ];saveO(ODATA);}
 
 /* ── 분류 ── */
@@ -366,12 +366,18 @@ function autoQuarter(dateStr){
 }
 
 /* 리워드 계산 */
-function calcRewardAmt(saleType,amount,rewardType){
+function calcRewardAmt(saleType, amount, rewardType, count, channel){
+  count = count || 0;
+  /* 운영파트 */
+  if(saleType==='호갱노노') return Math.round(count * 200 * 0.05);
+  if(saleType==='LMS'){
+    var price = channel==='롯데멤버스' ? 80 : 100;
+    return Math.round(count * price * 0.15);
+  }
+  /* 실행파트 */
   var amt=Math.abs(amount||0);
-  if(saleType==='호갱노노')return Math.round(amt*0.05);
-  if(saleType==='LMS')return Math.round(amt*0.15);
-  if(rewardType==='reward')return Math.round(amt*0.05);
-  if(rewardType==='mileage')return Math.round(amt*0.10);
+  if(rewardType==='reward') return Math.round(amt*0.05);
+  if(rewardType==='mileage') return Math.round(amt*0.10);
   return 0;
 }
 
@@ -492,12 +498,12 @@ function doRender(){
   document.getElementById('execBody').innerHTML=eData.length?eData.map(function(d){
     var rb=d.rewardAmt?'<span class="badge '+(d.rewardType==='reward'||d.rewardType==='fixed5'||d.rewardType==='fixed15'?'b-reward':'b-mile')+'">'+(d.rewardType==='mileage'?'M':'R')+' '+won(d.rewardAmt)+'</span>':'—';
     return '<tr onclick="openEditModal(\'exec\','+d.id+')">'
+      +'<td>'+(SALE_BADGE[d.route]||d.route||'—')+'</td>'
       +'<td>'+typeCell(d.saleType)+'</td>'
       +'<td class="td-name">'+d.name+'</td>'
       +'<td>'+d.rank+'</td>'
       +'<td>'+amtCell(d.amount,d.vat)+'</td>'
       +'<td>'+dateCell(d.amount,d.date)+'</td>'
-      +'<td>'+(SALE_BADGE[d.route]||d.route||'—')+'</td>'
       +'<td>'+d.exec+'</td>'
       +'<td>'+d.consult+'</td>'
       +'<td>'+rb+'</td>'
@@ -507,13 +513,14 @@ function doRender(){
   document.getElementById('opsBody').innerHTML=oData.length?oData.map(function(d){
     var rb=d.rewardAmt?'<span class="badge b-reward">'+won(d.rewardAmt)+'</span>':'—';
     return '<tr onclick="openEditModal(\'ops\','+d.id+')">'
-      +'<td><div class="type-cell"><span class="b-cat-ad">[문자광고]</span></div></td>'
+      +'<td>'+(SALE_BADGE[d.saleType]||d.saleType)+'</td>'
+      +'<td style="font-size:11px">'+(d.sendChannel||'—')+'</td>'
       +'<td class="td-name">'+d.name+'</td>'
       +'<td>'+d.rank+'</td>'
-      +'<td>'+(SALE_BADGE[d.saleType]||d.saleType)+'</td>'
       +'<td>'+(d.count||0).toLocaleString()+'건</td>'
-      +'<td>'+amtCell(d.amount,d.vat)+'</td>'
+      +'<td>'+amtCell(d.amount,0)+'</td>'
       +'<td>'+dateCell(d.amount,d.date)+'</td>'
+      +'<td>'+fmtDate(d.sendDate)+'</td>'
       +'<td>'+d.ops+'</td>'
       +'<td>'+d.consult+'</td>'
       +'<td>'+rb+'</td>'
@@ -539,7 +546,7 @@ function closeModal(){document.getElementById('modalBg').classList.remove('on');
 function switchModalTab(t){modalTab=t;var d=null;renderModal(t,d);}
 
 var EXEC_TYPES=['입회비','월회비','TM토스','완판트럭','분양회'];
-var OPS_TYPES=['호갱노노','LMS','직방'];
+var OPS_TYPES=['LMS','호갱노노','직방'];
 var EXEC_LIST=['조계현','이세호','기여운','최연전'];
 var OPS_LIST=['김재영','최은정'];
 var CONSULT_LIST=['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'];
@@ -644,9 +651,14 @@ function onCountChange(){
     if(cnt&&amtEl){
       var calculated=Math.round(cnt*info.price*1.1);
       amtEl.value=calculated.toLocaleString();
-      onAmtChange('ops');
     }
   }
+  /* 리워드 갱신 */
+  var cnt2=numRaw('f_count');
+  var amtRaw=(document.getElementById('f_amount').value||'').replace(/,/g,'');
+  var amt=parseFloat(amtRaw)||0;
+  var rw=calcRewardAmt(st,amt,'',cnt2,ch);
+  var el=document.getElementById('f_rwPrev');if(el)el.textContent=rw.toLocaleString()+'원';
 }
 
 function renderModal(type, d){
@@ -749,13 +761,13 @@ function onAmtChange(type){
   var amt=parseFloat(raw)||0;
   var abs=Math.abs(amt);
   var vat=document.getElementById('f_vat')?document.getElementById('f_vat').value:'0';
-  /* VAT 힌트 (실행파트만) */
   var vatHint=document.getElementById('vatHint');
   if(vatHint)vatHint.textContent=vat==='1'&&abs?'VAT포함 '+Math.round(abs*1.1).toLocaleString()+'원':'';
-  /* 리워드 */
   var st=document.getElementById('f_saleType').value;
   var rwType=document.getElementById('f_rewardType')?document.getElementById('f_rewardType').value:'';
-  var rw=calcRewardAmt(st,amt,rwType);
+  var cnt=numRaw('f_count');
+  var ch=document.getElementById('f_sendChannel')?document.getElementById('f_sendChannel').value:'';
+  var rw=calcRewardAmt(st,amt,rwType,cnt,ch);
   var el=document.getElementById('f_rwPrev');if(el)el.textContent=rw.toLocaleString()+'원';
 }
 
@@ -789,7 +801,7 @@ function submitItem(type,id){
       var info=CHANNEL_INFO[ch];
       if(info&&cnt<info.min){alert('['+ch+'] 최소 발송 수량: '+info.min.toLocaleString()+'건\n현재 입력: '+cnt.toLocaleString()+'건');return;}
     }
-    var rw2=calcRewardAmt(st,amount,'');
+    var rw2=calcRewardAmt(st,amount,'',cnt,ch);
     var obj={saleType:st,name:name,rank:document.getElementById('f_rank').value,amount:amount,vat:0,count:cnt,sendChannel:ch,date:date,sendDate:document.getElementById('f_sendDate').value,ops:document.getElementById('f_ops').value,consult:document.getElementById('f_consult').value,rewardAmt:rw2,quarter:quarter,note:document.getElementById('f_note').value};
     if(id){var i=ODATA.findIndex(function(x){return x.id===id;});ODATA[i]=Object.assign({id:id},obj);}else{obj.id=Math.max.apply(null,ODATA.map(function(d){return d.id;}).concat([0]))+1;ODATA.unshift(obj);}
     saveO(ODATA);
