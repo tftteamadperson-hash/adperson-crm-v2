@@ -471,14 +471,18 @@ function getFilteredO(){
 }
 
 /* ── 렌더 ── */
-function amtCell(amount,vat){
-  var isNeg=amount<0;
-  var abs=Math.abs(amount);
-  var vatAmt=vat?Math.round(abs*1.1):0;
-  var html=isNeg
-    ?'<div class="td-amt-neg">-'+won(amount)+'</div>'
-    :'<div class="td-amt-pos">'+won(amount)+'</div>'+(vat?'<div class="td-vat">VAT포함 '+vatAmt.toLocaleString()+'원</div>':'');
-  return html;
+function amtCell(amount, vat){
+  var isNeg = amount < 0;
+  var abs = Math.abs(amount);
+  var vatAmt = Math.round(abs * 1.1);
+  if(isNeg){
+    return '<div class="td-amt-neg">-' + won(amount) + '</div>';
+  }
+  if(vat){
+    return '<div class="td-amt-pos">' + vatAmt.toLocaleString() + '원</div>'
+      + '<div class="td-vat">집행 ' + won(amount) + ' (VAT 포함)</div>';
+  }
+  return '<div class="td-amt-pos">' + won(amount) + '</div>';
 }
 function dateCell(amount,date){
   return amount<0
@@ -499,7 +503,7 @@ function doRender(){
     var rb=d.rewardAmt?'<span class="badge '+(d.rewardType==='reward'||d.rewardType==='fixed5'||d.rewardType==='fixed15'?'b-reward':'b-mile')+'">'+(d.rewardType==='mileage'?'M':'R')+' '+won(d.rewardAmt)+'</span>':'—';
     return '<tr onclick="openEditModal(\'exec\','+d.id+')">'
       +'<td>'+(SALE_BADGE[d.route]||d.route||'—')+'</td>'
-      +'<td>'+typeCell(d.saleType)+'</td>'
+      +'<td>'+(SALE_BADGE[d.saleType]||d.saleType)+'</td>'
       +'<td class="td-name">'+d.name+'</td>'
       +'<td>'+d.rank+'</td>'
       +'<td>'+amtCell(d.amount,d.vat)+'</td>'
@@ -799,7 +803,10 @@ function submitItem(type,id){
     var ch=document.getElementById('f_sendChannel')?document.getElementById('f_sendChannel').value:'';
     if(st==='LMS'&&ch){
       var info=CHANNEL_INFO[ch];
-      if(info&&cnt<info.min){alert('['+ch+'] 최소 발송 수량: '+info.min.toLocaleString()+'건\n현재 입력: '+cnt.toLocaleString()+'건');return;}
+      if(info&&cnt<info.min){
+        var ok=confirm('['+ch+'] 최소 발송 수량은 '+info.min.toLocaleString()+'건입니다.\n현재 입력: '+cnt.toLocaleString()+'건\n\n최소 수량 미달이지만 저장하시겠습니까?');
+        if(!ok)return;
+      }
     }
     var rw2=calcRewardAmt(st,amount,'',cnt,ch);
     var obj={saleType:st,name:name,rank:document.getElementById('f_rank').value,amount:amount,vat:0,count:cnt,sendChannel:ch,date:date,sendDate:document.getElementById('f_sendDate').value,ops:document.getElementById('f_ops').value,consult:document.getElementById('f_consult').value,rewardAmt:rw2,quarter:quarter,note:document.getElementById('f_note').value};
