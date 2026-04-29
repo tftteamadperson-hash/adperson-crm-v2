@@ -54,16 +54,19 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 
 /* ── 상단 목표 카드 ── */
 .goal-section{padding:14px 24px 0;flex-shrink:0;display:flex;gap:12px}
-.goal-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;flex:1;display:flex;flex-direction:column;gap:10px}
-.goal-col-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
-.goal-col-title .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.goal-items{display:flex;gap:16px}
-.goal-item{display:flex;flex-direction:column;gap:4px}
-.goal-label{font-size:11px;color:var(--text3)}
-.goal-val{display:flex;align-items:baseline;gap:4px}
-.goal-num{font-size:20px;font-weight:700;color:var(--text)}
-.goal-target{font-size:12px;color:var(--text3)}
-.goal-bar{height:4px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:2px;width:80px}
+.goal-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;flex:1;display:flex;flex-direction:column;gap:14px}
+.goal-col-title{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.goal-col-title .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.goal-items{display:flex;gap:24px}
+.goal-item{display:flex;flex-direction:column;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:1px solid transparent;transition:all .18s;user-select:none}
+.goal-item:hover{background:rgba(255,255,255,.04);border-color:var(--border)}
+.goal-item.active-filter{border-color:var(--gold);background:rgba(201,168,76,.07)}
+.goal-item.active-filter .goal-label{color:var(--gold-light)}
+.goal-label{font-size:13px;font-weight:600;color:var(--text2);transition:color .18s}
+.goal-val{display:flex;align-items:baseline;gap:5px}
+.goal-num{font-size:32px;font-weight:700;color:var(--text);line-height:1}
+.goal-target{font-size:14px;color:var(--text3)}
+.goal-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:4px;width:100px}
 .goal-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
 .type-interview{background:linear-gradient(to right,var(--blue),#7ab4ff)}
 .type-article{background:linear-gradient(to right,var(--purple),#c4b5fd)}
@@ -290,12 +293,6 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
       <input type="text" id="searchInput" placeholder="성명, 소속 검색..." oninput="render()">
     </div>
     <div class="fdivider"></div>
-    <div class="filter-btns">
-      <button class="fbtn active" data-filter="all" onclick="setFilter('all',this)">전체</button>
-      <button class="fbtn" data-filter="interview" onclick="setFilter('interview',this)">인터뷰형</button>
-      <button class="fbtn" data-filter="article" onclick="setFilter('article',this)">아티클형</button>
-    </div>
-    <div class="fdivider"></div>
     <div class="filter-btns" id="execFilterBtns"></div>
     <button class="reset-btn" onclick="resetAll()">↺ 초기화</button>
     <div class="total-info">전체 <strong id="totalCnt">—</strong>건</div>
@@ -317,6 +314,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
       <div class="mf"><label class="ml">소속 현장</label><input class="e-input" id="m_site" placeholder="예: 인천 더샵"></div>
       <div class="mf"><label class="ml">소속 회사</label><input class="e-input" id="m_company" placeholder="미파악 시 공란"></div>
       <div class="mf"><label class="ml">활동 지역</label><input class="e-input" id="m_region" placeholder="예: 수도권"></div>
+      <div class="mf"><label class="ml">미팅 일자</label><input class="e-input" id="m_meetdate" type="date"></div>
       <div class="mf"><label class="ml">담당자</label>
         <select class="e-select" id="m_exec">
           <option value="">선택</option>
@@ -386,15 +384,15 @@ function loadData(){
   const saved = localStorage.getItem(STORAGE_KEY);
   if(saved) return JSON.parse(saved);
   return [
-    {id:1,name:'김성호',phone:'010-3773-0018',birth:'1982',position:'본부장 / 15년차',site:'서울 강남 래미안',company:'한화건설',region:'수도권',exec:'조계현',type:'interview',note:'SNS 인스타 팔로워 2만. 취재 적극적.',
+    {id:1,name:'김성호',phone:'010-3773-0018',birth:'1982',position:'본부장 / 15년차',site:'서울 강남 래미안',company:'한화건설',region:'수도권',exec:'조계현',type:'interview',meetdate:'2026-04-28',note:'SNS 인스타 팔로워 2만. 취재 적극적.',
      checks:{info:1,photo:1,transfer:1,interview:1,output:1}},
-    {id:2,name:'박수근',phone:'010-6633-7866',birth:'1979',position:'본부장 / 20년차',site:'서울 강서 센트럴파크',company:'대우건설',region:'수도권',exec:'조계현',type:'article',note:'이번 달 취재 예정.',
+    {id:2,name:'박수근',phone:'010-6633-7866',birth:'1979',position:'본부장 / 20년차',site:'서울 강서 센트럴파크',company:'대우건설',region:'수도권',exec:'조계현',type:'article',meetdate:'2026-05-03',note:'이번 달 취재 예정.',
      checks:{info:1,photo:1,transfer:1,interview:0,output:0}},
-    {id:3,name:'오세혁',phone:'010-5146-7442',birth:'1975',position:'대표 / 25년차',site:'경남 양산 스카이',company:'',region:'영남권',exec:'최연전',type:'interview',note:'',
+    {id:3,name:'오세혁',phone:'010-5146-7442',birth:'1975',position:'대표 / 25년차',site:'경남 양산 스카이',company:'',region:'영남권',exec:'최연전',type:'interview',meetdate:'',note:'',
      checks:{info:1,photo:0,transfer:0,interview:0,output:0}},
-    {id:4,name:'한세이',phone:'010-7791-7988',birth:'1988',position:'팀장 / 8년차',site:'오산 한신더휴',company:'태성',region:'수도권',exec:'최연전',type:'article',note:'',
+    {id:4,name:'한세이',phone:'010-7791-7988',birth:'1988',position:'팀장 / 8년차',site:'오산 한신더휴',company:'태성',region:'수도권',exec:'최연전',type:'article',meetdate:'2026-05-07',note:'',
      checks:{info:1,photo:1,transfer:0,interview:0,output:0}},
-    {id:5,name:'이정재',phone:'010-4878-7464',birth:'1980',position:'총괄본부장 / 18년차',site:'인천 더샵',company:'포스코건설',region:'수도권',exec:'조계현',type:'article',note:'',
+    {id:5,name:'이정재',phone:'010-4878-7464',birth:'1980',position:'총괄본부장 / 18년차',site:'인천 더샵',company:'포스코건설',region:'수도권',exec:'조계현',type:'article',meetdate:'',note:'',
      checks:{info:0,photo:0,transfer:0,interview:0,output:0}},
   ];
 }
@@ -413,44 +411,35 @@ function buildExecFilter(){
 }
 function toggleExec(n){activeExec=activeExec===n?null:n;buildExecFilter();render();}
 function setFilter(v,btn){
-  activeFilter=v;
-  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');render();
+  activeFilter=v;render();
 }
 function resetAll(){
   activeFilter='all';activeExec=null;
   document.getElementById('searchInput').value='';
-  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));
-  document.querySelector('[data-filter="all"]').classList.add('active');
-  buildExecFilter();render();
+  buildExecFilter();renderGoals();render();
 }
 
 // ── 목표 현황 ──
 function renderGoals(){
-  const now=new Date();
-  const weekStart=new Date(now);weekStart.setDate(now.getDate()-now.getDay()+1);weekStart.setHours(0,0,0,0);
-  const monthStart=new Date(now.getFullYear(),now.getMonth(),1);
-
-  // 산출물 완료 기준 (output 체크)
   const weekDone_i=DATA.filter(d=>d.type==='interview'&&d.checks.output).length;
   const weekDone_a=DATA.filter(d=>d.type==='article'&&d.checks.output).length;
   const monthDone=DATA.filter(d=>d.checks.output).length;
-
   const WEEK_GOAL_I=1, WEEK_GOAL_A=2;
   const pctI=Math.min(Math.round(weekDone_i/WEEK_GOAL_I*100),100);
   const pctA=Math.min(Math.round(weekDone_a/WEEK_GOAL_A*100),100);
   const pctM=DATA.length>0?Math.round(monthDone/DATA.length*100):0;
+  const totalDone=weekDone_i+weekDone_a;
 
   document.getElementById('goalSection').innerHTML=`
     <div class="goal-col">
-      <div class="goal-col-title"><span class="dot" style="background:var(--blue)"></span>주간 목표</div>
+      <div class="goal-col-title"><span class="dot" style="background:var(--blue)"></span>주간 목표 (산출물 완료 기준)</div>
       <div class="goal-items">
-        <div class="goal-item">
+        <div class="goal-item${activeFilter==='interview'?' active-filter':''}" onclick="setGoalFilter('interview')">
           <span class="goal-label">인터뷰형</span>
           <div class="goal-val"><span class="goal-num" style="color:var(--blue)">${weekDone_i}</span><span class="goal-target">/ ${WEEK_GOAL_I}건</span></div>
           <div class="goal-bar"><div class="goal-bar-fill type-interview" style="width:${pctI}%"></div></div>
         </div>
-        <div class="goal-item">
+        <div class="goal-item${activeFilter==='article'?' active-filter':''}" onclick="setGoalFilter('article')">
           <span class="goal-label">아티클형</span>
           <div class="goal-val"><span class="goal-num" style="color:var(--purple)">${weekDone_a}</span><span class="goal-target">/ ${WEEK_GOAL_A}건</span></div>
           <div class="goal-bar"><div class="goal-bar-fill type-article" style="width:${pctA}%"></div></div>
@@ -460,17 +449,24 @@ function renderGoals(){
     <div class="goal-col">
       <div class="goal-col-title"><span class="dot" style="background:var(--gold)"></span>이번 달 전체 산출물 완료</div>
       <div class="goal-items">
-        <div class="goal-item">
+        <div class="goal-item${activeFilter==='all'&&!activeExec?' active-filter':''}" onclick="setGoalFilter('all')">
           <span class="goal-label">산출물 완료</span>
           <div class="goal-val"><span class="goal-num" style="color:var(--gold-light)">${monthDone}</span><span class="goal-target">/ ${DATA.length}건</span></div>
           <div class="goal-bar" style="width:120px"><div class="goal-bar-fill type-total" style="width:${pctM}%"></div></div>
         </div>
-        <div class="goal-item">
+        <div class="goal-item" style="cursor:default">
           <span class="goal-label">전체 등록</span>
           <div class="goal-val"><span class="goal-num">${DATA.length}</span><span class="goal-target">건</span></div>
         </div>
       </div>
     </div>`;
+}
+
+function setGoalFilter(type){
+  activeFilter=type;
+  renderGoals();
+  render();
+}
 }
 
 // ── 배지 렌더 ──
@@ -540,7 +536,8 @@ function expandHTML(d){
         </div>
         <div class="exp-field row2">
           <div><span class="exp-label">활동 지역</span><input class="e-input" id="ef_region_${d.id}" value="${d.region||''}"></div>
-          <div><span class="exp-label">담당자</span>
+          <div><span class="exp-label">미팅 일자</span><input class="e-input" type="date" id="ef_meetdate_${d.id}" value="${d.meetdate||''}"></div>
+        </div>
             <select class="e-select" id="ef_exec_${d.id}">
               <option value="">선택</option>
               ${['조계현','이세호','기여운','최연전'].map(n=>`<option${d.exec===n?' selected':''}>${n}</option>`).join('')}
@@ -608,6 +605,7 @@ function render(){
         <span class="row-rank">${d.position?d.position.split('/')[0].trim():''}</span>
         ${d.exec?`<span class="row-exec-tag">${d.exec}</span>`:''}
         <span class="row-type ${d.type==='interview'?'type-i':'type-a'}">${d.type==='interview'?'인터뷰형':'아티클형'}</span>
+        ${d.meetdate?`<span style="font-size:12px;color:var(--blue);font-weight:600">📅 ${d.meetdate.replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$2/$3')}</span>`:'<span style="font-size:12px;color:var(--text3)">미팅 미정</span>'}
         <div class="progress-badges">${progressBadgesHTML(d.checks)}</div>
         <span class="row-arr">›</span>
       </div>
@@ -680,7 +678,7 @@ function removeImgUI(id){
 // ── 저장 ──
 function saveRow(id){
   const d=DATA.find(x=>x.id===id);if(!d)return;
-  ['name','phone','birth','position','site','company','region','exec','type','note'].forEach(k=>{
+  ['name','phone','birth','position','site','company','region','meetdate','exec','type','note'].forEach(k=>{
     const el=document.getElementById('ef_'+k+'_'+id);
     if(el)d[k]=el.value;
   });
@@ -703,12 +701,15 @@ function submitNew(){
     id:newId,name,phone:document.getElementById('m_phone').value,
     birth:document.getElementById('m_birth').value,position:document.getElementById('m_position').value,
     site:document.getElementById('m_site').value,company:document.getElementById('m_company').value,
-    region:document.getElementById('m_region').value,exec:document.getElementById('m_exec').value,
+    region:document.getElementById('m_region').value,
+    meetdate:document.getElementById('m_meetdate').value,
+    exec:document.getElementById('m_exec').value,
     type,note:document.getElementById('m_note').value,
     checks:{info:0,photo:0,transfer:0,interview:0,output:0}
   });
   saveData();closeModal();openId=newId;render();
   ['m_name','m_phone','m_birth','m_position','m_site','m_company','m_region','m_note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m_meetdate').value='';
   document.getElementById('m_exec').value='';document.getElementById('m_type').value='';
 }
 
