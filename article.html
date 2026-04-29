@@ -538,18 +538,19 @@ function expandHTML(d){
           <div><span class="exp-label">활동 지역</span><input class="e-input" id="ef_region_${d.id}" value="${d.region||''}"></div>
           <div><span class="exp-label">미팅 일자</span><input class="e-input" type="date" id="ef_meetdate_${d.id}" value="${d.meetdate||''}"></div>
         </div>
+        <div class="exp-field row2">
+          <div><span class="exp-label">담당자</span>
             <select class="e-select" id="ef_exec_${d.id}">
               <option value="">선택</option>
               ${['조계현','이세호','기여운','최연전'].map(n=>`<option${d.exec===n?' selected':''}>${n}</option>`).join('')}
             </select>
           </div>
-        </div>
-        <div class="exp-field">
-          <span class="exp-label">유형</span>
-          <select class="e-select" id="ef_type_${d.id}">
-            <option value="interview"${d.type==='interview'?' selected':''}>인터뷰형 (숏폼+롱폼 영상)</option>
-            <option value="article"${d.type==='article'?' selected':''}>아티클형 (텍스트 결과물)</option>
-          </select>
+          <div><span class="exp-label">유형</span>
+            <select class="e-select" id="ef_type_${d.id}">
+              <option value="interview"${d.type==='interview'?' selected':''}>인터뷰형 (숏폼+롱폼 영상)</option>
+              <option value="article"${d.type==='article'?' selected':''}>아티클형 (텍스트 결과물)</option>
+            </select>
+          </div>
         </div>
         <div class="exp-field">
           <span class="exp-label">비고</span>
