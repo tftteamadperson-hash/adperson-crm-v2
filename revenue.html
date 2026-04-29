@@ -6,10 +6,7 @@
 <title>통합 매출 관리 — 분양의신 CRM</title>
 <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <script>
-(function(){
-  var u=sessionStorage.getItem('crm_user');
-  if(u){var uid=JSON.parse(u).id;if(localStorage.getItem('crm_light_'+uid)==='1')document.documentElement.setAttribute('data-theme','light');}
-})();
+(function(){var u=sessionStorage.getItem('crm_user');if(u){var uid=JSON.parse(u).id;if(localStorage.getItem('crm_light_'+uid)==='1')document.documentElement.setAttribute('data-theme','light');}})();
 </script>
 <style>
 :root{
@@ -48,49 +45,72 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .topbar{height:54px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
 .page-title{font-size:16px;font-weight:700}
 .page-desc{font-size:12px;color:var(--text3);margin-top:1px}
-.btn-new{background:var(--gold);color:#160d00;border:none;border-radius:6px;padding:9px 18px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-new{background:var(--gold);color:#160d00;border:none;border-radius:6px;padding:9px 18px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
 .btn-new:hover{background:var(--gold-light);transform:translateY(-1px)}
 
-/* 요약 카드 */
-.summary-row{display:flex;gap:10px;padding:14px 24px 0;flex-shrink:0}
-.sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;flex:1;display:flex;flex-direction:column;gap:4px}
-.sum-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em}
-.sum-val{font-size:20px;font-weight:700;color:var(--text)}
-.sum-sub{font-size:11px;color:var(--text3)}
+/* ── 상단 4개 카드 ── */
+.cat-row{display:flex;gap:10px;padding:14px 24px 0;flex-shrink:0}
+.cat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 18px;flex:1;cursor:pointer;transition:all .18s;user-select:none;
+}
+.cat-card:hover{border-color:var(--border2);background:var(--bg3)}
+.cat-card.active{border-color:var(--gold);background:rgba(201,168,76,.07);box-shadow:0 0 0 1px rgba(201,168,76,.2)}
+.cat-card.active .cat-label{color:var(--gold-light)}
+.cat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.cat-icon{font-size:16px}
+.cat-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;transition:color .18s}
+.cat-amount{font-size:20px;font-weight:700;color:var(--text);line-height:1.1}
+.cat-sub{font-size:11px;color:var(--text3);margin-top:4px;display:flex;gap:8px}
+.cat-sub span{display:flex;align-items:center;gap:3px}
 
-/* 탭 + 필터바 */
-.tab-filter-bar{display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
-.tabs{display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;flex-shrink:0}
-.tab{padding:6px 18px;border-radius:6px;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .18s;border:none;background:transparent}
-.tab.active{background:var(--bg2);color:var(--text);font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.3)}
-.fdiv{width:1px;height:22px;background:var(--border);margin:0 4px}
-.sw{position:relative;width:180px;flex-shrink:0}
-.sw input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 10px 7px 28px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
+/* ── 필터바 ── */
+.filter-bar{display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;flex-wrap:wrap}
+.sw{position:relative;width:200px;flex-shrink:0}
+.sw input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px 8px 30px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
 .sw input:focus{border-color:rgba(201,168,76,.4)}
 .sw input::placeholder{color:var(--text3)}
-.si{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:11px;pointer-events:none}
-.fsel{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text);outline:none;cursor:pointer;transition:border-color .2s}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:11px;pointer-events:none}
+.fdiv{width:1px;height:22px;background:var(--border);margin:0 2px}
+.flabel{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.exec-btns{display:flex;gap:5px;flex-wrap:wrap}
+.ebtn{padding:6px 13px;border-radius:18px;font-family:'Pretendard',sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg3);border:1px solid var(--border);color:var(--text2);transition:all .18s}
+.ebtn:hover{border-color:var(--border2);color:var(--text)}
+.ebtn.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light);font-weight:600}
+.fsel{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'Pretendard',sans-serif;font-size:12px;color:var(--text);outline:none;cursor:pointer}
 .fsel:focus{border-color:rgba(201,168,76,.4)}
 .rbtn{padding:7px 13px;border-radius:20px;background:none;border:1px solid var(--border);font-family:'Pretendard',sans-serif;font-size:12px;color:var(--text3);cursor:pointer;transition:all .18s}
 .rbtn:hover{border-color:var(--gold);color:var(--gold)}
-.tinfo{margin-left:auto;font-size:12px;color:var(--text3);white-space:nowrap}
-.tinfo strong{color:var(--text2);font-weight:600}
 
-/* 테이블 */
-.table-wrap{flex:1;overflow:auto;padding:0 24px 20px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-.table-wrap::-webkit-scrollbar{width:4px;height:4px}
-.table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-table{width:100%;border-collapse:collapse;min-width:900px}
-thead th{position:sticky;top:0;z-index:10;background:var(--bg2);border-bottom:2px solid var(--border);padding:11px 12px;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;text-align:left}
-thead th.right{text-align:right}
-tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+/* ── 2열 메인 ── */
+.dual-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0;overflow:hidden}
+.col-panel{display:flex;flex-direction:column;overflow:hidden}
+.col-panel:first-child{border-right:2px solid var(--border)}
+
+.col-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.col-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
+.col-title .dot{width:7px;height:7px;border-radius:50%}
+.col-count{font-size:12px;color:var(--text3)}
+.col-total{font-size:13px;font-weight:700}
+
+.tbl-wrap{flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.tbl-wrap::-webkit-scrollbar{width:3px;height:3px}
+.tbl-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+table{width:100%;border-collapse:collapse;min-width:500px}
+thead th{position:sticky;top:0;z-index:5;background:var(--bg2);border-bottom:1px solid var(--border);padding:9px 12px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;text-align:left}
+thead th.r{text-align:right}
+tbody tr{border-bottom:1px solid rgba(30,48,80,.5);cursor:pointer;transition:background .12s}
 tbody tr:hover{background:rgba(255,255,255,.025)}
-tbody td{padding:12px 12px;font-size:13px;color:var(--text2);white-space:nowrap}
-tbody td.right{text-align:right;font-weight:600}
+td{padding:11px 12px;font-size:13px;color:var(--text2);white-space:nowrap}
+td.r{text-align:right;font-weight:600}
 .td-name{font-size:14px;font-weight:700;color:var(--text)}
-.td-amt{font-size:14px;font-weight:700;color:var(--text)}
-.td-reward{color:var(--green);font-weight:600}
-.td-refund{color:var(--red);font-weight:600}
+.td-amt{font-size:13px;font-weight:700;color:var(--text)}
+.td-red{color:var(--red);font-weight:600}
+.td-blue{color:var(--blue);font-weight:600}
+.td-green{color:var(--green);font-weight:600}
 
 /* 배지 */
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
@@ -100,19 +120,18 @@ tbody td.right{text-align:right;font-weight:600}
 .b-lms{background:rgba(167,139,250,.15);color:var(--purple)}
 .b-reward{background:rgba(45,212,160,.12);color:var(--green);border:1px solid rgba(45,212,160,.2)}
 .b-mile{background:rgba(251,146,60,.12);color:var(--orange);border:1px solid rgba(251,146,60,.2)}
+.empty-row td{text-align:center;padding:40px;color:var(--text3);font-size:13px}
 
-/* 빈 상태 */
-.empty-row td{text-align:center;padding:48px;color:var(--text3);font-size:13px}
-
-/* 상세 모달 */
+/* ── 모달 ── */
 .mbg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
 .mbg.on{opacity:1;pointer-events:all}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:580px;max-width:96vw;max-height:88vh;overflow-y:auto;padding:26px;transform:translateY(14px) scale(.98);transition:transform .35s ease;scrollbar-width:thin}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:580px;max-width:96vw;max-height:90vh;overflow-y:auto;padding:26px;transform:translateY(14px) scale(.98);transition:transform .35s ease;scrollbar-width:thin}
 .mbg.on .modal{transform:none}
 .modal::-webkit-scrollbar{width:3px}
 .modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:20px;opacity:.5}
-.modal-title{font-size:17px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.modal::before{content:'';display:block;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin-bottom:18px;opacity:.5}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-size:16px;font-weight:700}
 .modal-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .modal-close:hover{background:rgba(255,255,255,.12)}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -125,27 +144,23 @@ tbody td.right{text-align:right;font-weight:600}
 .einput::placeholder,.etarea::placeholder{color:var(--text3)}
 .etarea{resize:none;height:68px;line-height:1.7}
 .einput[readonly]{background:var(--bg4);color:var(--text2);cursor:default}
-
-/* 리워드 미리보기 */
-.reward-preview{grid-column:1/-1;background:var(--bg3);border:1px solid rgba(45,212,160,.2);border-radius:7px;padding:12px 16px;display:flex;align-items:center;gap:12px}
-.reward-preview .rp-label{font-size:11px;font-weight:600;color:var(--text3)}
-.reward-preview .rp-val{font-size:15px;font-weight:700;color:var(--green)}
-
-/* 섹션 구분 */
 .msec{grid-column:1/-1;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding-bottom:6px;border-bottom:1px solid var(--border);margin-top:4px;display:flex;align-items:center;gap:6px}
 .msec .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-
-.mfoot{display:flex;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid var(--border)}
+.reward-box{grid-column:1/-1;background:var(--bg3);border:1px solid rgba(45,212,160,.25);border-radius:7px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.rb-label{font-size:11px;font-weight:600;color:var(--text3)}
+.rb-val{font-size:16px;font-weight:700;color:var(--green)}
+.rb-hint{font-size:11px;color:var(--text3)}
+.mfoot{display:flex;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
 .mcancel{flex:1;background:transparent;border:1px solid var(--border);border-radius:6px;padding:10px;font-family:'Pretendard',sans-serif;font-size:13px;color:var(--text2);cursor:pointer}
 .msubmit{flex:2;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#160d00;border:none;border-radius:6px;padding:10px;font-family:'Pretendard',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
 .mdel{font-family:'Pretendard',sans-serif;font-size:12px;padding:10px 14px;border-radius:6px;background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.25);color:var(--red);cursor:pointer}
 
 /* 라이트모드 */
-[data-theme="light"]{--bg:#eef2f7;--bg2:#fff;--bg3:#e4eaf2;--bg4:#d8e2ee;--bg5:#f0f4f9;--border:#c0d0e0;--text:#0d1f36;--text2:#2a4060;--text3:#6080a0;--gold:#9a6800;--gold-light:#7a5200}
+[data-theme="light"]{--bg:#eef2f7;--bg2:#fff;--bg3:#e4eaf2;--bg4:#d8e2ee;--border:#c0d0e0;--text:#0d1f36;--text2:#2a4060;--text3:#6080a0;--gold:#9a6800;--gold-light:#7a5200}
 [data-theme="light"] .sidebar,[data-theme="light"] .sb-top,[data-theme="light"] .sb-user{background:#1a2a42 !important;border-color:#243858 !important}
 [data-theme="light"] .sb-item{color:#a0bcd8 !important}
 [data-theme="light"] .sb-item.active{background:rgba(201,168,76,.15) !important;color:var(--gold-light) !important}
-[data-theme="light"] thead th{background:var(--bg2) !important}
+[data-theme="light"] thead th,[data-theme="light"] .col-header{background:var(--bg2) !important}
 [data-theme="light"] .btn-new{background:linear-gradient(135deg,#c8900a,#a07008) !important;color:#fff !important}
 </style>
 </head>
@@ -153,7 +168,7 @@ tbody td.right{text-align:right;font-weight:600}
 
 <aside class="sidebar">
   <div class="sb-top">
-    <img src="./logo-gold.png" class="sb-logo" alt="분양의신" onerror="this.style.display='none'">
+    <img src="./logo-gold.png" class="sb-logo" alt="" onerror="this.style.display='none'">
     <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
   </div>
   <div class="sb-user">
@@ -190,42 +205,80 @@ tbody td.right{text-align:right;font-weight:600}
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px">
       <span style="font-size:18px">💰</span>
-      <div><div class="page-title">통합 매출 관리</div><div class="page-desc">실행파트 연계매출 · 운영파트 광고특전 집행 내역</div></div>
+      <div><div class="page-title">통합 매출 관리</div><div class="page-desc">연계매출 집행 · 광고 매출 집행 내역</div></div>
     </div>
-    <button class="btn-new" onclick="openNewModal()">＋ 신규 등록</button>
+    <button class="btn-new" onclick="openNewModal('link')">＋ 신규 등록</button>
   </div>
 
-  <!-- 요약 카드 -->
-  <div class="summary-row" id="summaryRow"></div>
+  <!-- 4개 카테고리 카드 -->
+  <div class="cat-row" id="catRow"></div>
 
-  <!-- 탭 + 필터바 -->
-  <div class="tab-filter-bar">
-    <div class="tabs">
-      <button class="tab active" id="tab-real" onclick="setTab('real')">📈 실연집</button>
-      <button class="tab" id="tab-adv" onclick="setTab('adv')">📣 운광집</button>
-    </div>
-    <div class="fdiv"></div>
+  <!-- 필터바 -->
+  <div class="filter-bar">
     <div class="sw"><span class="si">🔍</span><input type="text" id="searchInput" placeholder="고객명 검색..." oninput="doRender()"></div>
-    <select class="fsel" id="filterExec" onchange="doRender()"><option value="">전체 담당자</option></select>
+    <div class="fdiv"></div>
+    <span class="flabel">실행파트</span>
+    <div class="exec-btns" id="execBtns1"></div>
+    <div class="fdiv"></div>
+    <span class="flabel">운영파트</span>
+    <div class="exec-btns" id="execBtns2"></div>
+    <div class="fdiv"></div>
     <select class="fsel" id="filterMonth" onchange="doRender()">
       <option value="">전체 월</option>
       <option>1월</option><option>2월</option><option>3월</option><option>4월</option>
       <option>5월</option><option>6월</option><option>7월</option><option>8월</option>
       <option>9월</option><option>10월</option><option>11월</option><option>12월</option>
     </select>
-    <button class="rbtn" onclick="resetFilter()">↺ 초기화</button>
-    <div class="tinfo">전체 <strong id="totalCnt">0</strong>건 · 합계 <strong id="totalAmt">0원</strong></div>
+    <button class="rbtn" onclick="resetAll()">↺ 초기화</button>
   </div>
 
-  <div class="table-wrap">
-    <table id="mainTable">
-      <thead id="tableHead"></thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+  <!-- 2열 테이블 -->
+  <div class="dual-wrap">
+    <!-- 왼쪽: 연계매출 집행 -->
+    <div class="col-panel" id="panelLink">
+      <div class="col-header">
+        <div class="col-title"><span class="dot" style="background:var(--gold)"></span>연계매출 집행 <span style="font-size:11px;color:var(--text3);font-weight:400">(실행파트)</span></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="col-count" id="linkCnt">0건</span>
+          <span class="col-total" style="color:var(--gold-light)" id="linkTotal">0원</span>
+          <button class="ebtn" onclick="openNewModal('link')" style="padding:4px 10px;font-size:11px">＋ 추가</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>결제일</th><th>고객명</th><th>직급</th><th>캠페인</th><th>경로</th>
+            <th class="r">집행금액</th><th>담당</th><th>리워드</th>
+          </tr></thead>
+          <tbody id="linkBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 오른쪽: 광고 매출 집행 -->
+    <div class="col-panel" id="panelAdv">
+      <div class="col-header">
+        <div class="col-title"><span class="dot" style="background:var(--purple)"></span>광고 매출 집행 <span style="font-size:11px;color:var(--text3);font-weight:400">(운영파트)</span></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="col-count" id="advCnt">0건</span>
+          <span class="col-total" style="color:var(--purple)" id="advTotal">0원</span>
+          <button class="ebtn" onclick="openNewModal('adv')" style="padding:4px 10px;font-size:11px">＋ 추가</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>발송일</th><th>고객명</th><th>직급</th><th>상품</th><th>건수</th>
+            <th class="r">결제금액</th><th class="r">마진</th><th>담당</th><th>리워드</th><th>입금일</th>
+          </tr></thead>
+          <tbody id="advBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- 상세/신규 모달 -->
+<!-- 모달 -->
 <div class="mbg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="modalInner"></div>
 </div>
@@ -261,394 +314,266 @@ window.addEventListener('DOMContentLoaded',function(){
 });
 
 /* ── 데이터 ── */
-var RKEY='crm_sales_real', AKEY='crm_sales_adv';
-function loadR(){try{var s=localStorage.getItem(RKEY);return s?JSON.parse(s):[];}catch(e){return [];}}
-function loadA(){try{var s=localStorage.getItem(AKEY);return s?JSON.parse(s):[];}catch(e){return [];}}
+var RKEY='crm_sales_real',AKEY='crm_sales_adv';
+function loadR(){try{var s=localStorage.getItem(RKEY);return s?JSON.parse(s):[];}catch(e){return[];}}
+function loadA(){try{var s=localStorage.getItem(AKEY);return s?JSON.parse(s):[];}catch(e){return[];}}
 function saveR(d){localStorage.setItem(RKEY,JSON.stringify(d));}
 function saveA(d){localStorage.setItem(AKEY,JSON.stringify(d));}
 
-var RDATA=loadR(), ADATA=loadA();
+var RDATA=loadR(),ADATA=loadA();
 
-/* 더미 데이터 */
+/* 더미 */
 if(!RDATA.length){
   RDATA=[
     {id:1,date:'2026-04-28',name:'최준호',rank:'팀장',campaign:'용인-최준호-고진로제비앙3',route:'분양회',amount:500000,vat:1,refund:0,refundDate:'',exec:'기여운',consult:'백선중',reward:'reward',rewardAmt:25000,rewardQuarter:'2분기',note:''},
     {id:2,date:'2026-04-25',name:'박수근',rank:'본부장',campaign:'여의대방 더 마크원',route:'분양회',amount:3300000,vat:0,refund:0,refundDate:'',exec:'조계현',consult:'강아름',reward:'mileage',rewardAmt:330000,rewardQuarter:'2분기',note:''},
-    {id:3,date:'2026-04-24',name:'오세혁',rank:'대표',campaign:'파주-최두식-헤이리10',route:'완판트럭',amount:5500000,vat:1,refund:967000,refundDate:'2026-04-28',exec:'최연전',consult:'강아름',reward:'reward',rewardAmt:275000,rewardQuarter:'2분기',note:'3/9 결제 건 → 4/1 환불 요청'},
+    {id:3,date:'2026-04-24',name:'오세혁',rank:'대표',campaign:'파주-최두식-헤이리10',route:'완판트럭',amount:5500000,vat:1,refund:967000,refundDate:'2026-04-28',exec:'최연전',consult:'강아름',reward:'reward',rewardAmt:275000,rewardQuarter:'2분기',note:'환불 처리'},
     {id:4,date:'2026-04-22',name:'한세이',rank:'팀장',campaign:'용인-한세이-광지푸르지오파크2',route:'분양회',amount:7350000,vat:0,refund:0,refundDate:'',exec:'기여운',consult:'백선중',reward:'mileage',rewardAmt:735000,rewardQuarter:'2분기',note:''},
     {id:5,date:'2026-04-21',name:'이정재',rank:'총괄본부장',campaign:'인천-이정재-더샵 센트럴파크',route:'분양회',amount:5500000,vat:1,refund:0,refundDate:'',exec:'조계현',consult:'박민경',reward:'reward',rewardAmt:275000,rewardQuarter:'2분기',note:''},
-  ];
-  saveR(RDATA);
+  ];saveR(RDATA);
 }
 if(!ADATA.length){
   ADATA=[
-    {id:1,sendDate:'2026-04-23',name:'김이태',rank:'본부장',product:'LMS',count:30000,amount:3300000,payDate:'2026-04-20',payMethod:'계좌',realAmount:2640000,margin:660000,ops:'김재영',consult:'박나라',reward:495000,rewardQuarter:'2분기',payinDate:'2026-04-20',note:'SKT 20% (황진미)'},
-    {id:2,sendDate:'2026-04-22',name:'김이태',rank:'본부장',product:'LMS',count:45000,amount:4950000,payDate:'2026-04-22',payMethod:'계좌',realAmount:4207500,margin:742500,ops:'김재영',consult:'박나라',reward:742500,rewardQuarter:'2분기',payinDate:'2026-04-20',note:'BC카드 15% (황진미)'},
+    {id:1,sendDate:'2026-04-23',name:'김이태',rank:'본부장',product:'LMS',count:30000,amount:3300000,payDate:'2026-04-20',payMethod:'계좌',realAmount:2640000,margin:660000,ops:'김재영',consult:'박나라',reward:495000,rewardQuarter:'2분기',payinDate:'2026-04-20',note:'SKT 20%'},
+    {id:2,sendDate:'2026-04-22',name:'김이태',rank:'본부장',product:'LMS',count:45000,amount:4950000,payDate:'2026-04-22',payMethod:'계좌',realAmount:4207500,margin:742500,ops:'김재영',consult:'박나라',reward:742500,rewardQuarter:'2분기',payinDate:'2026-04-20',note:'BC카드 15%'},
     {id:3,sendDate:'2026-04-17',name:'김윤아',rank:'팀장',product:'LMS',count:30000,amount:3300000,payDate:'2026-04-15',payMethod:'카드',realAmount:2805000,margin:495000,ops:'최은정',consult:'박민경',reward:495000,rewardQuarter:'2분기',payinDate:'',note:'BC카드 15%'},
     {id:4,sendDate:'2026-03-20',name:'오정연',rank:'실장',product:'호갱노노',count:10000,amount:1650000,payDate:'2026-03-05',payMethod:'잔여광고비',realAmount:1320000,margin:330000,ops:'김재영',consult:'박나라',reward:82500,rewardQuarter:'1분기',payinDate:'2026-03-06',note:''},
     {id:5,sendDate:'2026-03-19',name:'김선호',rank:'본부장',product:'호갱노노',count:30000,amount:4950000,payDate:'2026-03-17',payMethod:'계좌',realAmount:3960000,margin:990000,ops:'김재영',consult:'백선중',reward:247500,rewardQuarter:'1분기',payinDate:'2026-03-18',note:''},
-  ];
-  saveA(ADATA);
+  ];saveA(ADATA);
 }
 
 /* ── 상태 ── */
-var activeTab='real', editId=null;
+var activeCat='all', activeExec=null, activeOps=null;
 
-/* ── 탭 ── */
-function setTab(t){
-  activeTab=t;
-  document.getElementById('tab-real').classList.toggle('active',t==='real');
-  document.getElementById('tab-adv').classList.toggle('active',t==='adv');
-  buildExecFilter();doRender();
-}
-
-/* ── 담당자 필터 옵션 ── */
-function buildExecFilter(){
-  var sel=document.getElementById('filterExec');
-  var opts=['<option value="">전체 담당자</option>'];
-  if(activeTab==='real'){
-    ['조계현','이세호','기여운','최연전'].forEach(function(n){opts.push('<option>'+n+'</option>');});
-  } else {
-    ['김재영','최은정'].forEach(function(n){opts.push('<option>'+n+'</option>');});
-  }
-  sel.innerHTML=opts.join('');
-}
-
-function resetFilter(){
-  document.getElementById('searchInput').value='';
-  document.getElementById('filterExec').value='';
-  document.getElementById('filterMonth').value='';
-  doRender();
-}
+/* ── 카테고리 정의 ── */
+var CATS=[
+  {key:'all',label:'전체',icon:'💰',color:'var(--gold-light)'},
+  {key:'fee',label:'회비',icon:'👑',color:'var(--orange)',desc:'입회비 · 월회비',coming:true},
+  {key:'link',label:'연계매출',icon:'📈',color:'var(--green)',desc:'분양회 · 완판트럭'},
+  {key:'ad',label:'광고매출',icon:'📣',color:'var(--purple)',desc:'LMS · 호갱노노 · 직방'},
+];
 
 /* ── 포맷 ── */
-function won(n){return (Math.abs(n)||0).toLocaleString()+'원';}
+function won(n){return(n||0).toLocaleString()+'원';}
 function fmtDate(s){if(!s)return'—';var p=s.split('-');return p[1]+'/'+p[2];}
 function monthOf(s){if(!s)return 0;return parseInt(s.split('-')[1])||0;}
-
-/* ── 요약 ── */
-function renderSummary(){
-  var totalReal=RDATA.reduce(function(a,d){return a+(d.amount||0)-(d.refund||0);},0);
-  var totalAdv=ADATA.reduce(function(a,d){return a+(d.amount||0);},0);
-  var totalRewardR=RDATA.reduce(function(a,d){return a+(d.rewardAmt||0);},0);
-  var totalRewardA=ADATA.reduce(function(a,d){return a+(d.reward||0);},0);
-  document.getElementById('summaryRow').innerHTML=
-    '<div class="sum-card"><div class="sum-label">전체 매출 합계</div><div class="sum-val" style="color:var(--gold-light)">'+(totalReal+totalAdv).toLocaleString()+'원</div><div class="sum-sub">실연집 + 운광집</div></div>'+
-    '<div class="sum-card"><div class="sum-label">📈 실연집 총액</div><div class="sum-val">'+totalReal.toLocaleString()+'원</div><div class="sum-sub">'+RDATA.length+'건</div></div>'+
-    '<div class="sum-card"><div class="sum-label">📣 운광집 총액</div><div class="sum-val">'+totalAdv.toLocaleString()+'원</div><div class="sum-sub">'+ADATA.length+'건</div></div>'+
-    '<div class="sum-card"><div class="sum-label">🎁 리워드 적립 누적</div><div class="sum-val" style="color:var(--green)">'+(totalRewardR+totalRewardA).toLocaleString()+'원</div><div class="sum-sub">실연집+운광집 합산</div></div>';
+function calcReward(type,product,amount,choice){
+  if(type==='link'){if(choice==='reward')return Math.round(amount*0.05);if(choice==='mileage')return Math.round(amount*0.10);return 0;}
+  if(product==='호갱노노')return Math.round(amount*0.05);
+  if(product==='LMS')return Math.round(amount*0.15);
+  return 0;
 }
 
-/* ── 테이블 렌더 ── */
-function doRender(){
-  renderSummary();
+/* ── 카테고리 카드 ── */
+function renderCats(){
+  var rTotal=RDATA.reduce(function(a,d){return a+(d.amount||0)-(d.refund||0);},0);
+  var aTotal=ADATA.reduce(function(a,d){return a+(d.amount||0);},0);
+  var vals={all:rTotal+aTotal, fee:0, link:rTotal, ad:aTotal};
+  document.getElementById('catRow').innerHTML=CATS.map(function(c){
+    return '<div class="cat-card'+(activeCat===c.key?' active':'')+'" onclick="setCat(\''+c.key+'\')">'
+      +'<div class="cat-top"><span class="cat-icon">'+c.icon+'</span><span class="cat-label">'+c.label+'</span></div>'
+      +'<div class="cat-amount" style="color:'+c.color+'">'+(c.coming?'준비중':vals[c.key].toLocaleString()+'원')+'</div>'
+      +'<div class="cat-sub">'+(c.desc?'<span>'+c.desc+'</span>':'')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function setCat(k){activeCat=k;renderCats();doRender();}
+
+/* ── 담당자 버튼 ── */
+function buildPersonBtns(){
+  var exec1=['조계현','이세호','기여운','최연전'];
+  var ops=['김재영','최은정'];
+  document.getElementById('execBtns1').innerHTML=exec1.map(function(n){
+    return '<button class="ebtn'+(activeExec===n?' active':'')+'" onclick="toggleExec(\''+n+'\')" >'+n+'</button>';
+  }).join('');
+  document.getElementById('execBtns2').innerHTML=ops.map(function(n){
+    return '<button class="ebtn'+(activeOps===n?' active':'')+'" onclick="toggleOps(\''+n+'\')" >'+n+'</button>';
+  }).join('');
+}
+function toggleExec(n){activeExec=activeExec===n?null:n;buildPersonBtns();doRender();}
+function toggleOps(n){activeOps=activeOps===n?null:n;buildPersonBtns();doRender();}
+function resetAll(){
+  activeCat='all';activeExec=null;activeOps=null;
+  document.getElementById('searchInput').value='';
+  document.getElementById('filterMonth').value='';
+  renderCats();buildPersonBtns();doRender();
+}
+
+/* ── 필터링 ── */
+function getFilteredR(){
   var q=document.getElementById('searchInput').value.toLowerCase();
-  var exec=document.getElementById('filterExec').value;
   var mo=document.getElementById('filterMonth').value;
   var moNum=mo?parseInt(mo):0;
-
-  if(activeTab==='real'){
-    var data=RDATA.filter(function(d){
-      if(q&&d.name.toLowerCase().indexOf(q)<0)return false;
-      if(exec&&d.exec!==exec)return false;
-      if(moNum&&monthOf(d.date)!==moNum)return false;
-      return true;
-    });
-    var total=data.reduce(function(a,d){return a+(d.amount||0)-(d.refund||0);},0);
-    document.getElementById('totalCnt').textContent=data.length;
-    document.getElementById('totalAmt').textContent=total.toLocaleString()+'원';
-    document.getElementById('tableHead').innerHTML='<tr>'+
-      '<th>결제일</th><th>고객명</th><th>직급</th><th>캠페인명</th><th>계약경로</th>'+
-      '<th class="right">집행금액</th><th class="right">환불금액</th>'+
-      '<th>담당 실행파트</th><th>담당 컨설턴트</th><th>리워드</th><th>비고</th>'+
-    '</tr>';
-    document.getElementById('tableBody').innerHTML=data.length?data.map(function(d){
-      return '<tr onclick="openEditModal(\'real\','+d.id+')">'+
-        '<td>'+fmtDate(d.date)+'</td>'+
-        '<td class="td-name">'+d.name+'</td>'+
-        '<td>'+d.rank+'</td>'+
-        '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">'+d.campaign+'</td>'+
-        '<td><span class="badge '+(d.route==='분양회'?'b-bun':'b-wan')+'">'+d.route+'</span></td>'+
-        '<td class="right td-amt">'+won(d.amount)+'</td>'+
-        '<td class="right '+(d.refund?'td-refund':'')+'">'+  (d.refund?'-'+won(d.refund):'—')+'</td>'+
-        '<td>'+d.exec+'</td><td>'+d.consult+'</td>'+
-        '<td>'+(d.rewardAmt?'<span class="badge '+(d.reward==='reward'?'b-reward':'b-mile')+'">'+(d.reward==='reward'?'리워드':'마일리지')+' '+won(d.rewardAmt)+'</span>':'—')+'</td>'+
-        '<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--text3)">'+  (d.note||'—')+'</td>'+
-      '</tr>';
-    }).join(''):'<tr class="empty-row"><td colspan="11">등록된 내역이 없습니다</td></tr>';
-  } else {
-    var data=ADATA.filter(function(d){
-      if(q&&d.name.toLowerCase().indexOf(q)<0)return false;
-      if(exec&&d.ops!==exec)return false;
-      if(moNum&&monthOf(d.sendDate)!==moNum)return false;
-      return true;
-    });
-    var total=data.reduce(function(a,d){return a+(d.amount||0);},0);
-    document.getElementById('totalCnt').textContent=data.length;
-    document.getElementById('totalAmt').textContent=total.toLocaleString()+'원';
-    document.getElementById('tableHead').innerHTML='<tr>'+
-      '<th>발송일</th><th>고객명</th><th>직급</th><th>이용상품</th><th>건수</th>'+
-      '<th class="right">결제금액</th><th class="right">실집행금액</th><th class="right">마진</th>'+
-      '<th>담당 운영파트</th><th>담당 컨설턴트</th><th>리워드</th><th>입금일</th>'+
-    '</tr>';
-    document.getElementById('tableBody').innerHTML=data.length?data.map(function(d){
-      return '<tr onclick="openEditModal(\'adv\','+d.id+')">'+
-        '<td>'+fmtDate(d.sendDate)+'</td>'+
-        '<td class="td-name">'+d.name+'</td>'+
-        '<td>'+d.rank+'</td>'+
-        '<td><span class="badge '+(d.product==='호갱노노'?'b-hog':'b-lms')+'">'+d.product+'</span></td>'+
-        '<td>'+(d.count||0).toLocaleString()+'건</td>'+
-        '<td class="right td-amt">'+won(d.amount)+'</td>'+
-        '<td class="right">'+won(d.realAmount)+'</td>'+
-        '<td class="right" style="color:var(--blue)">'+won(d.margin)+'</td>'+
-        '<td>'+d.ops+'</td><td>'+d.consult+'</td>'+
-        '<td>'+(d.reward?'<span class="badge b-reward">리워드 '+won(d.reward)+'</span>':'—')+'</td>'+
-        '<td>'+(d.payinDate?fmtDate(d.payinDate):'—')+'</td>'+
-      '</tr>';
-    }).join(''):'<tr class="empty-row"><td colspan="12">등록된 내역이 없습니다</td></tr>';
-  }
+  if(activeCat==='fee'||activeCat==='ad')return[];
+  return RDATA.filter(function(d){
+    if(q&&d.name.toLowerCase().indexOf(q)<0)return false;
+    if(activeExec&&d.exec!==activeExec)return false;
+    if(moNum&&monthOf(d.date)!==moNum)return false;
+    return true;
+  });
+}
+function getFilteredA(){
+  var q=document.getElementById('searchInput').value.toLowerCase();
+  var mo=document.getElementById('filterMonth').value;
+  var moNum=mo?parseInt(mo):0;
+  if(activeCat==='fee'||activeCat==='link')return[];
+  return ADATA.filter(function(d){
+    if(q&&d.name.toLowerCase().indexOf(q)<0)return false;
+    if(activeOps&&d.ops!==activeOps)return false;
+    if(moNum&&monthOf(d.sendDate)!==moNum)return false;
+    return true;
+  });
 }
 
-/* ── 리워드 자동계산 ── */
-function calcReward(type, product, amount, rewardChoice){
-  if(type==='real'){
-    // 분양회/완판트럭: 리워드5% or 마일리지10%
-    if(rewardChoice==='reward') return Math.round(amount*0.05);
-    if(rewardChoice==='mileage') return Math.round(amount*0.10);
-    return 0;
-  } else {
-    if(product==='호갱노노') return Math.round(amount*0.05);
-    if(product==='LMS') return Math.round(amount*0.15);
-    return 0;
-  }
+/* ── 렌더 ── */
+function doRender(){
+  var rData=getFilteredR();
+  var aData=getFilteredA();
+  var rTotal=rData.reduce(function(a,d){return a+(d.amount||0)-(d.refund||0);},0);
+  var aTotal=aData.reduce(function(a,d){return a+(d.amount||0);},0);
+
+  document.getElementById('linkCnt').textContent=rData.length+'건';
+  document.getElementById('linkTotal').textContent=rTotal.toLocaleString()+'원';
+  document.getElementById('advCnt').textContent=aData.length+'건';
+  document.getElementById('advTotal').textContent=aTotal.toLocaleString()+'원';
+
+  /* 연계매출 테이블 */
+  document.getElementById('linkBody').innerHTML=rData.length?rData.map(function(d){
+    return '<tr onclick="openEditModal(\'link\','+d.id+')">'
+      +'<td>'+fmtDate(d.date)+'</td>'
+      +'<td class="td-name">'+d.name+'</td>'
+      +'<td>'+d.rank+'</td>'
+      +'<td style="max-width:150px;overflow:hidden;text-overflow:ellipsis">'+d.campaign+'</td>'
+      +'<td><span class="badge '+(d.route==='분양회'?'b-bun':'b-wan')+'">'+d.route+'</span></td>'
+      +'<td class="r td-amt">'+won(d.amount)+(d.refund?'<br><span class="td-red" style="font-size:11px">-'+won(d.refund)+'</span>':'')+'</td>'
+      +'<td>'+d.exec+'</td>'
+      +'<td>'+(d.rewardAmt?'<span class="badge '+(d.reward==='reward'?'b-reward':'b-mile')+'">'+  (d.reward==='reward'?'R':'M')+' '+won(d.rewardAmt)+'</span>':'—')+'</td>'
+      +'</tr>';
+  }).join(''):'<tr class="empty-row"><td colspan="8">내역이 없습니다</td></tr>';
+
+  /* 광고 매출 테이블 */
+  document.getElementById('advBody').innerHTML=aData.length?aData.map(function(d){
+    return '<tr onclick="openEditModal(\'adv\','+d.id+')">'
+      +'<td>'+fmtDate(d.sendDate)+'</td>'
+      +'<td class="td-name">'+d.name+'</td>'
+      +'<td>'+d.rank+'</td>'
+      +'<td><span class="badge '+(d.product==='호갱노노'?'b-hog':'b-lms')+'">'+d.product+'</span></td>'
+      +'<td>'+(d.count||0).toLocaleString()+'건</td>'
+      +'<td class="r td-amt">'+won(d.amount)+'</td>'
+      +'<td class="r td-blue">'+won(d.margin)+'</td>'
+      +'<td>'+d.ops+'</td>'
+      +'<td>'+(d.reward?'<span class="badge b-reward">'+won(d.reward)+'</span>':'—')+'</td>'
+      +'<td>'+(d.payinDate?fmtDate(d.payinDate):'—')+'</td>'
+      +'</tr>';
+  }).join(''):'<tr class="empty-row"><td colspan="10">내역이 없습니다</td></tr>';
 }
 
 /* ── 모달 ── */
-function openNewModal(){
-  editId=null;
-  renderModal(activeTab, null);
-  document.getElementById('modalBg').classList.add('on');
+function openNewModal(type){renderModal(type,null);document.getElementById('modalBg').classList.add('on');}
+function openEditModal(type,id){
+  var d=(type==='link'?RDATA:ADATA).find(function(x){return x.id===id;});
+  renderModal(type,d);document.getElementById('modalBg').classList.add('on');
 }
-function openEditModal(type, id){
-  editId=id;
-  var d=(type==='real'?RDATA:ADATA).find(function(x){return x.id===id;});
-  renderModal(type, d);
-  document.getElementById('modalBg').classList.add('on');
-}
-function closeModal(){document.getElementById('modalBg').classList.remove('on');editId=null;}
+function closeModal(){document.getElementById('modalBg').classList.remove('on');}
 
-function renderModal(type, d){
+function renderModal(type,d){
   var isEdit=!!d;
-  if(type==='real'){
-    var rewardPreview=d?calcReward('real','',d.amount,d.reward):0;
-    document.getElementById('modalInner').innerHTML=
-      '<div class="modal-title">'+(isEdit?'📈 실연집 수정':'📈 실연집 신규 등록')+'<button class="modal-close" onclick="closeModal()">✕</button></div>'+
-      '<div class="mgrid">'+
+  var html='<div class="modal-head"><div class="modal-title">'+(type==='link'?'📈 연계매출 집행':'📣 광고 매출 집행')+(isEdit?' 수정':' 신규 등록')+'</div><button class="modal-close" onclick="closeModal()">✕</button></div>';
+  html+='<div class="mgrid">';
+
+  if(type==='link'){
+    var rw=d?calcReward('link','',d.amount,d.reward):0;
+    html+=
       '<div class="msec full"><span class="dot" style="background:var(--blue)"></span>기본 정보</div>'+
       '<div class="mf"><label class="ml">결제일<span class="req">*</span></label><input class="einput" id="r_date" type="date" value="'+(d&&d.date||'')+'"></div>'+
       '<div class="mf"><label class="ml">고객명<span class="req">*</span></label><input class="einput" id="r_name" value="'+(d&&d.name||'')+'" placeholder="홍길동"></div>'+
       '<div class="mf"><label class="ml">직급</label><input class="einput" id="r_rank" value="'+(d&&d.rank||'')+'" placeholder="팀장"></div>'+
       '<div class="mf"><label class="ml">계약 경로<span class="req">*</span></label>'+
         '<select class="eselect" id="r_route">'+
-          '<option value="">선택</option>'+
-          ['분양회','완판트럭'].map(function(v){return '<option'+(d&&d.route===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
-      '<div class="mf full"><label class="ml">캠페인명</label><input class="einput" id="r_campaign" value="'+(d&&d.campaign||'')+'" placeholder="용인-홍길동-현장명"></div>'+
+          ['분양회','완판트럭'].map(function(v){return'<option'+(d&&d.route===v?' selected':'')+'>'+v+'</option>';}).join('')+
+        '</select></div>'+
+      '<div class="mf full"><label class="ml">캠페인명</label><input class="einput" id="r_campaign" value="'+(d&&d.campaign||'')+'" placeholder="지역-고객명-현장명"></div>'+
       '<div class="mf"><label class="ml">집행금액<span class="req">*</span></label><input class="einput" id="r_amount" type="number" value="'+(d&&d.amount||'')+'" oninput="updateRReward()" placeholder="5000000"></div>'+
-      '<div class="mf"><label class="ml">VAT 포함</label>'+
-        '<select class="eselect" id="r_vat">'+
-          '<option value="1"'+(d&&d.vat?'':(d?'':' selected'))+'>포함 (+10%)</option>'+
-          '<option value="0"'+(d&&!d.vat?' selected':'')+'>미포함</option>'+
-        '</select>'+
-      '</div>'+
+      '<div class="mf"><label class="ml">VAT 포함</label><select class="eselect" id="r_vat"><option value="1"'+(d&&d.vat?' selected':'')+'>포함(+10%)</option><option value="0"'+(d&&!d.vat?' selected':'')+'>미포함</option></select></div>'+
       '<div class="mf"><label class="ml">환불금액</label><input class="einput" id="r_refund" type="number" value="'+(d&&d.refund||'')+'" placeholder="0"></div>'+
       '<div class="mf"><label class="ml">환불일</label><input class="einput" id="r_refundDate" type="date" value="'+(d&&d.refundDate||'')+'"></div>'+
       '<div class="msec full"><span class="dot" style="background:var(--purple)"></span>담당자</div>'+
-      '<div class="mf"><label class="ml">담당 실행파트</label>'+
-        '<select class="eselect" id="r_exec">'+
-          '<option value="">선택</option>'+
-          ['조계현','이세호','기여운','최연전'].map(function(v){return '<option'+(d&&d.exec===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
-      '<div class="mf"><label class="ml">담당 컨설턴트</label>'+
-        '<select class="eselect" id="r_consult">'+
-          '<option value="">선택</option>'+
-          ['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'].map(function(v){return '<option'+(d&&d.consult===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
+      '<div class="mf"><label class="ml">담당 실행파트</label><select class="eselect" id="r_exec"><option value="">선택</option>'+['조계현','이세호','기여운','최연전'].map(function(v){return'<option'+(d&&d.exec===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
+      '<div class="mf"><label class="ml">담당 컨설턴트</label><select class="eselect" id="r_consult"><option value="">선택</option>'+['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'].map(function(v){return'<option'+(d&&d.consult===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
       '<div class="msec full"><span class="dot" style="background:var(--green)"></span>리워드</div>'+
-      '<div class="mf"><label class="ml">리워드 유형</label>'+
-        '<select class="eselect" id="r_reward" onchange="updateRReward()">'+
-          '<option value="">선택 안 함</option>'+
-          '<option value="reward"'+(d&&d.reward==='reward'?' selected':'')+'>리워드 5% (현금 환급)</option>'+
-          '<option value="mileage"'+(d&&d.reward==='mileage'?' selected':'')+'>마일리지 10% (자사광고 포인트)</option>'+
-        '</select>'+
-      '</div>'+
-      '<div class="mf"><label class="ml">지급 분기</label>'+
-        '<select class="eselect" id="r_quarter">'+
-          ['1분기','2분기','3분기','4분기'].map(function(v){return '<option'+(d&&d.rewardQuarter===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
-      '<div class="reward-preview full" id="rRewardPreview">'+
-        '<div><div class="rp-label">자동 계산 리워드</div><div class="rp-val" id="rRewardVal">'+rewardPreview.toLocaleString()+'원</div></div>'+
-        '<div style="font-size:11px;color:var(--text3);margin-left:auto">분양의신/하이타겟: 리워드 5% · 마일리지 10%</div>'+
-      '</div>'+
-      '<div class="mf full"><label class="ml">비고</label><textarea class="etarea" id="r_note">'+(d&&d.note||'')+'</textarea></div>'+
-      '</div>'+
-      '<div class="mfoot">'+
-        (isEdit?'<button class="mdel" onclick="deleteItem(\'real\','+d.id+')">삭제</button>':'')+
-        '<button class="mcancel" onclick="closeModal()">취소</button>'+
-        '<button class="msubmit" onclick="submitReal('+(isEdit?d.id:'null')+')">저장</button>'+
-      '</div>';
+      '<div class="mf"><label class="ml">리워드 유형</label><select class="eselect" id="r_reward" onchange="updateRReward()"><option value="">선택 안 함</option><option value="reward"'+(d&&d.reward==='reward'?' selected':'')+'>리워드 5% (현금환급)</option><option value="mileage"'+(d&&d.reward==='mileage'?' selected':'')+'>마일리지 10% (포인트)</option></select></div>'+
+      '<div class="mf"><label class="ml">지급 분기</label><select class="eselect" id="r_quarter">'+['1분기','2분기','3분기','4분기'].map(function(v){return'<option'+(d&&d.rewardQuarter===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
+      '<div class="reward-box full"><div><div class="rb-label">자동 계산 리워드</div><div class="rb-val" id="rRewardVal">'+rw.toLocaleString()+'원</div></div><div class="rb-hint">분양의신: 리워드 5% · 마일리지 10%</div></div>'+
+      '<div class="mf full"><label class="ml">비고</label><textarea class="etarea" id="r_note">'+(d&&d.note||'')+'</textarea></div>';
   } else {
-    /* 운광집 */
-    document.getElementById('modalInner').innerHTML=
-      '<div class="modal-title">'+(isEdit?'📣 운광집 수정':'📣 운광집 신규 등록')+'<button class="modal-close" onclick="closeModal()">✕</button></div>'+
-      '<div class="mgrid">'+
+    var rw2=d?d.reward:0;
+    html+=
       '<div class="msec full"><span class="dot" style="background:var(--blue)"></span>기본 정보</div>'+
       '<div class="mf"><label class="ml">발송일<span class="req">*</span></label><input class="einput" id="a_sendDate" type="date" value="'+(d&&d.sendDate||'')+'"></div>'+
       '<div class="mf"><label class="ml">고객명<span class="req">*</span></label><input class="einput" id="a_name" value="'+(d&&d.name||'')+'" placeholder="홍길동"></div>'+
       '<div class="mf"><label class="ml">직급</label><input class="einput" id="a_rank" value="'+(d&&d.rank||'')+'" placeholder="팀장"></div>'+
-      '<div class="mf"><label class="ml">이용 상품<span class="req">*</span></label>'+
-        '<select class="eselect" id="a_product" onchange="updateAReward()">'+
-          '<option value="">선택</option>'+
-          ['호갱노노','LMS'].map(function(v){return '<option'+(d&&d.product===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
+      '<div class="mf"><label class="ml">이용 상품<span class="req">*</span></label><select class="eselect" id="a_product" onchange="updateAReward()"><option value="">선택</option>'+['호갱노노','LMS','직방'].map(function(v){return'<option'+(d&&d.product===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
       '<div class="mf"><label class="ml">건수</label><input class="einput" id="a_count" type="number" value="'+(d&&d.count||'')+'" placeholder="30000"></div>'+
       '<div class="mf"><label class="ml">결제금액<span class="req">*</span></label><input class="einput" id="a_amount" type="number" value="'+(d&&d.amount||'')+'" oninput="updateAReward()" placeholder="3300000"></div>'+
       '<div class="mf"><label class="ml">결제일</label><input class="einput" id="a_payDate" type="date" value="'+(d&&d.payDate||'')+'"></div>'+
-      '<div class="mf"><label class="ml">결제 방식</label>'+
-        '<select class="eselect" id="a_payMethod">'+
-          ['계좌','카드','잔여광고비'].map(function(v){return '<option'+(d&&d.payMethod===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
+      '<div class="mf"><label class="ml">결제 방식</label><select class="eselect" id="a_payMethod">'+['계좌','카드','잔여광고비'].map(function(v){return'<option'+(d&&d.payMethod===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
       '<div class="mf"><label class="ml">실제 집행금액</label><input class="einput" id="a_realAmount" type="number" value="'+(d&&d.realAmount||'')+'" oninput="updateAMargin()" placeholder="2640000"></div>'+
-      '<div class="mf"><label class="ml">대협팀 마진 (자동)</label><input class="einput" id="a_margin" type="number" value="'+(d&&d.margin||'')+'" readonly placeholder="자동계산"></div>'+
+      '<div class="mf"><label class="ml">대협팀 마진 (자동)</label><input class="einput" id="a_margin" type="number" value="'+(d&&d.margin||'')+'" readonly></div>'+
       '<div class="msec full"><span class="dot" style="background:var(--purple)"></span>담당자</div>'+
-      '<div class="mf"><label class="ml">담당 운영파트</label>'+
-        '<select class="eselect" id="a_ops">'+
-          '<option value="">선택</option>'+
-          ['김재영','최은정'].map(function(v){return '<option'+(d&&d.ops===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
-      '<div class="mf"><label class="ml">담당 컨설턴트</label>'+
-        '<select class="eselect" id="a_consult">'+
-          '<option value="">선택</option>'+
-          ['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'].map(function(v){return '<option'+(d&&d.consult===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
+      '<div class="mf"><label class="ml">담당 운영파트</label><select class="eselect" id="a_ops"><option value="">선택</option>'+['김재영','최은정'].map(function(v){return'<option'+(d&&d.ops===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
+      '<div class="mf"><label class="ml">담당 컨설턴트</label><select class="eselect" id="a_consult"><option value="">선택</option>'+['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'].map(function(v){return'<option'+(d&&d.consult===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
       '<div class="msec full"><span class="dot" style="background:var(--green)"></span>리워드 · 정산</div>'+
-      '<div class="reward-preview full" id="aRewardPreview">'+
-        '<div><div class="rp-label">자동 계산 리워드</div><div class="rp-val" id="aRewardVal">'+(d&&d.reward?d.reward.toLocaleString():'0')+'원</div></div>'+
-        '<div style="font-size:11px;color:var(--text3);margin-left:auto">호갱노노 5% · LMS 15%</div>'+
-      '</div>'+
-      '<div class="mf"><label class="ml">지급 분기</label>'+
-        '<select class="eselect" id="a_quarter">'+
-          ['1분기','2분기','3분기','4분기'].map(function(v){return '<option'+(d&&d.rewardQuarter===v?' selected':'')+'>'+v+'</option>';}).join('')+
-        '</select>'+
-      '</div>'+
+      '<div class="reward-box full"><div><div class="rb-label">자동 계산 리워드</div><div class="rb-val" id="aRewardVal">'+(rw2||0).toLocaleString()+'원</div></div><div class="rb-hint">호갱노노 5% · LMS 15%</div></div>'+
+      '<div class="mf"><label class="ml">지급 분기</label><select class="eselect" id="a_quarter">'+['1분기','2분기','3분기','4분기'].map(function(v){return'<option'+(d&&d.rewardQuarter===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
       '<div class="mf"><label class="ml">입금일</label><input class="einput" id="a_payinDate" type="date" value="'+(d&&d.payinDate||'')+'"></div>'+
-      '<div class="mf full"><label class="ml">비고</label><textarea class="etarea" id="a_note">'+(d&&d.note||'')+'</textarea></div>'+
-      '</div>'+
-      '<div class="mfoot">'+
-        (isEdit?'<button class="mdel" onclick="deleteItem(\'adv\','+d.id+')">삭제</button>':'')+
-        '<button class="mcancel" onclick="closeModal()">취소</button>'+
-        '<button class="msubmit" onclick="submitAdv('+(isEdit?d.id:'null')+')">저장</button>'+
-      '</div>';
+      '<div class="mf full"><label class="ml">비고</label><textarea class="etarea" id="a_note">'+(d&&d.note||'')+'</textarea></div>';
   }
+
+  html+='</div>';
+  html+='<div class="mfoot">'+(isEdit?'<button class="mdel" onclick="deleteItem(\''+type+'\','+d.id+')">삭제</button>':'')+'<button class="mcancel" onclick="closeModal()">취소</button><button class="msubmit" onclick="submit(\''+type+'\','+(isEdit?d.id:'null')+')">저장</button></div>';
+  document.getElementById('modalInner').innerHTML=html;
 }
 
-/* ── 리워드 미리보기 갱신 ── */
-function updateRReward(){
-  var amt=parseInt(document.getElementById('r_amount').value)||0;
-  var type=document.getElementById('r_reward').value;
-  var val=calcReward('real','',amt,type);
-  var el=document.getElementById('rRewardVal');
-  if(el)el.textContent=val.toLocaleString()+'원';
-}
-function updateAReward(){
-  var amt=parseInt(document.getElementById('a_amount').value)||0;
-  var prod=document.getElementById('a_product').value;
-  var val=calcReward('adv',prod,amt,'');
-  var el=document.getElementById('aRewardVal');
-  if(el)el.textContent=val.toLocaleString()+'원';
-}
-function updateAMargin(){
-  var total=parseInt(document.getElementById('a_amount').value)||0;
-  var real=parseInt(document.getElementById('a_realAmount').value)||0;
-  var el=document.getElementById('a_margin');
-  if(el)el.value=total-real;
+function updateRReward(){var amt=parseInt(document.getElementById('r_amount').value)||0;var t=document.getElementById('r_reward').value;var el=document.getElementById('rRewardVal');if(el)el.textContent=calcReward('link','',amt,t).toLocaleString()+'원';}
+function updateAReward(){var amt=parseInt(document.getElementById('a_amount').value)||0;var p=document.getElementById('a_product').value;var el=document.getElementById('aRewardVal');if(el)el.textContent=calcReward('adv',p,amt,'').toLocaleString()+'원';}
+function updateAMargin(){var t=parseInt(document.getElementById('a_amount').value)||0;var r=parseInt(document.getElementById('a_realAmount').value)||0;var el=document.getElementById('a_margin');if(el)el.value=t-r;}
+
+function submit(type,id){
+  if(type==='link'){
+    var date=document.getElementById('r_date').value,name=document.getElementById('r_name').value.trim(),route=document.getElementById('r_route').value,amount=parseInt(document.getElementById('r_amount').value)||0;
+    if(!date||!name||!route||!amount){alert('결제일·고객명·계약경로·집행금액 필수');return;}
+    var rc=document.getElementById('r_reward').value;
+    var obj={date:date,name:name,rank:document.getElementById('r_rank').value,campaign:document.getElementById('r_campaign').value,route:route,amount:amount,vat:parseInt(document.getElementById('r_vat').value),refund:parseInt(document.getElementById('r_refund').value)||0,refundDate:document.getElementById('r_refundDate').value,exec:document.getElementById('r_exec').value,consult:document.getElementById('r_consult').value,reward:rc,rewardAmt:calcReward('link','',amount,rc),rewardQuarter:document.getElementById('r_quarter').value,note:document.getElementById('r_note').value};
+    if(id){var i=RDATA.findIndex(function(x){return x.id===id;});RDATA[i]=Object.assign({id:id},obj);}else{obj.id=Math.max.apply(null,RDATA.map(function(d){return d.id;}).concat([0]))+1;RDATA.unshift(obj);}
+    saveR(RDATA);
+  } else {
+    var sendDate=document.getElementById('a_sendDate').value,name=document.getElementById('a_name').value.trim(),product=document.getElementById('a_product').value,amount=parseInt(document.getElementById('a_amount').value)||0;
+    if(!sendDate||!name||!product||!amount){alert('발송일·고객명·상품·결제금액 필수');return;}
+    var obj={sendDate:sendDate,name:name,rank:document.getElementById('a_rank').value,product:product,count:parseInt(document.getElementById('a_count').value)||0,amount:amount,payDate:document.getElementById('a_payDate').value,payMethod:document.getElementById('a_payMethod').value,realAmount:parseInt(document.getElementById('a_realAmount').value)||0,margin:parseInt(document.getElementById('a_margin').value)||0,ops:document.getElementById('a_ops').value,consult:document.getElementById('a_consult').value,reward:calcReward('adv',product,amount,''),rewardQuarter:document.getElementById('a_quarter').value,payinDate:document.getElementById('a_payinDate').value,note:document.getElementById('a_note').value};
+    if(id){var i=ADATA.findIndex(function(x){return x.id===id;});ADATA[i]=Object.assign({id:id},obj);}else{obj.id=Math.max.apply(null,ADATA.map(function(d){return d.id;}).concat([0]))+1;ADATA.unshift(obj);}
+    saveA(ADATA);
+  }
+  saveRewardData();closeModal();renderCats();doRender();
 }
 
-/* ── 저장 ── */
-function submitReal(id){
-  var date=document.getElementById('r_date').value;
-  var name=document.getElementById('r_name').value.trim();
-  var route=document.getElementById('r_route').value;
-  var amount=parseInt(document.getElementById('r_amount').value)||0;
-  if(!date||!name||!route||!amount){alert('결제일, 고객명, 계약경로, 집행금액은 필수입니다.');return;}
-  var rewardChoice=document.getElementById('r_reward').value;
-  var rewardAmt=calcReward('real','',amount,rewardChoice);
-  var obj={
-    date:date,name:name,rank:document.getElementById('r_rank').value,
-    campaign:document.getElementById('r_campaign').value,route:route,amount:amount,
-    vat:parseInt(document.getElementById('r_vat').value),
-    refund:parseInt(document.getElementById('r_refund').value)||0,
-    refundDate:document.getElementById('r_refundDate').value,
-    exec:document.getElementById('r_exec').value,consult:document.getElementById('r_consult').value,
-    reward:rewardChoice,rewardAmt:rewardAmt,
-    rewardQuarter:document.getElementById('r_quarter').value,
-    note:document.getElementById('r_note').value
-  };
-  if(id){var idx=RDATA.findIndex(function(x){return x.id===id;});RDATA[idx]=Object.assign({id:id},obj);}
-  else{obj.id=Math.max.apply(null,RDATA.map(function(d){return d.id;}).concat([0]))+1;RDATA.unshift(obj);}
-  saveR(RDATA); saveRewardData(); closeModal(); doRender();
-}
-function submitAdv(id){
-  var sendDate=document.getElementById('a_sendDate').value;
-  var name=document.getElementById('a_name').value.trim();
-  var product=document.getElementById('a_product').value;
-  var amount=parseInt(document.getElementById('a_amount').value)||0;
-  if(!sendDate||!name||!product||!amount){alert('발송일, 고객명, 이용상품, 결제금액은 필수입니다.');return;}
-  var reward=calcReward('adv',product,amount,'');
-  var obj={
-    sendDate:sendDate,name:name,rank:document.getElementById('a_rank').value,product:product,
-    count:parseInt(document.getElementById('a_count').value)||0,amount:amount,
-    payDate:document.getElementById('a_payDate').value,payMethod:document.getElementById('a_payMethod').value,
-    realAmount:parseInt(document.getElementById('a_realAmount').value)||0,
-    margin:parseInt(document.getElementById('a_margin').value)||0,
-    ops:document.getElementById('a_ops').value,consult:document.getElementById('a_consult').value,
-    reward:reward,rewardQuarter:document.getElementById('a_quarter').value,
-    payinDate:document.getElementById('a_payinDate').value,
-    note:document.getElementById('a_note').value
-  };
-  if(id){var idx=ADATA.findIndex(function(x){return x.id===id;});ADATA[idx]=Object.assign({id:id},obj);}
-  else{obj.id=Math.max.apply(null,ADATA.map(function(d){return d.id;}).concat([0]))+1;ADATA.unshift(obj);}
-  saveA(ADATA); saveRewardData(); closeModal(); doRender();
-}
 function deleteItem(type,id){
   if(!confirm('삭제하시겠습니까?'))return;
-  if(type==='real'){RDATA=RDATA.filter(function(x){return x.id!==id;});saveR(RDATA);}
+  if(type==='link'){RDATA=RDATA.filter(function(x){return x.id!==id;});saveR(RDATA);}
   else{ADATA=ADATA.filter(function(x){return x.id!==id;});saveA(ADATA);}
-  saveRewardData(); closeModal(); doRender();
+  saveRewardData();closeModal();renderCats();doRender();
 }
 
-/* ── 리워드 데이터 저장 (리워드 페이지 연동용) ── */
 function saveRewardData(){
   var all=[];
-  RDATA.forEach(function(d){
-    if(d.rewardAmt){all.push({source:'실연집',date:d.date,name:d.name,type:d.reward==='reward'?'리워드':'마일리지',amount:d.rewardAmt,quarter:d.rewardQuarter,product:d.route,exec:d.exec});}
-  });
-  ADATA.forEach(function(d){
-    if(d.reward){all.push({source:'운광집',date:d.sendDate,name:d.name,type:'리워드',amount:d.reward,quarter:d.rewardQuarter,product:d.product,exec:d.ops});}
-  });
+  RDATA.forEach(function(d){if(d.rewardAmt)all.push({source:'연계매출',date:d.date,name:d.name,type:d.reward==='reward'?'리워드':'마일리지',amount:d.rewardAmt,quarter:d.rewardQuarter,product:d.route,exec:d.exec});});
+  ADATA.forEach(function(d){if(d.reward)all.push({source:'광고매출',date:d.sendDate,name:d.name,type:'리워드',amount:d.reward,quarter:d.rewardQuarter,product:d.product,exec:d.ops});});
   localStorage.setItem('crm_reward_data',JSON.stringify(all));
 }
 
 /* ── 초기 ── */
-buildExecFilter();
+buildPersonBtns();
+renderCats();
 doRender();
 saveRewardData();
 </script>
