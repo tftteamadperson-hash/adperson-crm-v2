@@ -57,20 +57,23 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .goal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;flex:1;display:flex;flex-direction:column;gap:14px}
 .gc-title{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .gc-title .dot{width:6px;height:6px;border-radius:50%}
-.gc-items{display:flex;gap:24px}
-.gc-item{display:flex;flex-direction:column;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:1px solid transparent;transition:all .18s}
+.gc-items{display:flex;gap:0;flex:1}
+.gc-item{display:flex;flex-direction:column;gap:6px;cursor:pointer;padding:10px 18px;border-radius:8px;border:1px solid transparent;transition:all .18s;flex:1;align-items:center;text-align:center}
 .gc-item:hover{background:rgba(255,255,255,.04);border-color:var(--border)}
 .gc-item.active{border-color:var(--gold);background:rgba(201,168,76,.07)}
 .gc-item.active .gc-label{color:var(--gold-light)}
+.gc-item.no-click{cursor:default;flex:1;align-items:center;text-align:center;padding:10px 18px}
 .gc-label{font-size:13px;font-weight:600;color:var(--text2);transition:color .18s}
-.gc-val{display:flex;align-items:baseline;gap:5px}
+.gc-val{display:flex;align-items:baseline;gap:5px;justify-content:center}
 .gc-num{font-size:32px;font-weight:700;line-height:1}
 .gc-target{font-size:14px;color:var(--text3)}
-.gc-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:4px;width:100px}
+.gc-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:4px;width:80px}
 .gc-fill{height:100%;border-radius:3px;transition:width .8s ease}
 .fill-blue{background:linear-gradient(to right,var(--blue),#7ab4ff)}
 .fill-purple{background:linear-gradient(to right,var(--purple),#c4b5fd)}
 .fill-gold{background:linear-gradient(to right,var(--gold),var(--gold-light))}
+.fill-green{background:linear-gradient(to right,var(--green),#6ee7b7)}
+.gc-divider{width:1px;background:var(--border);margin:6px 0;align-self:stretch}
 
 /* ── 필터바 ── */
 .filter-bar{display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
@@ -150,15 +153,17 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .etarea{resize:none;height:80px;line-height:1.7}
 
 /* 이미지 */
-.img-wrap{display:flex;flex-direction:column;gap:8px}
-.img-box{width:100%;height:160px;border-radius:7px;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.img-box:hover{border-color:var(--gold);background:rgba(201,168,76,.04)}
-.img-box img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:5px}
-.img-icon{font-size:24px;color:var(--text3)}
-.img-txt{font-size:12px;color:var(--text3);text-align:center;line-height:1.5}
-.img-del{align-self:flex-start;font-family:'Pretendard',sans-serif;font-size:11px;padding:4px 10px;border-radius:5px;background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.2);color:var(--red);cursor:pointer;transition:all .2s;display:none}
-.img-del.show{display:inline-block}
-.img-del:hover{background:rgba(240,96,96,.2)}
+.img-wrap{display:flex;flex-direction:column;gap:10px}
+.img-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.img-thumb{position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.img-thumb-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(240,96,96,.85);border:none;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Pretendard',sans-serif;transition:background .15s}
+.img-thumb-del:hover{background:var(--red)}
+.img-add-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;aspect-ratio:1;border-radius:6px;border:2px dashed var(--border);cursor:pointer;transition:all .2s;color:var(--text3);font-size:11px;text-align:center}
+.img-add-btn:hover{border-color:var(--gold);color:var(--gold-light);background:rgba(201,168,76,.04)}
+.img-add-icon{font-size:22px}
+.img-empty{padding:24px 0;text-align:center;color:var(--text3);font-size:12px;border:2px dashed var(--border);border-radius:7px;cursor:pointer;transition:all .2s}
+.img-empty:hover{border-color:var(--gold);color:var(--gold-light)}
 
 /* 저장 버튼 */
 .exp-footer{display:flex;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
@@ -387,6 +392,7 @@ function getFiltered() {
   return DATA.filter(function(d) {
     if (activeFilter === 'interview' && d.type !== 'interview') return false;
     if (activeFilter === 'article'   && d.type !== 'article')   return false;
+    if (activeFilter === 'done'      && !d.checks.output)       return false;
     if (activeExec && d.exec !== activeExec) return false;
     if (q && d.name.toLowerCase().indexOf(q) < 0 && (d.site||'').toLowerCase().indexOf(q) < 0) return false;
     return true;
@@ -398,20 +404,32 @@ function renderGoals() {
   var wi = DATA.filter(function(d){ return d.type==='interview' && d.checks.output; }).length;
   var wa = DATA.filter(function(d){ return d.type==='article'   && d.checks.output; }).length;
   var md = DATA.filter(function(d){ return d.checks.output; }).length;
-  var WI = 1, WA = 2;
+  var WI = 1, WA = 2, WT = WI + WA;
   var pi = Math.min(Math.round(wi/WI*100),100);
   var pa = Math.min(Math.round(wa/WA*100),100);
+  var pt = Math.min(Math.round((wi+wa)/WT*100),100);
   var pm = DATA.length ? Math.round(md/DATA.length*100) : 0;
+  var wt = wi + wa;
 
   document.getElementById('goalRow').innerHTML =
     '<div class="goal-card">' +
       '<div class="gc-title"><span class="dot" style="background:var(--blue)"></span>주간 목표 (산출물 완료 기준)</div>' +
       '<div class="gc-items">' +
+        /* 전체 */
+        '<div class="gc-item' + (activeFilter==='all' ? ' active' : '') + '" onclick="setGoalFilter(\'all\')">' +
+          '<span class="gc-label">전체</span>' +
+          '<div class="gc-val"><span class="gc-num" style="color:var(--green)">' + wt + '</span><span class="gc-target">/ ' + WT + '건</span></div>' +
+          '<div class="gc-bar"><div class="gc-fill fill-green" style="width:' + pt + '%"></div></div>' +
+        '</div>' +
+        '<div class="gc-divider"></div>' +
+        /* 인터뷰형 */
         '<div class="gc-item' + (activeFilter==='interview' ? ' active' : '') + '" onclick="setGoalFilter(\'interview\')">' +
           '<span class="gc-label">인터뷰형</span>' +
           '<div class="gc-val"><span class="gc-num" style="color:var(--blue)">' + wi + '</span><span class="gc-target">/ ' + WI + '건</span></div>' +
           '<div class="gc-bar"><div class="gc-fill fill-blue" style="width:' + pi + '%"></div></div>' +
         '</div>' +
+        '<div class="gc-divider"></div>' +
+        /* 아티클형 */
         '<div class="gc-item' + (activeFilter==='article' ? ' active' : '') + '" onclick="setGoalFilter(\'article\')">' +
           '<span class="gc-label">아티클형</span>' +
           '<div class="gc-val"><span class="gc-num" style="color:var(--purple)">' + wa + '</span><span class="gc-target">/ ' + WA + '건</span></div>' +
@@ -422,12 +440,13 @@ function renderGoals() {
     '<div class="goal-card">' +
       '<div class="gc-title"><span class="dot" style="background:var(--gold)"></span>이번 달 전체 산출물 완료</div>' +
       '<div class="gc-items">' +
-        '<div class="gc-item' + (activeFilter==='all' ? ' active' : '') + '" onclick="setGoalFilter(\'all\')">' +
+        '<div class="gc-item' + (activeFilter==='done' ? ' active' : '') + '" onclick="setGoalFilter(\'done\')" style="flex:1">' +
           '<span class="gc-label">산출물 완료</span>' +
           '<div class="gc-val"><span class="gc-num" style="color:var(--gold-light)">' + md + '</span><span class="gc-target">/ ' + DATA.length + '건</span></div>' +
-          '<div class="gc-bar" style="width:120px"><div class="gc-fill fill-gold" style="width:' + pm + '%"></div></div>' +
+          '<div class="gc-bar"><div class="gc-fill fill-gold" style="width:' + pm + '%"></div></div>' +
         '</div>' +
-        '<div class="gc-item" style="cursor:default">' +
+        '<div class="gc-divider"></div>' +
+        '<div class="gc-item no-click" style="flex:1">' +
           '<span class="gc-label">전체 등록</span>' +
           '<div class="gc-val"><span class="gc-num">' + DATA.length + '</span><span class="gc-target">건</span></div>' +
         '</div>' +
@@ -464,15 +483,74 @@ function checkRowHTML(d) {
   '</div>';
 }
 
-/* ── 이미지 키 ── */
-function imgKey(id) { return 'crm_art_img_' + id; }
-function loadImg(id) { return localStorage.getItem(imgKey(id)); }
-function saveImg(id, url) { try { localStorage.setItem(imgKey(id), url); } catch(e) { alert('저장 공간 부족'); } }
-function removeImg(id) { localStorage.removeItem(imgKey(id)); }
+/* ── 이미지 (멀티) ── */
+function imgKey(id) { return 'crm_art_imgs_' + id; }
+function loadImgs(id) {
+  try { var s = localStorage.getItem(imgKey(id)); return s ? JSON.parse(s) : []; }
+  catch(e) { return []; }
+}
+function saveImgs(id, arr) {
+  try { localStorage.setItem(imgKey(id), JSON.stringify(arr)); }
+  catch(e) { alert('저장 공간이 부족합니다. 일부 이미지를 삭제해주세요.'); }
+}
+
+function imgSectionHTML(id) {
+  var imgs = loadImgs(id);
+  var thumbs = imgs.map(function(url, i) {
+    return '<div class="img-thumb">' +
+      '<img src="' + url + '">' +
+      '<button class="img-thumb-del" onclick="removeOneImg(' + id + ',' + i + ')">✕</button>' +
+    '</div>';
+  }).join('');
+  var addBtn = '<div class="img-add-btn" onclick="document.getElementById(\'imgInput' + id + '\').click()">' +
+    '<span class="img-add-icon">📤</span><span>사진 추가</span>' +
+  '</div>';
+  var grid = imgs.length > 0
+    ? '<div class="img-grid" id="imgGrid' + id + '">' + thumbs + addBtn + '</div>'
+    : '<div class="img-empty" onclick="document.getElementById(\'imgInput' + id + '\').click()">📤<br>클릭하여 사진 업로드<br><span style="font-size:10px">여러 장 선택 가능</span></div>';
+  return '<div class="img-wrap" id="imgWrap' + id + '">' +
+    grid +
+    '<input type="file" accept="image/*" multiple id="imgInput' + id + '" style="display:none" onchange="handleImgs(' + id + ',this)">' +
+  '</div>';
+}
+
+function refreshImgSection(id) {
+  var wrap = document.getElementById('imgWrap' + id);
+  if (!wrap) return;
+  var tmp = document.createElement('div');
+  tmp.innerHTML = imgSectionHTML(id);
+  wrap.replaceWith(tmp.firstChild);
+}
+
+function handleImgs(id, input) {
+  if (!input.files || !input.files.length) return;
+  var imgs = loadImgs(id);
+  var files = Array.from(input.files);
+  var loaded = 0;
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      imgs.push(e.target.result);
+      loaded++;
+      if (loaded === files.length) {
+        saveImgs(id, imgs);
+        refreshImgSection(id);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeOneImg(id, idx) {
+  if (!confirm('이 사진을 삭제하시겠습니까?')) return;
+  var imgs = loadImgs(id);
+  imgs.splice(idx, 1);
+  saveImgs(id, imgs);
+  refreshImgSection(id);
+}
 
 /* ── 확장 HTML ── */
 function expandHTML(d) {
-  var img = loadImg(d.id);
   var selExec = ['조계현','이세호','기여운','최연전'].map(function(n){
     return '<option' + (d.exec===n ? ' selected' : '') + '>' + n + '</option>';
   }).join('');
@@ -517,15 +595,7 @@ function expandHTML(d) {
       /* 우: 사진 */
       '<div class="exp-col">' +
         '<div class="exp-sec-title"><span class="dot" style="background:var(--green)"></span>사진</div>' +
-        '<div class="img-wrap">' +
-          '<div class="img-box" id="imgBox' + d.id + '" onclick="document.getElementById(\'imgInput' + d.id + '\').click()">' +
-            (img ? '<img src="' + img + '">' : '') +
-            '<span class="img-icon" style="' + (img?'display:none':'') + '">' + (img?'📷':'📤') + '</span>' +
-            '<span class="img-txt" style="' + (img?'display:none':'') + '">' + (img?'클릭하여 사진 변경':'클릭하여 사진 업로드<br>JPG, PNG 권장') + '</span>' +
-          '</div>' +
-          '<input type="file" accept="image/*" id="imgInput' + d.id + '" style="display:none" onchange="handleImg(' + d.id + ',this)">' +
-          '<button class="img-del' + (img?' show':'') + '" id="imgDel' + d.id + '" onclick="removeImgUI(' + d.id + ')">🗑 사진 삭제</button>' +
-        '</div>' +
+        imgSectionHTML(d.id) +
       '</div>' +
     '</div>' +
     '<div class="exp-footer"><button class="btn-save" id="bsave' + d.id + '" onclick="saveRow(' + d.id + ')">저장</button></div>' +
@@ -591,38 +661,6 @@ function toggleCheck(id, key) {
   var row = document.getElementById('arow' + id);
   if (row) { var pb = row.querySelector('.pbadges'); if (pb) pb.innerHTML = badgesHTML(d.checks); }
   renderGoals();
-}
-
-/* ── 이미지 ── */
-function handleImg(id, input) {
-  if (!input.files || !input.files[0]) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var url = e.target.result;
-    saveImg(id, url);
-    var box = document.getElementById('imgBox' + id);
-    if (box) {
-      var existImg = box.querySelector('img');
-      if (!existImg) { existImg = document.createElement('img'); box.insertBefore(existImg, box.firstChild); }
-      existImg.src = url;
-      var icon = box.querySelector('.img-icon'); if (icon) icon.style.display = 'none';
-      var txt  = box.querySelector('.img-txt');  if (txt)  txt.style.display  = 'none';
-    }
-    var del = document.getElementById('imgDel' + id); if (del) del.classList.add('show');
-  };
-  reader.readAsDataURL(input.files[0]);
-}
-
-function removeImgUI(id) {
-  if (!confirm('사진을 삭제하시겠습니까?')) return;
-  removeImg(id);
-  var box = document.getElementById('imgBox' + id);
-  if (box) {
-    var img = box.querySelector('img'); if (img) img.remove();
-    var icon = box.querySelector('.img-icon'); if (icon) { icon.style.display=''; icon.textContent='📤'; }
-    var txt  = box.querySelector('.img-txt');  if (txt)  { txt.style.display=''; txt.innerHTML='클릭하여 사진 업로드<br>JPG, PNG 권장'; }
-  }
-  var del = document.getElementById('imgDel' + id); if (del) del.classList.remove('show');
 }
 
 /* ── 저장 ── */
