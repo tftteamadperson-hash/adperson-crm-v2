@@ -543,6 +543,48 @@ var OPS_TYPES=['호갱노노','LMS','직방'];
 var EXEC_LIST=['조계현','이세호','기여운','최연전'];
 var OPS_LIST=['김재영','최은정'];
 var CONSULT_LIST=['박경화','박민경','강아름','전정훈','박혜은','조승현','백선중','박나라'];
+var ROUTE_LIST=['분양회','완판트럭'];
+
+/* 발송 채널 옵션 */
+var CHANNEL_OPTS={
+  'LMS':['BC카드','국민카드','삼성카드','하나카드','롯데카드','신한카드','SKT','KT','롯데멤버스','신세계포인트','OK캐시백','카카오페이','티맵','나이스평가정보'],
+  '호갱노노':['채널톡','단지마커'],
+  '직방':[]
+};
+function getChannelOpts(saleType, cur){
+  var list=CHANNEL_OPTS[saleType]||[];
+  if(!list.length)return'<option value="">해당없음</option>';
+  return'<option value="">선택</option>'+list.map(function(v){return'<option'+(cur===v?' selected':'')+'>'+v+'</option>';}).join('');
+}
+
+/* 매출구분 optgroup HTML */
+function execSaleTypeSelect(cur){
+  return '<select class="eselect" id="f_saleType" onchange="onExecTypeChange()">'
+    +'<option value="">선택</option>'
+    +'<optgroup label="▸ 분양회">'
+    +'<option value="입회비"'+(cur==='입회비'?' selected':'')+'>입회비</option>'
+    +'<option value="월회비"'+(cur==='월회비'?' selected':'')+'>월회비</option>'
+    +'</optgroup>'
+    +'<optgroup label="▸ 연계매출">'
+    +'<option value="TM토스"'+(cur==='TM토스'?' selected':'')+'>TM토스</option>'
+    +'<option value="완판트럭"'+(cur==='완판트럭'?' selected':'')+'>완판트럭</option>'
+    +'<option value="분양회"'+(cur==='분양회'?' selected':'')+'>분양회</option>'
+    +'</optgroup>'
+    +'</select>';
+}
+
+/* 숫자 콤마 포맷 */
+function numFmt(el){
+  var raw=el.value.replace(/,/g,'');
+  if(raw===''||raw==='-'){return;}
+  var n=parseInt(raw);
+  if(!isNaN(n))el.value=n.toLocaleString();
+}
+function numRaw(id){
+  var el=document.getElementById(id);
+  if(!el)return 0;
+  return parseInt(el.value.replace(/,/g,''))||0;
+}
 
 function renderModal(type, d){
   var isEdit=!!d;
@@ -561,18 +603,18 @@ function renderModal(type, d){
   html+='<div class="mgrid">';
 
   if(type==='exec'){
-    var stOpts=EXEC_TYPES.map(function(v){var cat=CAT_OF[v]||'';return'<option value="'+v+'"'+(d&&d.saleType===v?' selected':'')+'>'+CAT_LABEL_MAP[cat]+' '+v+'</option>';}).join('');
-    var rwOpts=d?getRewardOptions(d.saleType,d.rewardType):'<option value="">선택 안 함</option>';
     var curRwAmt=d?d.rewardAmt:0;
     html+=
       '<div class="msec full"><span class="dot" style="background:var(--blue)"></span>기본 정보</div>'+
-      '<div class="mf"><label class="ml">매출 구분<span class="req">*</span></label><select class="eselect" id="f_saleType" onchange="onExecTypeChange()"><option value="">선택</option>'+stOpts+'</select></div>'+
+      /* ① 계약 경로 먼저 */
+      '<div class="mf"><label class="ml">계약 경로</label><select class="eselect" id="f_route"><option value="">선택</option>'+ROUTE_LIST.map(function(v){return'<option'+(d&&d.route===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
+      /* ② 매출 구분 (optgroup) */
+      '<div class="mf"><label class="ml">매출 구분<span class="req">*</span></label>'+execSaleTypeSelect(d&&d.saleType||'')+'</div>'+
       '<div class="mf"><label class="ml">고객명<span class="req">*</span></label><input class="einput" id="f_name" value="'+(d&&d.name||'')+'" placeholder="홍길동"></div>'+
       '<div class="mf"><label class="ml">직급</label><input class="einput" id="f_rank" value="'+(d&&d.rank||'')+'" placeholder="팀장"></div>'+
       '<div class="mf"><label class="ml">금액<span class="req">*</span> <span style="font-size:10px;color:var(--text3)">(-는 환불)</span></label><input class="einput" id="f_amount" type="number" value="'+(d&&d.amount||'')+'" oninput="onAmtChange(\'exec\')" placeholder="5000000 또는 -967000"></div>'+
-      '<div class="mf"><label class="ml">결제일·환불일<span class="req">*</span></label><input class="einput" id="f_date" type="date" value="'+(d&&d.date||'')+'" onchange="onDateChange()"><div class="input-hint" id="vatHint">'+(d&&d.vat?'VAT포함 '+Math.round(Math.abs(d.amount)*1.1).toLocaleString()+'원':'')+'</div></div>'+
+      '<div class="mf"><label class="ml">결제일·환불일<span class="req">*</span></label><input class="einput" id="f_date" type="date" value="'+(d&&d.date||'')+'" onchange="onDateChange()"><div class="input-hint green" id="vatHint">'+(d&&d.vat?'VAT포함 '+Math.round(Math.abs(d.amount)*1.1).toLocaleString()+'원':'')+'</div></div>'+
       '<div class="mf"><label class="ml">VAT 포함</label><select class="eselect" id="f_vat" onchange="onAmtChange(\'exec\')"><option value="0">미포함</option><option value="1"'+(d&&d.vat?' selected':'')+'>포함 (+10%)</option></select></div>'+
-      '<div class="mf full"><label class="ml">계약 경로</label><select class="eselect" id="f_route"><option value="">선택</option>'+EXEC_TYPES.map(function(v){return'<option'+(d&&d.route===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
       '<div class="msec full"><span class="dot" style="background:var(--purple)"></span>담당자</div>'+
       '<div class="mf"><label class="ml">담당 실행파트</label><select class="eselect" id="f_exec"><option value="">선택</option>'+EXEC_LIST.map(function(v){return'<option'+(d&&d.exec===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
       '<div class="mf"><label class="ml">담당 컨설턴트</label><select class="eselect" id="f_consult"><option value="">선택</option>'+CONSULT_LIST.map(function(v){return'<option'+(d&&d.consult===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'+
@@ -585,12 +627,17 @@ function renderModal(type, d){
     /* 운영파트 */
     var stOpts=OPS_TYPES.map(function(v){return'<option value="'+v+'"'+(d&&d.saleType===v?' selected':'')+'>'+v+'</option>';}).join('');
     var curRwAmt=d?d.rewardAmt:0;
+    var curST=d?d.saleType:'';
+    var curCH=d?d.sendChannel:'';
+    var chOpts=getChannelOpts(curST,curCH);
+    var countFmt=d&&d.count?(d.count).toLocaleString():'';
     html+=
       '<div class="msec full"><span class="dot" style="background:var(--blue)"></span>기본 정보</div>'+
       '<div class="mf"><label class="ml">발송 매체<span class="req">*</span></label><select class="eselect" id="f_saleType" onchange="onOpsTypeChange()"><option value="">선택</option>'+stOpts+'</select></div>'+
+      '<div class="mf"><label class="ml">발송 채널</label><select class="eselect" id="f_sendChannel">'+chOpts+'</select></div>'+
       '<div class="mf"><label class="ml">고객명<span class="req">*</span></label><input class="einput" id="f_name" value="'+(d&&d.name||'')+'" placeholder="홍길동"></div>'+
       '<div class="mf"><label class="ml">직급</label><input class="einput" id="f_rank" value="'+(d&&d.rank||'')+'" placeholder="팀장"></div>'+
-      '<div class="mf"><label class="ml">발송 건수</label><input class="einput" id="f_count" type="number" value="'+(d&&d.count||'')+'" placeholder="30000"></div>'+
+      '<div class="mf"><label class="ml">발송 건수</label><input class="einput" id="f_count" inputmode="numeric" value="'+countFmt+'" oninput="numFmt(this)" placeholder="30,000"></div>'+
       '<div class="mf"><label class="ml">금액<span class="req">*</span> <span style="font-size:10px;color:var(--text3)">(-는 환불)</span></label><input class="einput" id="f_amount" type="number" value="'+(d&&d.amount||'')+'" oninput="onAmtChange(\'ops\')" placeholder="3300000"></div>'+
       '<div class="mf"><label class="ml">결제일·환불일<span class="req">*</span></label><input class="einput" id="f_date" type="date" value="'+(d&&d.date||'')+'" onchange="onDateChange()"></div>'+
       '<div class="mf"><label class="ml">VAT 포함</label><select class="eselect" id="f_vat" onchange="onAmtChange(\'ops\')"><option value="0">미포함</option><option value="1"'+(d&&d.vat?' selected':'')+'>포함 (+10%)</option></select></div>'+
@@ -615,7 +662,12 @@ function onExecTypeChange(){
   if(rwEl)rwEl.innerHTML=getRewardOptions(st,'');
   onAmtChange('exec');
 }
-function onOpsTypeChange(){onAmtChange('ops');}
+function onOpsTypeChange(){
+  var st=document.getElementById('f_saleType').value;
+  var chEl=document.getElementById('f_sendChannel');
+  if(chEl)chEl.innerHTML=getChannelOpts(st,'');
+  onAmtChange('ops');
+}
 
 /* 금액 변경 → VAT·리워드 미리보기 갱신 */
 function onAmtChange(type){
@@ -658,7 +710,7 @@ function submitItem(type,id){
   } else {
     var st2=document.getElementById('f_saleType').value;
     var rw2=calcRewardAmt(st2,amount,'');
-    var obj={saleType:st2,name:name,rank:document.getElementById('f_rank').value,amount:amount,vat:vat,count:parseInt(document.getElementById('f_count').value)||0,date:date,sendDate:document.getElementById('f_sendDate').value,ops:document.getElementById('f_ops').value,consult:document.getElementById('f_consult').value,rewardAmt:rw2,quarter:quarter,note:document.getElementById('f_note').value};
+    var obj={saleType:st2,name:name,rank:document.getElementById('f_rank').value,amount:amount,vat:vat,count:numRaw('f_count'),sendChannel:document.getElementById('f_sendChannel')?document.getElementById('f_sendChannel').value:'',date:date,sendDate:document.getElementById('f_sendDate').value,ops:document.getElementById('f_ops').value,consult:document.getElementById('f_consult').value,rewardAmt:rw2,quarter:quarter,note:document.getElementById('f_note').value};
     if(id){var i=ODATA.findIndex(function(x){return x.id===id;});ODATA[i]=Object.assign({id:id},obj);}else{obj.id=Math.max.apply(null,ODATA.map(function(d){return d.id;}).concat([0]))+1;ODATA.unshift(obj);}
     saveO(ODATA);
   }
