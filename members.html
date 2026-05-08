@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분양회 회원 관리 — 분양의신 CRM</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --bg:#080f1a;--bg2:#0d1623;--bg3:#111e30;--bg4:#162236;--border:#1e3050;
+  --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:rgba(201,168,76,.15);
+  --text:#e8edf5;--text2:#8fa3bc;--text3:#4d6480;
+  --green:#2dd4a0;--red:#f06060;--blue:#5b9cf6;--purple:#a78bfa;--orange:#fb923c;
+  --sidebar:220px;--radius:10px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:13px}
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+.sb-top{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo{height:28px;width:auto;filter:drop-shadow(0 0 6px rgba(201,168,76,.4))}
+.sb-brand{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.04em;line-height:1.3}
+.sb-brand span{display:block;font-size:9px;font-weight:300;color:var(--text3)}
+.sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1e4d8c,#0d2d5a);border:1.5px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-light);flex-shrink:0;overflow:hidden}
+.sb-avatar img{width:100%;height:100%;object-fit:cover}
+.sb-uname{font-size:13px;font-weight:600;color:var(--text)}
+.sb-role{font-size:11px;color:var(--gold);font-weight:500}
+.sb-nav{flex:1;padding:8px 0}
+.sb-section{padding:10px 16px 4px;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--text2);font-size:13px;font-weight:400;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:var(--gold-dim);color:var(--gold-light);border-left-color:var(--gold);font-weight:600}
+.sb-item .icon{font-size:14px;width:17px;text-align:center;flex-shrink:0}
+.sb-coming{margin-left:auto;font-size:9px;color:var(--text3);background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
+.sb-bottom{padding:10px 0;border-top:1px solid var(--border)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.page-title{font-size:15px;font-weight:700;color:var(--text)}
+.date-badge{font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:5px 12px;border-radius:6px}
+.content{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden;transition:border-color .2s}
+.stat-card:hover{border-color:rgba(201,168,76,.3)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:.3}
+.stat-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;margin-bottom:6px;text-transform:uppercase}
+.stat-val{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-.02em;line-height:1}
+.stat-val.c-green{color:var(--green)}.stat-val.c-yellow{color:var(--gold-light)}.stat-val.c-red{color:var(--red)}.stat-val.c-gold{color:var(--gold);font-size:18px}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:5px}
+.stat-warn{font-size:10px;color:var(--orange);margin-top:5px}
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-bar input[type=text]{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 12px;color:var(--text);font-family:'Pretendard',sans-serif;font-size:12px;width:190px;outline:none;transition:border .15s}
+.filter-bar input[type=text]:focus{border-color:rgba(201,168,76,.4)}
+.filter-bar input[type=text]::placeholder{color:var(--text3)}
+.filter-bar select{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 12px;color:var(--text);font-family:'Pretendard',sans-serif;font-size:12px;outline:none;cursor:pointer}
+.btn-new{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:6px;border:1px solid rgba(201,168,76,.4);background:var(--gold-dim);color:var(--gold-light);font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-new:hover{background:rgba(201,168,76,.22);border-color:var(--gold)}
+.filter-count{margin-left:auto;font-size:11px;color:var(--text3)}
+.table-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+thead tr{background:var(--bg4)}
+.tbl th{padding:10px 12px;font-size:10px;font-weight:700;color:var(--text3);text-align:left;border-bottom:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)}
+.tbl tbody tr:last-child td{border-bottom:none}
+.mrow{cursor:pointer;transition:background .1s}
+.mrow:hover td{background:rgba(255,255,255,.025)}
+.mrow.expanded td{background:rgba(201,168,76,.04)}
+.td-id{font-weight:700;color:var(--gold)!important}
+.td-name{font-weight:600;color:var(--text)!important}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;max-width:82px;overflow:hidden;text-overflow:ellipsis}
+.b-active{background:rgba(45,212,160,.12);color:var(--green);border:1px solid rgba(45,212,160,.25)}
+.b-paused{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.25)}
+.b-churned{background:rgba(240,96,96,.1);color:var(--red);border:1px solid rgba(240,96,96,.25)}
+.b-new{background:rgba(91,156,246,.1);color:var(--blue);border:1px solid rgba(91,156,246,.25)}
+.dd{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px}
+.dd-ok{background:rgba(45,212,160,.12);color:var(--green)}
+.dd-warn{background:rgba(240,208,128,.12);color:var(--gold-light)}
+.dd-over{background:rgba(240,96,96,.1);color:var(--red)}
+.exp-row td{padding:0!important;border-bottom:1px solid var(--border)}
+.exp-inner{padding:16px 20px 14px;background:rgba(255,255,255,.015);border-top:1px solid rgba(201,168,76,.15)}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:12px}
+.exp-section{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.exp-section::before{content:'';width:3px;height:10px;border-radius:2px;background:var(--gold);display:inline-block}
+.htbl{width:100%;border-collapse:collapse;font-size:12px}
+.htbl th{padding:5px 8px;font-size:10px;font-weight:600;color:var(--text3);text-align:left;border-bottom:1px solid var(--border);letter-spacing:.04em}
+.htbl td{padding:6px 8px;border-bottom:1px solid rgba(30,48,80,.5);color:var(--text2)}
+.htbl tr:last-child td{border-bottom:none}
+.tasks-list{display:flex;flex-direction:column;gap:3px}
+.task-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;font-size:12px}
+.task-done{background:rgba(45,212,160,.07);color:rgba(45,212,160,.6)}
+.task-soon{background:rgba(240,208,128,.09);color:var(--gold-light)}
+.task-future{background:rgba(255,255,255,.03);color:var(--text3)}
+.task-label{flex:1}.task-target{font-size:10px;opacity:.65;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px}.task-date{font-size:10px;opacity:.55}
+.pay-form{background:var(--bg4);border:1px solid rgba(201,168,76,.25);border-radius:8px;padding:14px 16px;margin-top:10px}
+.pay-form-title{font-size:12px;font-weight:700;color:var(--gold-light);margin-bottom:12px}
+.pay-form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.form-field label{font-size:10px;font-weight:600;color:var(--text3);display:block;margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase}
+.form-field input[type=date]{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-family:'Pretendard',sans-serif;font-size:12px;outline:none;transition:border .15s}
+.form-field input[type=date]:focus{border-color:rgba(201,168,76,.4)}
+.pay-footer{display:flex;justify-content:space-between;align-items:center}
+.pay-amount{font-size:12px;color:var(--text3)}.pay-amount strong{color:var(--gold-light);font-size:13px}
+.btn-sm{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Pretendard',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-sm:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.btn-confirm{border-color:rgba(201,168,76,.4);background:var(--gold-dim);color:var(--gold-light)}
+.btn-confirm:hover{background:rgba(201,168,76,.22)}
+.btn-danger{border-color:rgba(240,96,96,.3);color:var(--red)}
+.btn-danger:hover{background:rgba(240,96,96,.08)}
+.exp-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:10px;border-top:1px solid var(--border)}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid rgba(201,168,76,.35);border-radius:8px;padding:11px 18px;font-size:13px;color:var(--gold-light);z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;font-weight:500}
+.toast.show{opacity:1;transform:translateY(0)}
+body.light-mode .sb-top,body.light-mode .sb-user,body.light-mode .sidebar{background:#1a2a42;border-color:#243858}
+body.light-mode .sb-item{color:#a0bcd8}
+body.light-mode .sb-item:hover{background:rgba(255,255,255,.08);color:#fff}
+body.light-mode .sb-item.active{background:rgba(201,168,76,.15);color:var(--gold-light)}
+body.light-mode .sb-section{color:#5a7a9a}
+[data-theme="light"]{--bg:#eef2f7;--bg2:#ffffff;--bg3:#e4eaf2;--bg4:#d8e2ee;--border:#c0d0e0;--text:#0d1f36;--text2:#2a4060;--text3:#6080a0;--gold-dim:rgba(180,140,40,.12)}
+[data-theme="light"] .sidebar{background:var(--bg2)!important}
+[data-theme="light"] .sb-top,[data-theme="light"] .sb-user{background:var(--bg2)!important;border-color:var(--border)!important}
+[data-theme="light"] .sb-item{color:var(--text2)!important}
+[data-theme="light"] .sb-item:hover{background:rgba(0,0,0,.04)!important;color:var(--text)!important}
+[data-theme="light"] .sb-item.active{background:rgba(201,168,76,.12)!important;color:#8a6010!important;border-left-color:var(--gold)!important}
+[data-theme="light"] .sb-section{color:var(--text3)!important}
+[data-theme="light"] .sb-brand{color:#7a5a08!important}
+[data-theme="light"]{--gold:#9a6800;--gold-light:#7a5200}
+[data-theme="light"] .sb-role{color:#9a6800!important}
+[data-theme="light"] .topbar{background:var(--bg2)!important;border-color:var(--border)!important}
+[data-theme="light"] .sb-coming{color:var(--text3)!important;background:rgba(0,0,0,.08)!important}
+[data-theme="light"] thead tr{background:var(--bg4)!important}
+[data-theme="light"] .tbl td{color:var(--text2)!important}
+[data-theme="light"] .td-name{color:var(--text)!important}
+</style>
+<script>
+(function(){var u=sessionStorage.getItem('crm_user');if(u){var uid=JSON.parse(u).id;if(localStorage.getItem('crm_light_'+uid)==='1')document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-top">
+    <img src="./logo-gold.png" class="sb-logo" alt="분양의신" onerror="this.style.display='none'">
+    <div class="sb-brand">분양의신 CRM<span>광고인㈜ 대외협력팀</span></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">?</div>
+    <div><div class="sb-uname" id="sbName">—</div><div class="sb-role" id="sbRole">—</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">총괄</div>
+    <a class="sb-item" href="dashboard.html"><span class="icon">📊</span>대시보드</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📅</span>월간 실적<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📆</span>주간 실적<span class="sb-coming">준비중</span></a>
+    <div class="sb-section">실행</div>
+    <a class="sb-item" href="customers.html"><span class="icon">👥</span>고객 DB</a>
+    <a class="sb-item" href="pipeline.html"><span class="icon">🔀</span>파이프라인</a>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">⭐</span>분양회 입회자<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="article.html"><span class="icon">📰</span>취재 · 아티클</a>
+    <a class="sb-item" href="premium-agency.html"><span class="icon">🏢</span>프리미엄 대행사</a>
+    <a class="sb-item" href="wanpan.html"><span class="icon">🚚</span>완판트럭</a>
+    <div class="sb-section">운영</div>
+    <a class="sb-item" href="#" onclick="return false" style="opacity:.5;cursor:default"><span class="icon">📋</span>매출일보<span class="sb-coming">준비중</span></a>
+    <a class="sb-item" href="revenue.html"><span class="icon">💰</span>통합 매출 관리</a>
+    <a class="sb-item" href="reward.html"><span class="icon">🎁</span>리워드 관리</a>
+    <a class="sb-item active" href="members.html"><span class="icon">👑</span>분양회 회원 관리</a>
+  </nav>
+  <div class="sb-bottom">
+    <a class="sb-item" id="lightModeBtn" onclick="toggleLightMode()" style="cursor:pointer"><span class="icon">🌙</span>라이트 모드</a>
+    <a class="sb-item" id="menuAccessMgmt" href="admin-accounts.html"><span class="icon">⚙️</span>접근 권한</a>
+    <a class="sb-item" href="mypage.html"><span class="icon">👤</span>마이페이지</a>
+    <a class="sb-item" href="index.html"><span class="icon">🚪</span>로그아웃</a>
+  </div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span style="font-size:18px">👑</span>
+      <span class="page-title">분양회 회원 관리</span>
+      <span style="font-size:11px;color:var(--text3)">회원 납부 현황 · 혜택 기간 · 업무 일정 통합 관리</span>
+    </div>
+    <div><div class="date-badge">기준일 2026-05-08</div></div>
+  </div>
+  <div class="content">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="filter-bar">
+      <input type="text" id="q" placeholder="🔍  이름 · 지역 · 담당 검색" oninput="render()">
+      <select id="fs" onchange="render()"><option value="">전체 상태</option><option value="active">활성</option><option value="paused">일시중단</option><option value="churned">이탈</option></select>
+      <select id="fr" onchange="render()"><option value="">전체 지역</option></select>
+      <select id="fc" onchange="render()"><option value="">전체 담당</option></select>
+      <button class="btn-new" onclick="alert('신규 회원 등록은 다음 버전에서 추가됩니다.')">＋ 신규 회원 등록</button>
+      <div class="filter-count" id="fcount"></div>
+    </div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th style="width:64px">회원번호</th><th style="width:72px">이름</th><th style="width:58px">직급</th>
+          <th style="width:52px">지역</th><th style="width:82px">상태</th><th style="width:46px;text-align:center">회차</th>
+          <th style="width:68px">시작일</th><th style="width:68px">종료일</th><th style="width:66px;text-align:center">잔여일</th>
+          <th style="width:50px">출금</th><th style="width:64px">담당</th><th style="width:68px">액션</th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+window.addEventListener('DOMContentLoaded',function(){
+  var RANKS={adperson1:'본부장',adperson2:'팀장',adperson3:'파트장',adperson4:'메인',adperson5:'어쏘',adperson6:'어쏘',adperson7:'CX',adperson8:'어시',adperson9:'어시'};
+  var ROLE_LABEL={admin:'—',exec:'실행파트',ops:'운영파트'};
+  var ALLOWED_ADMIN=['adperson1','adperson2','adperson3','adperson8'];
+  var u=sessionStorage.getItem('crm_user');
+  if(!u){window.location.href='index.html';return;}
+  var user=JSON.parse(u);
+  var rank=RANKS[user.id]||'';
+  var el=document.getElementById('sbName');if(el)el.textContent=user.name+(rank?' '+rank:'');
+  var el2=document.getElementById('sbRole');if(el2)el2.textContent=ROLE_LABEL[user.role]||'';
+  var av=document.getElementById('sbAvatar');
+  if(av){var photo=sessionStorage.getItem('profile_photo_'+user.id);if(photo){av.innerHTML='<img src="'+photo+'">';}else{av.textContent=user.name[0];}}
+  var menuEl=document.getElementById('menuAccessMgmt');
+  if(menuEl&&ALLOWED_ADMIN.indexOf(user.id)===-1)menuEl.style.display='none';
+  initFilters();renderStats();render();
+});
+function toggleLightMode(){
+  var u=sessionStorage.getItem('crm_user');var uid=u?JSON.parse(u).id:'guest';
+  var isLight=document.documentElement.getAttribute('data-theme')==='light';
+  if(isLight){document.documentElement.removeAttribute('data-theme');localStorage.removeItem('crm_light_'+uid);}
+  else{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('crm_light_'+uid,'1');}
+  var btn=document.getElementById('lightModeBtn');
+  if(btn)btn.innerHTML=isLight?'<span class="icon">🌙</span>라이트 모드':'<span class="icon">☀️</span>다크 모드';
+}
+(function(){var btn=document.getElementById('lightModeBtn');if(btn&&document.documentElement.getAttribute('data-theme')==='light')btn.innerHTML='<span class="icon">☀️</span>다크 모드';})();
+
+const TODAY=new Date('2026-05-08');
+const members=[
+  {id:'B-1',name:'최준호',pos:'팀장',phone:'010-9033-6380',region:'광주',joinPath:'신규TM',consultant:'박나라',sales:'기여운',ops:'김재영',day:20,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-02-20',s:'2026-02-20',e:'2026-03-21'},{n:2,pd:'2026-03-20',s:'2026-03-20',e:'2026-04-20'},{n:3,pd:'2026-04-20',s:'2026-04-20',e:'2026-05-20'}]},
+  {id:'B-2',name:'김선호',pos:'본부장',phone:'010-4327-2450',region:'용인',joinPath:'기존TM',consultant:'백선중',sales:'기여운',ops:'김재영',day:25,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-02-25',s:'2026-02-25',e:'2026-03-26'},{n:2,pd:'2026-03-25',s:'2026-03-27',e:'2026-04-25'},{n:3,pd:'2026-04-25',s:'2026-04-25',e:'2026-05-25'}]},
+  {id:'B-3',name:'허덕연',pos:'본부장',phone:'010-3255-5555',region:'평택',joinPath:'기존TM',consultant:'백선중',sales:'기여운',ops:'김재영',day:25,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-02-25',s:'2026-02-25',e:'2026-03-26'},{n:2,pd:'2026-03-25',s:'2026-03-27',e:'2026-04-25'}]},
+  {id:'B-4',name:'오정연',pos:'실장',phone:'010-5548-7737',region:'대구',joinPath:'기존TM',consultant:'박나라',sales:'기여운',ops:'김재영',day:1,pay:'카드',churned:true,rounds:[{n:1,pd:'2026-03-01',s:'2026-03-01',e:'2026-03-30'},{n:2,pd:'2026-03-31',s:'2026-03-31',e:'2026-04-29'}]},
+  {id:'B-5',name:'윤민',pos:'팀장',phone:'010-8561-0805',region:'울산',joinPath:'기존TM',consultant:'조승현',sales:'기여운',ops:'김재영',day:8,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-03-08',s:'2026-03-08',e:'2026-04-06'},{n:2,pd:'2026-04-21',s:'2026-04-21',e:'2026-05-20'}]},
+  {id:'B-6',name:'최두식',pos:'본부장',phone:'010-6758-8249',region:'김포',joinPath:'기존TM',consultant:'강아름',sales:'최연진',ops:'최은정',day:20,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-03-24',s:'2026-03-24',e:'2026-04-22'},{n:2,pd:'2026-04-24',s:'2026-04-24',e:'2026-05-24'}]},
+  {id:'B-7',name:'김건하',pos:'팀장',phone:'010-7351-7172',region:'대구',joinPath:'기존TM',consultant:'강아름',sales:'최연진',ops:'최은정',day:20,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-03-27',s:'2026-03-27',e:'2026-04-20'}]},
+  {id:'B-8',name:'백민영',pos:'본부장',phone:'010-5775-7285',region:'부산',joinPath:'기존TM',consultant:'박경화',sales:'조계현',ops:'최은정',day:25,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-03-30',s:'2026-03-30',e:'2026-04-29'}]},
+  {id:'B-9',name:'김나윤',pos:'본부장',phone:'010-9364-4988',region:'부산',joinPath:'신규TM',consultant:'박민경',sales:'조계현',ops:'최은정',day:25,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-03-30',s:'2026-03-30',e:'2026-04-29'}]},
+  {id:'B-10',name:'신우진',pos:'본부장',phone:'010-5162-2312',region:'부산',joinPath:'기존TM',consultant:'강아름',sales:'최연진',ops:'최은정',day:25,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-02',s:'2026-04-02',e:'2026-05-01'}]},
+  {id:'B-11',name:'윤권',pos:'본부장',phone:'010-3405-0067',region:'울산',joinPath:'신규TM',consultant:'강아름',sales:'최연진',ops:'최은정',day:25,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-04-08',s:'2026-04-08',e:'2026-05-07'}]},
+  {id:'B-12',name:'위성민',pos:'팀장',phone:'010-9800-0484',region:'인천',joinPath:'기존TM',consultant:'박나라',sales:'이세호',ops:'김재영',day:10,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-10',s:'2026-04-10',e:'2026-05-09'},{n:2,pd:'2026-05-09',s:'2026-05-09',e:'2026-06-07'}]},
+  {id:'B-13',name:'김윤아',pos:'팀장',phone:'010-3581-6510',region:'부산',joinPath:'기존TM',consultant:'박민경',sales:'최연진',ops:'최은정',day:14,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-14',s:'2026-04-14',e:'2026-05-13'}]},
+  {id:'B-14',name:'김이태',pos:'본부장',phone:'010-7185-5954',region:'시흥',joinPath:'기존TM',consultant:'박나라',sales:'이세호',ops:'김재영',day:15,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-04-17',s:'2026-04-15',e:'2026-05-14'}]},
+  {id:'B-15',name:'김정환',pos:'본부장',phone:'010-9400-5226',region:'경산',joinPath:'기존TM',consultant:'백선중',sales:'기여운',ops:'김재영',day:15,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-04-15',s:'2026-04-15',e:'2026-05-14'}]},
+  {id:'B-16',name:'이수지',pos:'본부장',phone:'010-4553-8271',region:'오산',joinPath:'기존TM',consultant:'백선중',sales:'기여운',ops:'김재영',day:16,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-16',s:'2026-04-16',e:'2026-05-15'}]},
+  {id:'B-17',name:'박홍배',pos:'본부장',phone:'010-5690-5533',region:'오산',joinPath:'기존TM',consultant:'백선중',sales:'기여운',ops:'김재영',day:21,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-21',s:'2026-04-21',e:'2026-05-20'}]},
+  {id:'B-18',name:'김성호',pos:'팀장',phone:'010-3773-0018',region:'성남',joinPath:'기존TM',consultant:'강아름',sales:'조계현',ops:'최은정',day:25,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-25',s:'2026-04-25',e:'2026-05-24'}]},
+  {id:'B-19',name:'박수근',pos:'팀장',phone:'010-6633-7866',region:'서울',joinPath:'기존TM',consultant:'강아름',sales:'조계현',ops:'최은정',day:28,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-28',s:'2026-04-28',e:'2026-05-27'}]},
+  {id:'B-20',name:'이연수',pos:'본부장',phone:'010-7511-4439',region:'울산',joinPath:'기존TM',consultant:'백선중',sales:'기여운',ops:'김재영',day:21,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-04-21',s:'2026-04-21',e:'2026-05-20'}]},
+  {id:'B-21',name:'한세이',pos:'본부장',phone:'010-7791-7988',region:'오산',joinPath:'기존TM',consultant:'강아름',sales:'최연진',ops:'최은정',day:21,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-21',s:'2026-04-21',e:'2026-05-20'}]},
+  {id:'B-22',name:'김영성',pos:'팀장',phone:'010-8907-6151',region:'김해',joinPath:'신규TM',consultant:'박민경',sales:'조계현',ops:'최은정',day:27,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-27',s:'2026-04-27',e:'2026-05-26'}]},
+  {id:'B-23',name:'오세혁',pos:'대표',phone:'010-5146-7442',region:'양동',joinPath:'기존TM',consultant:'박민경',sales:'최연진',ops:'최은정',day:10,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-05-10',s:'2026-05-10',e:'2026-06-09'}]},
+  {id:'B-24',name:'이정재',pos:'본부장',phone:'010-4878-7464',region:'인천',joinPath:'기존TM',consultant:'박민경',sales:'조계현',ops:'최은정',day:1,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-05-04',s:'2026-05-01',e:'2026-05-30'}]},
+  {id:'B-25',name:'김부성',pos:'본부장',phone:'010-5064-8707',region:'평택',joinPath:'기존TM',consultant:'박민경',sales:'조계현',ops:'최은정',day:29,pay:'카드',churned:false,rounds:[{n:1,pd:'2026-04-29',s:'2026-04-30',e:'2026-05-29'}]},
+  {id:'B-26',name:'임순석',pos:'팀장',phone:'010-7710-3369',region:'구리',joinPath:'신규TM',consultant:'박나라',sales:'이세호',ops:'김재영',day:15,pay:'계좌',churned:false,rounds:[{n:1,pd:'2026-05-15',s:'2026-05-15',e:'2026-06-13'}]},
+];
+const expanded=new Set(),payOpen=new Set();
+function getStatus(m){if(m.churned)return'churned';if(!m.rounds.length)return'new';return new Date(m.rounds[m.rounds.length-1].e)>=TODAY?'active':'paused';}
+function getDday(m){if(!m.rounds.length||m.churned)return null;return Math.round((new Date(m.rounds[m.rounds.length-1].e)-TODAY)/86400000);}
+function fmt(d){if(!d)return'—';const dt=new Date(d);return`${dt.getMonth()+1}/${dt.getDate()}`;}
+function fmtFull(d){if(!d)return'—';const dt=new Date(d);return`${dt.getMonth()+1}월 ${dt.getDate()}일`;}
+function getTasks(m){
+  if(!m.rounds.length)return[];
+  const s=new Date(m.rounds[m.rounds.length-1].s);
+  return[{dOff:1,label:'혜택 안내 문자 발송',target:'운영파트'},{dOff:7,label:'첫 혜택 사용 확인 콜',target:'운영파트'},{dOff:20,label:'만족도 체크 · 갱신 권유',target:'실행파트'},{dOff:25,label:'갱신 안내 문자 발송',target:'운영파트'},{dOff:28,label:'갱신 최종 확인 콜',target:'실행파트'},{dOff:30,label:'갱신 or 이탈 처리',target:'실행파트'}].map(t=>{
+    const due=new Date(s);due.setDate(due.getDate()+t.dOff);
+    const diff=Math.round((due-TODAY)/86400000);
+    return{...t,due,diff,cls:diff<0?'task-done':diff<=3?'task-soon':'task-future',prefix:diff<0?'완료':diff===0?'오늘':`D-${diff}`};
+  });
+}
+function renderStats(){
+  const total=members.length,active=members.filter(m=>getStatus(m)==='active').length,paused=members.filter(m=>getStatus(m)==='paused').length,churned=members.filter(m=>m.churned).length;
+  const rev=active*550000,warn=members.filter(m=>{const d=getDday(m);return d!==null&&d>=0&&d<=7;}).length;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card"><div class="stat-label">전체 회원</div><div class="stat-val">${total}<span style="font-size:14px;color:var(--text3)">명</span></div><div class="stat-sub">누적 가입</div></div>
+    <div class="stat-card"><div class="stat-label">활성</div><div class="stat-val c-green">${active}<span style="font-size:14px">명</span></div><div class="stat-sub">혜택 유효</div></div>
+    <div class="stat-card"><div class="stat-label">일시중단</div><div class="stat-val c-yellow">${paused}<span style="font-size:14px">명</span></div><div class="stat-sub">재가입 대상</div></div>
+    <div class="stat-card"><div class="stat-label">이탈</div><div class="stat-val c-red">${churned}<span style="font-size:14px">명</span></div><div class="stat-sub">이탈 처리됨</div></div>
+    <div class="stat-card"><div class="stat-label">월 예상 수입</div><div class="stat-val c-gold">₩${rev.toLocaleString()}</div><div class="stat-warn">⚠ D-7 이내 ${warn}명</div></div>`;
+}
+function initFilters(){
+  const fr=document.getElementById('fr');[...new Set(members.map(m=>m.region))].sort().forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;fr.appendChild(o);});
+  const fc=document.getElementById('fc');[...new Set(members.map(m=>m.consultant))].sort().forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;fc.appendChild(o);});
+}
+function render(){
+  const q=document.getElementById('q').value.toLowerCase(),fs=document.getElementById('fs').value,fr=document.getElementById('fr').value,fc=document.getElementById('fc').value;
+  const filtered=members.filter(m=>{
+    if(fs&&getStatus(m)!==fs)return false;if(fr&&m.region!==fr)return false;if(fc&&m.consultant!==fc)return false;
+    if(q&&!m.name.includes(q)&&!m.region.includes(q)&&!m.consultant.includes(q)&&!m.id.toLowerCase().includes(q))return false;return true;
+  });
+  document.getElementById('fcount').textContent=`${filtered.length}명 표시 중`;
+  const SLBL={active:'활성',paused:'일시중단',churned:'이탈',new:'신규'},SCLS={active:'b-active',paused:'b-paused',churned:'b-churned',new:'b-new'};
+  let html='';
+  filtered.forEach(m=>{
+    const st=getStatus(m),last=m.rounds[m.rounds.length-1],dday=getDday(m),isExp=expanded.has(m.id),isPayO=payOpen.has(m.id);
+    let ddH='<span style="color:var(--text3)">—</span>';
+    if(dday!==null){if(dday>7)ddH=`<span class="dd dd-ok">D-${dday}</span>`;else if(dday>=0)ddH=`<span class="dd dd-warn">D-${dday}</span>`;else ddH=`<span class="dd dd-over">D+${Math.abs(dday)}</span>`;}
+    html+=`<tr class="mrow${isExp?' expanded':''}" onclick="toggleExp('${m.id}')"><td class="td-id">${m.id}</td><td class="td-name">${m.name}</td><td>${m.pos}</td><td>${m.region}</td><td><span class="badge ${SCLS[st]}">${SLBL[st]}</span></td><td style="text-align:center;font-weight:600;color:var(--text)">${m.rounds.length}회</td><td>${last?fmt(last.s):'—'}</td><td>${last?fmt(last.e):'—'}</td><td style="text-align:center">${ddH}</td><td>${m.pay}</td><td style="font-size:12px">${m.consultant}</td><td onclick="event.stopPropagation()"><button class="btn-new" style="padding:4px 10px;font-size:11px" onclick="openPay('${m.id}')">+ 납부</button></td></tr>`;
+    if(isExp){
+      const tasks=getTasks(m);
+      html+=`<tr class="exp-row"><td colspan="12"><div class="exp-inner"><div class="exp-grid">
+        <div><div class="exp-section">납부 이력</div><table class="htbl"><tr><th>회차</th><th>납부일</th><th>시작일</th><th>종료일</th><th>결제금액</th><th>상태</th></tr>${m.rounds.map((r,i)=>{const isCur=i===m.rounds.length-1,ed=new Date(r.e);const rSt=m.churned&&isCur?'<span class="badge b-churned" style="font-size:10px">이탈</span>':isCur&&ed>=TODAY?'<span class="badge b-active" style="font-size:10px">진행중</span>':isCur?'<span class="badge b-paused" style="font-size:10px">만료</span>':'<span style="font-size:11px;color:var(--text3)">완료</span>';return`<tr><td style="color:var(--text);font-weight:600">${r.n}회차</td><td>${fmt(r.pd)}</td><td>${fmt(r.s)}</td><td>${fmt(r.e)}</td><td style="color:var(--gold-light)">₩550,000</td><td>${rSt}</td></tr>`;}).join('')}</table><div style="margin-top:10px;font-size:11px;color:var(--text3);display:flex;gap:16px"><span>📞 ${m.phone}</span><span>정기출금일 매월 <strong style="color:var(--text2)">${m.day}일</strong></span><span>가입경로: ${m.joinPath}</span></div></div>
+        <div><div class="exp-section">업무 할 일 <span style="font-size:9px;font-weight:400;text-transform:none">(${m.rounds.length}회차 기준)</span></div><div class="tasks-list">${tasks.map(t=>`<div class="task-item ${t.cls}"><span style="font-size:10px;font-weight:700;min-width:34px;text-align:center">${t.prefix}</span><span class="task-label">${t.label}</span><span class="task-target">${t.target}</span><span class="task-date">${fmtFull(t.due.toISOString().split('T')[0])}</span></div>`).join('')}</div></div>
+      </div>${isPayO?`<div class="pay-form"><div class="pay-form-title">💳 ${m.rounds.length+1}회차 납부 등록</div><div class="pay-form-grid"><div class="form-field"><label>납부일</label><input type="date" id="pd-${m.id}" value="${TODAY.toISOString().split('T')[0]}"></div><div class="form-field"><label>시작일</label><input type="date" id="sd-${m.id}" value="${getNextStart(m)}" onchange="autoEnd('${m.id}')"></div><div class="form-field"><label>종료일</label><input type="date" id="ed-${m.id}" value="${getNextEnd(m)}"></div></div><div class="pay-footer"><div class="pay-amount">결제금액: <strong>₩550,000</strong> (VAT 포함)</div><div style="display:flex;gap:8px"><button class="btn-sm" onclick="cancelPay('${m.id}')">취소</button><button class="btn-sm btn-confirm" onclick="confirmPay('${m.id}')">✓ 납부 확인</button></div></div></div>`:''}
+      <div class="exp-actions">${!m.churned?`<button class="btn-sm btn-danger" onclick="markChurned('${m.id}');event.stopPropagation()">이탈 처리</button>`:`<button class="btn-sm" style="color:var(--green);border-color:rgba(45,212,160,.3)" onclick="reactivate('${m.id}');event.stopPropagation()">재활성화</button>`}<button class="btn-sm btn-confirm" onclick="openPay('${m.id}');event.stopPropagation()">+ 회비 납부 등록</button></div></div></td></tr>`;
+    }
+  });
+  document.getElementById('tb').innerHTML=html||`<tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text3)">검색 결과가 없습니다.</td></tr>`;
+}
+function getNextStart(m){if(!m.rounds.length)return TODAY.toISOString().split('T')[0];const d=new Date(m.rounds[m.rounds.length-1].e);d.setDate(d.getDate()+1);return d.toISOString().split('T')[0];}
+function getNextEnd(m){const d=new Date(getNextStart(m));d.setDate(d.getDate()+30);return d.toISOString().split('T')[0];}
+function autoEnd(id){const d=new Date(document.getElementById('sd-'+id).value);d.setDate(d.getDate()+30);document.getElementById('ed-'+id).value=d.toISOString().split('T')[0];}
+function toggleExp(id){expanded.has(id)?expanded.delete(id):expanded.add(id);render();}
+function openPay(id){expanded.add(id);payOpen.add(id);render();}
+function cancelPay(id){payOpen.delete(id);render();}
+function confirmPay(id){
+  const m=members.find(x=>x.id===id);
+  const pd=document.getElementById('pd-'+id).value,sd=document.getElementById('sd-'+id).value,ed=document.getElementById('ed-'+id).value;
+  if(!pd||!sd||!ed){showToast('날짜를 모두 입력해주세요.');return;}
+  m.rounds.push({n:m.rounds.length+1,pd,s:sd,e:ed});m.churned=false;payOpen.delete(id);
+  showToast(`✓ ${m.name} ${m.rounds.length}회차 납부가 등록되었습니다.`);renderStats();render();
+}
+function markChurned(id){if(!confirm('이탈 처리하시겠습니까?'))return;const m=members.find(x=>x.id===id);m.churned=true;showToast(`${m.name} 이탈 처리되었습니다.`);renderStats();render();}
+function reactivate(id){const m=members.find(x=>x.id===id);m.churned=false;showToast(`${m.name} 재활성화되었습니다.`);renderStats();render();}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
